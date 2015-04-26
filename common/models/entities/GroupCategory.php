@@ -1,54 +1,34 @@
 <?php
-namespace cmsgears\modules\community\common\models\entities;
+namespace cmsgears\community\common\models\entities;
 
-// Yii Imports
-use yii\db\ActiveRecord;
+// CMG Imports
+use cmsgears\core\common\models\entities\CmgEntity;
 
-class GroupCategory extends ActiveRecord {
+class GroupCategory extends CmgEntity {
 
 	// Instance Methods --------------------------------------------
 
-	// db columns
-
-	public function getGroupId() {
-
-		return $this->group_id;
-	}
-
-	public function setGroupId( $postId ) {
-
-		$this->group_id = $postId;
-	}
-
-	public function getCategoryId() {
-
-		return $this->category_id;
-	}
-
-	public function setCategoryId( $categoryId ) {
-
-		$this->category_id = $categoryId;
-	}
-
 	// Static Methods ----------------------------------------------
 
-	// yii\db\ActiveRecord
+	// yii\db\ActiveRecord ---------------
 
 	public static function tableName() {
 
-		return CommunityTables::TABLE_GROUP_CATEGORY;
+		return CmnTables::TABLE_GROUP_CATEGORY;
 	}
+
+	// GroupCategory ---------------------
 
 	// Delete
-	
-	public static function deleteByGroupId( $id ) {
 
-		self::deleteAll( 'group_id=:id', [ ':id' => $id ] );
+	public static function deleteByGroupId( $groupId ) {
+
+		self::deleteAll( 'groupId=:id', [ ':id' => $groupId ] );
 	}
 
-	public static function deleteByCategoryId( $id ) {
+	public static function deleteByCategoryId( $categoryId ) {
 
-		self::deleteAll( 'category_id=:id', [ ':id' => $id ] );
+		self::deleteAll( 'categoryId=:id', [ ':id' => $categoryId ] );
 	}
 }
 

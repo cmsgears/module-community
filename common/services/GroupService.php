@@ -1,13 +1,13 @@
 <?php
-namespace cmsgears\modules\community\common\services;
+namespace cmsgears\community\common\services;
 
 // Yii Imports
 use \Yii;
 
 // CMG Imports
-use cmsgears\modules\community\common\models\entities\Group;
+use cmsgears\community\common\models\entities\Group;
 
-use cmsgears\modules\core\common\services\Service;
+use cmsgears\core\common\services\Service;
 
 class GroupService extends Service {
 
@@ -17,7 +17,7 @@ class GroupService extends Service {
 
 	public static function findById( $id ) {
 
-		return Group::findOne( $id );
+		return Group::findById( $id );
 	}
 }
 

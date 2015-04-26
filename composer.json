@@ -1,0 +1,30 @@
+{
+	"name": "cmsgears/module-community",
+	"description": "The Community module having features including friends, message, groups, group members, group messages.",
+	"homepage": "http://www.cmsgears.com", 
+	"type": "package",
+	"keywords": [ "yii2", "cmsgears", "module", "community" ],
+	"license": "http://www.cmsgears.com/license",
+	"authors": [
+		{
+			"name": "Bhagwat Singh Chouhan",
+			"email": "bhagwat.chouhan@vulpinecode.com",
+			"homepage": "http://www.cmsgears.org/",
+			"role": "Founder and project lead."
+		}
+	],
+	"support": {
+		"forum": "http://forum.cmsgears.com/",
+		"issues": "https://www.amazingdesk.com/cmsgears/issues/",
+		"blog": "http://cmsgears.tutorials24x7.com/"
+	},
+	"autoload": {
+		"psr-4": {
+			"cmsgears\\community\\": ""
+		}
+	},
+    "require": {
+        "php": ">=5.4.0",
+        "cmsgears/module-core": "*"
+    }
+}
