@@ -130,7 +130,7 @@ class Group extends NamedCmgEntity {
 
 	public static function tableName() {
 
-		return CommunityTables::TABLE_GROUP;
+		return CmnTables::TABLE_GROUP;
 	}
 
 	// Group -----------------------------

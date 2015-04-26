@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\modules\community\admin\controllers\apix;
+namespace cmsgears\community\admin\controllers\apix;
 
 // Yii Imports
 use \Yii;
@@ -8,16 +8,14 @@ use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
 
 // CMG Imports
-use cmsgears\modules\core\common\config\CoreGlobal;
+use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\modules\community\common\models\entities\CommunityPermission;
+use cmsgears\community\admin\models\forms\GroupCategoryBinderForm;
 
-use cmsgears\modules\community\admin\models\forms\GroupCategoryBinderForm;
+use cmsgears\community\admin\services\GroupService;
 
-use cmsgears\modules\community\admin\services\GroupService;
-
-use cmsgears\modules\community\core\utilities\MessageUtil;
-use cmsgears\modules\community\core\utilities\AjaxUtil;
+use cmsgears\core\common\utilities\AjaxUtil;
 
 class GroupController extends Controller {
 
@@ -37,8 +35,8 @@ class GroupController extends Controller {
         return [
             'rbac' => [
                 'class' => Yii::$app->cmgCore->getRbacFilterClass(),
-                'permissions' => [
-	                'bindCategories'  => CommunityPermission::PERM_COMMUNITY_GROUP
+                'actions' => [
+	                'bindCategories'  => [ 'permission' => CmnGlobal::PERM_GROUP ]
                 ]
             ],
             'verbs' => [
@@ -61,12 +59,12 @@ class GroupController extends Controller {
 			if( GroupService::bindCategories( $binder ) ) {
 
 				// Trigger Ajax Success
-				AjaxUtil::generateSuccess( MessageUtil::getMessage( CoreGlobal::MESSAGE_REQUEST ) );
+				AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::MESSAGE_REQUEST ) );
 			}
 		}
 
 		// Trigger Ajax Failure
-        AjaxUtil::generateFailure( MessageUtil::getMessage( CoreGlobal::ERROR_REQUEST ) );
+        AjaxUtil::generateFailure( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_REQUEST ) );
 	}
 }
 

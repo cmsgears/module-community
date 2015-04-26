@@ -3,20 +3,20 @@ use \Yii;
 use yii\helpers\Html; 
 use yii\widgets\LinkPager;
 
-use cmsgears\modules\core\common\utilities\CodeGenUtil;
+use cmsgears\core\common\utilities\CodeGenUtil;
 
 $coreProperties = $this->context->getCoreProperties();
 $this->title 	= $coreProperties->getSiteTitle() . " | Group Messages";
 
-$gid			= $group->getId();
+$gid			= $group->id;
 ?>
 <div class="cud-box">
 	<h2>Group Messages</h2>
 	<form action="#" class="frm-split">
 		<label>Name</label>
-		<label><?= $group->getName() ?></label>
+		<label><?= $group->name ?></label>
 		<label>Description</label>
-		<label><?= $group->getDesc() ?></label>			
+		<label><?= $group->description ?></label>			
 	</form>
 </div>
 <div class="data-grid">
@@ -42,8 +42,8 @@ $gid			= $group->getId();
 
 					foreach( $page as $groupMessage ) {
 
-						$id		= $groupMessage->getId();
-						$user 	= $groupMessage->owner;
+						$id		= $groupMessage->id;
+						$user 	= $groupMessage->member->user;
 				?>
 					<tr>
 						<td> <input type='checkbox' /> </td>
@@ -53,20 +53,20 @@ $gid			= $group->getId();
 
 								if( isset( $avatar ) ) { 
 							?> 
-								<img class="avatar" src="<?=$coreProperties->getUploadUrl()?><?= $avatar->getThumb() ?>">
+								<img class="avatar" src="<?= $avatar->getThumbUrl() ?>">
 							<?php 
-								} else { 
+								} else {
 							?>
 								<img class="avatar" src="<?=Yii::getAlias('@web')?>/assets/images/avatar.png">
 							<?php } ?>
 						</td>
-						<td><?= $user->getUsername() ?></td>
-						<td><?= $user->getName() ?></td>
-						<td><?= $user->getEmail() ?></td>
-						<td><?= $groupMessage->getContent() ?></td>
-						<td><?= $groupMessage->getCreatedOn() ?></td>
+						<td><?= $user->username ?></td>
+						<td><?= $user->name ?></td>
+						<td><?= $user->email ?></td>
+						<td><?= $groupMessage->content ?></td>
+						<td><?= $groupMessage->createdAt ?></td>
 						<td>
-							<span class="wrap-icon-action" title="Delete Group Message"><?= Html::a( "", ["/cmgcommunity/group/delete-message?gid=$gid&id=$id"], ['class'=>'icon-action icon-action-delete'] )  ?></span>
+							<span class="wrap-icon-action" title="Delete Group Message"><?= Html::a( "", ["/cmgcmn/group/delete-message?gid=$gid&id=$id"], ['class'=>'icon-action icon-action-delete'] )  ?></span>
 						</td>
 					</tr>
 				<?php } ?>
@@ -79,5 +79,5 @@ $gid			= $group->getId();
 	</div>
 </div>
 <script type="text/javascript">
-	initSidebar( "sidebar-group", -1 );
+	initSidebar( "sidebar-group", 3 );
 </script>

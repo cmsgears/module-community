@@ -121,17 +121,17 @@ DROP TABLE IF EXISTS `cmg_cmn_group_member`;
 CREATE TABLE `cmg_cmn_group_member` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `groupId` bigint(20) NOT NULL,
-  `memberId` bigint(20) NOT NULL,
+  `userId` bigint(20) NOT NULL,
   `roleId` bigint(20) DEFAULT NULL,
   `status` smallint(6) NOT NULL DEFAULT 0,
   `joinedAt` datetime DEFAULT NULL,
   `syncedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_cmn_group_member_1` (`groupId`),
-  KEY `fk_cmn_group_member_2` (`memberId`),
+  KEY `fk_cmn_group_member_2` (`userId`),
   KEY `fk_cmn_group_member_3` (`roleId`),
   CONSTRAINT `fk_cmn_group_member_1` FOREIGN KEY (`groupId`) REFERENCES `cmg_cmn_group` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_cmn_group_member_2` FOREIGN KEY (`memberId`) REFERENCES `cmg_user` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_cmn_group_member_2` FOREIGN KEY (`userId`) REFERENCES `cmg_user` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_cmn_group_member_3` FOREIGN KEY (`roleId`) REFERENCES `cmg_role` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -3,11 +3,11 @@ use \Yii;
 use yii\helpers\Html; 
 use yii\widgets\LinkPager;
 
-use cmsgears\modules\core\common\utilities\CodeGenUtil;
+use cmsgears\core\common\utilities\CodeGenUtil;
 
 $coreProperties = $this->context->getCoreProperties();
 $this->title 	= $coreProperties->getSiteTitle() . ' | All Groups';
-$groupsUrl		= $coreProperties->getSiteUrl() . "group/";
+$siteUrl		= $coreProperties->getSiteUrl();
 
 // Searching
 $searchTerms	= Yii::$app->request->getQueryParam("search");
@@ -22,7 +22,7 @@ if( !isset( $sortOrder ) ) {
 ?>
 <div class="content-header clearfix">
 	<div class="header-actions"> 
-		<?= Html::a( "Add Group", ["/cmgcommunity/group/create"], ['class'=>'btn'] )  ?>				
+		<?= Html::a( "Add Group", ["/cmgcmn/group/create"], ['class'=>'btn'] )  ?>				
 	</div>
 	<div class="header-search">
 		<input type="text" name="search" id="search-terms" value="<?php if( isset($searchTerms) ) echo $searchTerms;?>">
@@ -47,7 +47,6 @@ if( !isset( $sortOrder ) ) {
 					</th>
 					<th>Slug</th>	
 					<th>Description</th>
-					<th>Categories</th>
 					<th>Visibility</th>
 					<th>Status</th>
 					<th>Created on
@@ -67,16 +66,15 @@ if( !isset( $sortOrder ) ) {
 			</thead>
 			<tbody>
 				<?php
-					
-					$uploadUrl	= Yii::$app->fileManager->uploadUrl;
+
+					$slugBase	= $siteUrl;
 
 					foreach( $page as $group ) {
 
-						$id 		= $group->getId();
-						$editUrl	= Html::a( $group->getName(), ["cmgcommunity/group/update?id=$id"] );
-						$slug		= $group->getSlug();
-						$slugUrl	= "<a href='" . $groupsUrl . "$slug'>$slug</a>";
-						$categories	= CodeGenUtil::generateCategoriesCsv( "#", $group->getCategoriesIdNameMap() );
+						$id 		= $group->id;
+						$editUrl	= Html::a( $group->name, [ "/cmgcmn/group/update?id=$id" ] );
+						$slug		= $group->slug;
+						$slugUrl	= "<a href='" . $slugBase . "group/$slug'>$slug</a>";
 				?>
 					<tr>
 						<td> <input type='checkbox' /> </td>
@@ -86,7 +84,7 @@ if( !isset( $sortOrder ) ) {
 
 								if( isset( $avatar ) ) { 
 							?> 
-								<img class="avatar" src="<?=$uploadUrl?><?= $avatar->getThumb() ?>">
+								<img class="avatar" src="<?= $avatar->getThumbUrl() ?>">
 							<?php 
 								} else { 
 							?>
@@ -95,17 +93,16 @@ if( !isset( $sortOrder ) ) {
 						</td>
 						<td><?= $editUrl ?></td>
 						<td><?= $slugUrl ?></td>
-						<td><?= $group->getDesc() ?></td>
-						<td><?= $categories ?></td>
+						<td><?= $group->description ?></td>
 						<td><?= $group->getVisibilityStr() ?></td>
 						<td><?= $group->getStatusStr() ?></td>
-						<td><?= $group->getCreatedOn() ?></td>
-						<td><?= $group->getUpdatedOn() ?></td>
+						<td><?= $group->createdAt ?></td>
+						<td><?= $group->updatedAt ?></td>
 						<td>
-							<span class="wrap-icon-action" title="View Group Members"><?= Html::a( "", ["/cmgcommunity/group/members?id=$id"], ['class'=>'icon-action icon-action-edit'] )  ?></span>
-							<span class="wrap-icon-action" title="View Group Messages"><?= Html::a( "", ["/cmgcommunity/group/messages?id=$id"], ['class'=>'icon-action icon-action-edit'] )  ?></span>
-							<span class="wrap-icon-action" title="Update Group"><?= Html::a( "", ["/cmgcommunity/group/update?id=$id"], ['class'=>'icon-action icon-action-edit'] )  ?></span>
-							<span class="wrap-icon-action" title="Delete Group"><?= Html::a( "", ["/cmgcommunity/group/delete?id=$id"], ['class'=>'icon-action icon-action-delete'] )  ?></span>
+							<span class="wrap-icon-action" title="View Group Members"><?= Html::a( "", ["/cmgcmn/group/members?id=$id"], ['class'=>'icon-action icon-action-edit'] )  ?></span>
+							<span class="wrap-icon-action" title="View Group Messages"><?= Html::a( "", ["/cmgcmn/group/messages?id=$id"], ['class'=>'icon-action icon-action-edit'] )  ?></span>
+							<span class="wrap-icon-action" title="Update Group"><?= Html::a( "", ["/cmgcmn/group/update?id=$id"], ['class'=>'icon-action icon-action-edit'] )  ?></span>
+							<span class="wrap-icon-action" title="Delete Group"><?= Html::a( "", ["/cmgcmn/group/delete?id=$id"], ['class'=>'icon-action icon-action-delete'] )  ?></span>
 						</td>
 					</tr>
 				<?php } ?>

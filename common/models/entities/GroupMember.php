@@ -4,7 +4,7 @@ namespace cmsgears\community\common\models\entities;
 // CMG Imports
 use cmsgears\core\common\models\entities\CmgEntity;
 use cmsgears\core\common\models\entities\User;
-use cmsgears\core\common\models\entities\rbac\Role;
+use cmsgears\core\common\models\entities\Role;
 
 class GroupMember extends CmgEntity {
 
@@ -25,9 +25,9 @@ class GroupMember extends CmgEntity {
 		return $this->hasOne( Group::className(), [ 'id' => 'groupId' ] );
 	}
 
-	public function getMember() {
+	public function getUser() {
 
-		return $this->hasOne( User::className(), [ 'id' => 'memberId' ] );
+		return $this->hasOne( User::className(), [ 'id' => 'userId' ] );
 	}
 
 	public function getRole() {
@@ -45,7 +45,7 @@ class GroupMember extends CmgEntity {
 	public function rules() {
 
         return [
-        	[ [ 'groupId', 'memberId', 'roleId' ], 'required' ],
+        	[ [ 'groupId', 'userId', 'roleId' ], 'required' ],
             [ [ 'status' ], 'safe' ]
         ];
     }
@@ -54,7 +54,7 @@ class GroupMember extends CmgEntity {
 
 		return [
 			'groupId' => 'Group',
-			'memberId' => 'Member',
+			'userId' => 'Member',
 			'roleId' => 'Role',
 			'status' => 'Status'
 		];
@@ -71,9 +71,14 @@ class GroupMember extends CmgEntity {
 
 	// GroupMember -----------------------
 
+	public static function findById( $id ) {
+
+		return self::find()->where( 'id=:id', [ ':id' => $id ] )->one();
+	}
+	
 	public static function findByGroupIdUserId( $groupId, $userId ) {
 
-		return self::find()->where( 'groupId=:gid AND memberId=:mid', [ ':gid' => $groupId, ':mid' => $userId ] )->one();
+		return self::find()->where( 'groupId=:gid AND userId=:mid', [ ':gid' => $groupId, ':mid' => $userId ] )->one();
 	}
 }
 

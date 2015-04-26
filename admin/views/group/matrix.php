@@ -3,14 +3,14 @@ use \Yii;
 use yii\helpers\Html; 
 use yii\widgets\LinkPager;
 
-use cmsgears\modules\core\common\utilities\CodeGenUtil;
+use cmsgears\core\common\utilities\CodeGenUtil;
 
 $coreProperties = $this->context->getCoreProperties();
 $this->title 	= $coreProperties->getSiteTitle() . " | Groups Matrix";
 ?>
 <div class="content-header clearfix">
 	<div class="header-actions"> 
-		<?= Html::a( "Add Group", ["/cmgcommunity/group/create"], ['class'=>'btn'] )  ?>				
+		<?= Html::a( "Add Group", ["/cmgcmn/group/create"], ['class'=>'btn'] )  ?>				
 	</div>
 	<div class="header-search">
 		<form action="#">
@@ -37,12 +37,12 @@ $this->title 	= $coreProperties->getSiteTitle() . " | Groups Matrix";
 
 					foreach( $page as $group ) {
 
-						$id 		= $group->getId();
+						$id 		= $group->id;
 						$categories	= $group->getCategoriesIdList();
-						$apixUrl	= Yii::$app->urlManager->createAbsoluteUrl( "/apix/cmgcommunity/group/bind-categories" );
+						$apixUrl	= Yii::$app->urlManager->createAbsoluteUrl( "/apix/cmgcmn/group/bind-categories" );
 				?>
 					<tr>
-						<td><?= $group->getName() ?></td>
+						<td><?= $group->name ?></td>
 						<td>
 							<form action="<?=$apixUrl?>" method="POST">
 								<input type="hidden" name="groupId" value="<?=$id?>" />

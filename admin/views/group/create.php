@@ -1,26 +1,32 @@
 <?php
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
+use cmsgears\core\widgets\Editor;
 
 $coreProperties = $this->context->getCoreProperties();
 $this->title 	= $coreProperties->getSiteTitle() . ' | Add Group';
+
+Editor::widget( [ 'selector' => '.content-editor' ] );
 ?>
 <section class="wrap-content container clearfix">
 	<div class="cud-box">
 		<h2>Add Group</h2>
 		<?php $form = ActiveForm::begin( ['id' => 'frm-group-create', 'options' => ['class' => 'frm-split' ] ] );?>
 
-    	<?= $form->field( $model, 'group_name' ) ?>
-    	<?= $form->field( $model, 'group_desc' )->textarea() ?>
-    	<?= $form->field( $model, 'group_status' )->dropDownList( $status ) ?>    	
-    	<?= $form->field( $model, 'group_visibility' )->dropDownList( $visibilities ) ?>
+    	<?= $form->field( $model, 'name' ) ?>
+    	<?= $form->field( $model, 'description' )->textarea() ?>
+    	<?= $form->field( $model, 'status' )->dropDownList( $status ) ?>    	
+    	<?= $form->field( $model, 'visibility' )->dropDownList( $visibilities ) ?>
+
+    	<h4>Group Content</h4>
+    	<?= $form->field( $model, 'content' )->textarea( [ 'class' => 'content-editor' ] ) ?>
 
     	<h4>Group Avatar</h4>
 		<div id="file-avatar" class="file-container" legend="Group Avatar" selector="avatar" utype="image" btn-class="btn file-input-wrap" btn-text="Choose Avatar">
 			<div class="file-fields">
-				<input type="hidden" name="Avatar[file_name]" class="file-name" value="<?php if( isset( $avatar ) ) echo $avatar->getName(); ?>" />
-				<input type="hidden" name="Avatar[file_extension]" class="file-extension" value="<?php if( isset( $avatar ) ) echo $avatar->getExtension(); ?>" />
-				<input type="hidden" name="Avatar[file_directory]" value="avatar" value="<?php if( isset( $avatar ) ) echo $avatar->getDirectory(); ?>" />
+				<input type="hidden" name="Avatar[name]" class="file-name" value="<?php if( isset( $avatar ) ) echo $avatar->name; ?>" />
+				<input type="hidden" name="Avatar[extension]" class="file-extension" value="<?php if( isset( $avatar ) ) echo $avatar->extension; ?>" />
+				<input type="hidden" name="Avatar[directory]" value="avatar" value="<?php if( isset( $avatar ) ) echo $avatar->directory; ?>" />
 				<input type="hidden" name="Avatar[changed]" class="file-change" value="<?php if( isset( $avatar ) ) echo $avatar->changed; ?>" />
 			</div>
 		</div>
@@ -28,12 +34,12 @@ $this->title 	= $coreProperties->getSiteTitle() . ' | Add Group';
     	<h4>Group Banner</h4>
 		<div id="file-banner" class="file-container" legend="Group Banner" selector="banner" utype="image" btn-class="btn file-input-wrap" btn-text="Choose Banner">
 			<div class="file-fields">
-				<input type="hidden" name="Banner[file_name]" class="file-name" value="<?php if( isset( $banner ) ) echo $banner->getName(); ?>" />
-				<input type="hidden" name="Banner[file_extension]" class="file-extension" value="<?php if( isset( $banner ) ) echo $banner->getExtension(); ?>" />
-				<input type="hidden" name="Banner[file_directory]" value="banner" value="<?php if( isset( $banner ) ) echo $banner->getDirectory(); ?>" />
+				<input type="hidden" name="Banner[name]" class="file-name" value="<?php if( isset( $banner ) ) echo $banner->name; ?>" />
+				<input type="hidden" name="Banner[extension]" class="file-extension" value="<?php if( isset( $banner ) ) echo $banner->extension; ?>" />
+				<input type="hidden" name="Banner[directory]" value="banner" value="<?php if( isset( $banner ) ) echo $banner->directory; ?>" />
 				<input type="hidden" name="Banner[changed]" class="file-change" value="<?php if( isset( $banner ) ) echo $banner->changed; ?>" />
-				<label>Banner Description</label> <input type="text" name="Banner[file_desc]" value="<?php if( isset( $banner ) ) echo $banner->getDesc(); ?>" />
-				<label>Banner Alternate Text</label> <input type="text" name="Banner[file_alt_text]" value="<?php if( isset( $banner ) ) echo $banner->getAltText(); ?>" />
+				<label>Banner Description</label> <input type="text" name="Banner[description]" value="<?php if( isset( $banner ) ) echo $banner->description; ?>" />
+				<label>Banner Alternate Text</label> <input type="text" name="Banner[altText]" value="<?php if( isset( $banner ) ) echo $banner->altText; ?>" />
 			</div>
 		</div>
 
@@ -44,7 +50,7 @@ $this->title 	= $coreProperties->getSiteTitle() . ' | Add Group';
 
 		<div class="box-filler"></div>
 
-		<?=Html::a( "Cancel", [ '/cmgcommunity/group/all' ], ['class' => 'btn' ] );?>
+		<?=Html::a( "Cancel", [ '/cmgcmn/group/all' ], ['class' => 'btn' ] );?>
 		<input type="submit" value="Create" />
 
 		<?php ActiveForm::end(); ?>
@@ -52,14 +58,14 @@ $this->title 	= $coreProperties->getSiteTitle() . ' | Add Group';
 </section>
 
 <script type="text/javascript">
-	initSidebar( "sidebar-group", 3 );
+	initSidebar( "sidebar-group", 2 );
 	initFileUploader();
 
 	<?php if( isset( $avatar ) ) { ?>
-		jQuery("#file-avatar .file-image").html( "<img src='<?php echo Yii::$app->fileManager->uploadUrl . $avatar->getDisplayUrl(); ?>' />'" );
+		jQuery("#file-avatar .file-image").html( "<img src='<?php echo $avatar->getFileUrl(); ?>' />'" );
 	<?php } ?>
 
 	<?php if( isset( $banner ) ) { ?>
-		jQuery("#file-banner .file-image").html( "<img src='<?php echo Yii::$app->fileManager->uploadUrl . $banner->getDisplayUrl(); ?>' />'" );
+		jQuery("#file-banner .file-image").html( "<img src='<?php echo $banner->getFileUrl(); ?>' />'" );
 	<?php } ?>
 </script>

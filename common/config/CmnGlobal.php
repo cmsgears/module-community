@@ -7,8 +7,8 @@ class CmnGlobal {
 	const CATEGORY_TYPE_GROUP		= 1551;
 
 	// Permissions
-	const PERM_CHAT					= "chat";
-	const PERM_GROUP				= "group";
+	const PERM_CHAT					= "community-chat";
+	const PERM_GROUP				= "community-group";
 }
 
 ?>

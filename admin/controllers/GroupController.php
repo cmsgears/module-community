@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\modules\community\admin\controllers;
+namespace cmsgears\community\admin\controllers;
 
 // Yii Imports
 use \Yii;
@@ -7,25 +7,22 @@ use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
 
 // CMG Imports
-use cmsgears\modules\core\common\config\CoreGlobal;
-use cmsgears\modules\community\common\config\CommunityGlobal;
+use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\modules\core\common\models\entities\CmgFile;
-use cmsgears\modules\core\common\models\entities\Category;
+use cmsgears\core\common\models\entities\CmgFile;
+use cmsgears\core\common\models\entities\Category;
 
-use cmsgears\modules\community\common\models\entities\Group;
-use cmsgears\modules\community\common\models\entities\CommunityPermission;
+use cmsgears\community\common\models\entities\Group;
+use cmsgears\community\common\models\entities\GroupMember;
+use cmsgears\community\admin\models\forms\GroupCategoryBinderForm;
 
-use cmsgears\modules\community\admin\models\forms\GroupCategoryBinderForm;
+use cmsgears\core\admin\services\CategoryService;
+use cmsgears\community\admin\services\GroupService;
+use cmsgears\community\admin\services\GroupMemberService;
+use cmsgears\community\admin\services\GroupMessageService;
 
-use cmsgears\modules\core\admin\services\CategoryService;
-use cmsgears\modules\community\admin\services\GroupService;
-use cmsgears\modules\community\admin\services\GroupMemberService;
-use cmsgears\modules\community\admin\services\GroupMessageService;
-
-use cmsgears\modules\core\admin\controllers\BaseController;
-
-use cmsgears\modules\core\common\utilities\MessageUtil;
+use cmsgears\core\admin\controllers\BaseController;
 
 class GroupController extends BaseController {
 
@@ -49,16 +46,16 @@ class GroupController extends BaseController {
         return [
             'rbac' => [
                 'class' => Yii::$app->cmgCore->getRbacFilterClass(),
-                'permissions' => [
-	                'index'  => CommunityPermission::PERM_COMMUNITY_GROUP,
-	                'all'    => CommunityPermission::PERM_COMMUNITY_GROUP,
-	                'create' => CommunityPermission::PERM_COMMUNITY_GROUP,
-	                'update' => CommunityPermission::PERM_COMMUNITY_GROUP,
-	                'delete' => CommunityPermission::PERM_COMMUNITY_GROUP,
-	                'members' => CommunityPermission::PERM_COMMUNITY_GROUP,
-	                'messages' => CommunityPermission::PERM_COMMUNITY_GROUP,
-	                'deleteMessage' => CommunityPermission::PERM_COMMUNITY_GROUP,
-	                'deleteMember' => CommunityPermission::PERM_COMMUNITY_GROUP
+                'actions' => [
+	                'index'  => [ 'permission' => CmnGlobal::PERM_GROUP ],
+	                'all'    => [ 'permission' => CmnGlobal::PERM_GROUP ],
+	                'create' => [ 'permission' => CmnGlobal::PERM_GROUP ],
+	                'update' => [ 'permission' => CmnGlobal::PERM_GROUP ],
+	                'delete' => [ 'permission' => CmnGlobal::PERM_GROUP ],
+	                'members' => [ 'permission' => CmnGlobal::PERM_GROUP ],
+	                'deleteMember' => [ 'permission' => CmnGlobal::PERM_GROUP ],
+	                'messages' => [ 'permission' => CmnGlobal::PERM_GROUP ],
+	                'deleteMessage' => [ 'permission' => CmnGlobal::PERM_GROUP ]
                 ]
             ],
             'verbs' => [
@@ -70,9 +67,9 @@ class GroupController extends BaseController {
 	                'update' => ['get', 'post'],
 	                'delete' => ['get', 'post'],
 	                'members' => ['get'],
+	                'deleteMember' => ['get', 'post'],
 	                'messages' => ['get'],
-	                'deleteMessage' => ['get', 'post'],
-	                'deleteMember' => ['get', 'post']
+	                'deleteMessage' => ['get', 'post']
                 ]
             ]
         ];
@@ -99,7 +96,7 @@ class GroupController extends BaseController {
 	public function actionMatrix() {
 
 		$pagination 	= GroupService::getPagination();
-		$allCategories	= CategoryService::getIdNameMapByType( CommunityGlobal::CATEGORY_TYPE_GROUP );
+		$allCategories	= CategoryService::getIdNameMapByType( CmnGlobal::CATEGORY_TYPE_GROUP );
 
 	    return $this->render('matrix', [
 	         'page' => $pagination['page'],
@@ -126,7 +123,7 @@ class GroupController extends BaseController {
 
 				$binder = new GroupCategoryBinderForm();
 
-				$binder->groupId	= $model->getId();
+				$binder->groupId	= $model->id;
 				$binder->load( Yii::$app->request->post( "Binder" ), "" );
 
 				GroupService::bindCategories( $binder );
@@ -135,7 +132,7 @@ class GroupController extends BaseController {
 			}
 		}
 
-		$categories		= CategoryService::getIdNameMapByType( CommunityGlobal::CATEGORY_TYPE_GROUP );
+		$categories		= CategoryService::getIdNameMapByType( CmnGlobal::CATEGORY_TYPE_GROUP );
 		$visibilities	= Group::$visibilityMap;
 		$status			= Group::$statusMap;
 
@@ -170,7 +167,7 @@ class GroupController extends BaseController {
 
 					$binder = new GroupCategoryBinderForm();
 	
-					$binder->groupId	= $model->getId();
+					$binder->groupId	= $model->id;
 					$binder->load( Yii::$app->request->post( "Binder" ), "" );
 	
 					GroupService::bindCategories( $binder );
@@ -179,7 +176,7 @@ class GroupController extends BaseController {
 				}
 			}
 
-			$categories		= CategoryService::getIdNameMapByType( CommunityGlobal::CATEGORY_TYPE_GROUP );
+			$categories		= CategoryService::getIdNameMapByType( CmnGlobal::CATEGORY_TYPE_GROUP );
 			$visibilities	= Group::$visibilityMap;
 			$status			= Group::$statusMap;
 			$avatar			= $model->avatar;
@@ -196,7 +193,7 @@ class GroupController extends BaseController {
 		}
 		
 		// Model not found
-		throw new NotFoundHttpException( MessageUtil::getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+		throw new NotFoundHttpException( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 
 	public function actionDelete( $id ) {
@@ -209,7 +206,7 @@ class GroupController extends BaseController {
 		// Delete/Render if exist
 		if( isset( $model ) ) {
 
-			if( isset( $_POST ) && count( $_POST ) > 0 ) {
+			if( $model->load( Yii::$app->request->post( "Group" ), "" ) ) {
 
 				if( GroupService::delete( $model ) ) {
 
@@ -217,7 +214,7 @@ class GroupController extends BaseController {
 				}
 			}
 
-			$categories		= CategoryService::getIdNameMapByType( CommunityGlobal::CATEGORY_TYPE_GROUP );
+			$categories		= CategoryService::getIdNameMapByType( CmnGlobal::CATEGORY_TYPE_GROUP );
 			$visibilities	= Group::$visibilityMap;
 			$status			= Group::$statusMap;
 			$avatar			= $model->avatar;
@@ -234,20 +231,20 @@ class GroupController extends BaseController {
 		}
 
 		// Model not found
-		throw new NotFoundHttpException( MessageUtil::getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+		throw new NotFoundHttpException( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 
 	// Categories -------------------
 
 	public function actionCategories() {
 
-		$pagination = CategoryService::getPaginationByType( CommunityGlobal::CATEGORY_TYPE_GROUP );
+		$pagination = CategoryService::getPaginationByType( CmnGlobal::CATEGORY_TYPE_GROUP );
 
 	    return $this->render('categories', [
 	         'page' => $pagination['page'],
 	         'pages' => $pagination['pages'],
 	         'total' => $pagination['total'],
-	         'type' => CommunityGlobal::CATEGORY_TYPE_GROUP
+	         'type' => CmnGlobal::CATEGORY_TYPE_GROUP
 	    ]);
 	}
 
@@ -261,7 +258,7 @@ class GroupController extends BaseController {
 		// Delete/Render if exist
 		if( isset( $model ) ) {
 
-			$pagination = GroupMemberService::getPaginationByGroup( $id );
+			$pagination = GroupMemberService::getPaginationByGroupId( $id );
 
 		    return $this->render('member/all', [
 		         'page' => $pagination['page'],
@@ -272,7 +269,7 @@ class GroupController extends BaseController {
 		}
 		
 		// Model not found
-		throw new NotFoundHttpException( MessageUtil::getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+		throw new NotFoundHttpException( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 	
 	public function actionDeleteMember( $gid, $id ) {
@@ -284,7 +281,7 @@ class GroupController extends BaseController {
 		// Delete/Render if exist
 		if( isset( $model ) ) {
 
-			if( isset( $_POST ) && count( $_POST ) > 0 ) {
+			if( $model->load( Yii::$app->request->post( "GroupMember" ), "" ) ) {
 
 				if( GroupMemberService::delete( $model ) ) {
 
@@ -294,12 +291,13 @@ class GroupController extends BaseController {
 
 	    	return $this->render( 'member/delete', [
 	    		'group' => $group,
-	    		'model' => $model
+	    		'model' => $model,
+	    		'statusMap' => GroupMember::$statusMap
 	    	]);
 		}
 
 		// Model not found
-		throw new NotFoundHttpException( MessageUtil::getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+		throw new NotFoundHttpException( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 	
 	// Messages --------------------------------
@@ -312,7 +310,7 @@ class GroupController extends BaseController {
 		// Delete/Render if exist
 		if( isset( $model ) ) {
 
-			$pagination = GroupMessageService::getPaginationByGroup( $id );
+			$pagination = GroupMessageService::getPaginationByGroupId( $id );
 
 		    return $this->render('message/all', [
 		         'page' => $pagination['page'],
@@ -323,7 +321,7 @@ class GroupController extends BaseController {
 		}
 		
 		// Model not found
-		throw new NotFoundHttpException( MessageUtil::getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+		throw new NotFoundHttpException( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 	
 	public function actionDeleteMessage( $gid, $id ) {
@@ -335,7 +333,7 @@ class GroupController extends BaseController {
 		// Delete/Render if exist
 		if( isset( $model ) ) {
 
-			if( isset( $_POST ) && count( $_POST ) > 0 ) {
+			if( $model->load( Yii::$app->request->post( "GroupMessage" ), "" ) ) {
 
 				if( GroupMessageService::delete( $model ) ) {
 
@@ -350,7 +348,7 @@ class GroupController extends BaseController {
 		}
 
 		// Model not found
-		throw new NotFoundHttpException( MessageUtil::getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+		throw new NotFoundHttpException( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 }
 
