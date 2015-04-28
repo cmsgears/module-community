@@ -2,8 +2,11 @@
 namespace cmsgears\community\common\models\entities;
 
 // CMG Imports
+use cmsgears\community\common\config\CmnGlobal;
+
 use cmsgears\core\common\models\entities\NamedCmgEntity;
-use cmsgears\core\common\models\entities\Category;
+use cmsgears\core\common\models\entities\MetaTrait;
+use cmsgears\core\common\models\entities\CategoryTrait;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\core\common\models\entities\CmgFile;
 
@@ -26,6 +29,14 @@ class Group extends NamedCmgEntity {
 		self::VISIBILITY_PRIVATE => "Private",
 		self::VISIBILITY_PUBLIC => "Public"
 	];
+
+	use MetaTrait;
+
+	public $parentType	= CmnGlobal::META_TYPE_GROUP;
+
+	use CategoryTrait;
+
+	public $parentType	= CmnGlobal::CATEGORY_TYPE_GROUP;
 
 	// Instance Methods --------------------------------------------
 
@@ -60,43 +71,6 @@ class Group extends NamedCmgEntity {
 	public function getVisibilityStr() {
 		
 		return self::$visibilityMap[ $this->visibility ];
-	}
-
-	public function getCategories() {
-
-    	return $this->hasMany( Category::className(), [ 'id' => 'categoryId' ] )
-					->viaTable( CmnTables::TABLE_CATEGORY, [ 'groupId' => 'id' ] );
-	}
-
-	public function getCategoriesMap() {
-
-    	return $this->hasMany( GroupCategory::className(), [ 'groupId' => 'id' ] );
-	}
-
-	public function getCategoriesIdList() {
-
-    	$categories 		= $this->categoriesMap;
-		$categoriesList		= array();
-
-		foreach ( $categories as $category ) {
-
-			array_push( $categoriesList, $category->categoryId );
-		}
-
-		return $categoriesList;
-	}
-
-	public function getCategoriesIdNameMap() {
-
-		$categories 	= $this->categories;
-		$categoriesMap	= array();
-
-		foreach ( $categories as $category ) {
-
-			$categoriesMap[] = [ 'id' => $category->id, 'name' => $category->name ];
-		}
-
-		return $categoriesMap;
 	}
 
 	// yii\base\Model --------------------
