@@ -1,29 +1,29 @@
 <?php
-namespace cmsgears\modules\community\admin\services;
+namespace cmsgears\community\admin\services;
 
 // Yii Imports
 use \Yii;
 
 // CMG Imports
-use cmsgears\modules\community\common\models\entities\Group;
-use cmsgears\modules\community\common\models\entities\GroupMember;
+use cmsgears\community\common\models\entities\Group;
+use cmsgears\community\common\models\entities\GroupMember;
 
-use cmsgears\modules\core\common\utilities\DateUtil;
+use cmsgears\core\common\utilities\DateUtil;
 
-class GroupMemberService extends \cmsgears\modules\community\common\services\GroupMemberService {
+class GroupMemberService extends \cmsgears\community\common\services\GroupMemberService {
 
 	// Static Methods ----------------------------------------------
 
 	// Pagination -------
 
-	public static function getPagination() {
+	public static function getPagination( $conditions = [] ) {
 
-		return self::getPaginationDetails( new GroupMember() );
+		return self::getPaginationDetails( new GroupMember(), [ 'conditions' => $conditions ] );
 	}
-	
-	public static function getPaginationByGroup( $groupId ) {
 
-		return self::getPaginationDetails( new GroupMember(), [ 'member_group' => $groupId ] );
+	public static function getPaginationByGroupId( $groupId ) {
+
+		return self::getPagination( [ 'groupId' => $groupId ] );
 	}
 
 	// Delete ----------------

@@ -1,16 +1,12 @@
 <?php
-namespace cmsgears\modules\community\common\models\entities;
-
-// Yii Imports
-use yii\db\ActiveRecord;
+namespace cmsgears\community\common\models\entities;
 
 // CMG Imports
-use cmsgears\modules\core\common\models\entities\User;
-use cmsgears\modules\core\common\models\entities\rbac\Role;
+use cmsgears\core\common\models\entities\CmgEntity;
+use cmsgears\core\common\models\entities\User;
+use cmsgears\core\common\models\entities\Role;
 
-use cmsgears\modules\core\common\utilities\MessageUtil;
-
-class GroupMember extends ActiveRecord {
+class GroupMember extends CmgEntity {
 
 	const STATUS_NEW		= 0;
 	const STATUS_ACTIVE		= 1;
@@ -24,123 +20,65 @@ class GroupMember extends ActiveRecord {
 
 	// Instance Methods --------------------------------------------
 
-	// db columns
-
-	public function getId() {
-
-		return $this->member_id;
-	}
-
-	public function getGroupId() {
-
-		return $this->member_group;	
-	}
-
 	public function getGroup() {
 
-		return $this->hasOne( Group::className(), [ 'user_id' => 'member_group' ] );
-	}
-
-	public function setGroupId( $groupId ) {
-
-		$this->member_group = $groupId;	
-	}
-
-	public function getUserId() {
-
-		return $this->member_user;	
+		return $this->hasOne( Group::className(), [ 'id' => 'groupId' ] );
 	}
 
 	public function getUser() {
 
-		return $this->hasOne( User::className(), [ 'user_id' => 'member_user' ] );
-	}
-
-	public function setUserId( $userId ) {
-
-		$this->member_user = $userId;
-	}
-
-	public function getRoleId() {
-
-		return $this->member_role;
+		return $this->hasOne( User::className(), [ 'id' => 'userId' ] );
 	}
 
 	public function getRole() {
 
-		return $this->hasOne( Role::className(), [ 'role_id' => 'member_role' ] );
-	}
-
-	public function setRoleId( $roleId ) {
-
-		$this->member_role = $roleId;
-	}
-
-	public function getStatus() {
-
-		return $this->member_status;
+		return $this->hasOne( Role::className(), [ 'id' => 'roleId' ] );
 	}
 
 	public function getStatusStr() {
 
-		return self::$statusMap[ $this->member_status ];
+		return self::$statusMap[ $this->status ];
 	}
 
-	public function setStatus( $status ) {
-
-		$this->member_status = $status;
-	}
-
-	public function getJoinedOn() {
-
-		return $this->member_joined_on;
-	}
-
-	public function setJoinedOn( $joinedOn ) {
-
-		$this->member_joined_on = $joinedOn;
-	}
-
-	// yii\base\Model
+	// yii\base\Model --------------------
 
 	public function rules() {
 
         return [
-            [ [ 'member_status' ], 'safe' ]
+        	[ [ 'groupId', 'userId', 'roleId' ], 'required' ],
+            [ [ 'status' ], 'safe' ]
         ];
     }
 
 	public function attributeLabels() {
 
 		return [
-			'member_status' => 'Status'
+			'groupId' => 'Group',
+			'userId' => 'Member',
+			'roleId' => 'Role',
+			'status' => 'Status'
 		];
 	}
 
 	// Static Methods ----------------------------------------------
 
-	// yii\db\ActiveRecord
+	// yii\db\ActiveRecord ---------------
 
 	public static function tableName() {
 
-		return CommunityTables::TABLE_GROUP_MEMBER;
+		return CmnTables::TABLE_GROUP_MEMBER;
 	}
 
-	// GroupMember
+	// GroupMember -----------------------
 
 	public static function findById( $id ) {
 
-		return GroupMember::find()->where( 'member_id=:id', [ ':id' => $id ] )->one();
+		return self::find()->where( 'id=:id', [ ':id' => $id ] )->one();
 	}
+	
+	public static function findByGroupIdUserId( $groupId, $userId ) {
 
-	public static function findByGroup( $group ) {
-
-		return GroupMember::find()->where( 'member_group=:id', [ ':id' => $group->getId() ] )->all();
-	}
-
-	public static function findByGroupId( $groupId ) {
-
-		return GroupMember::find()->where( 'member_group=:id', [ ':id' => $groupId ] )->all();
+		return self::find()->where( 'groupId=:gid AND userId=:mid', [ ':gid' => $groupId, ':mid' => $userId ] )->one();
 	}
 }
 

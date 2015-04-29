@@ -1,15 +1,16 @@
 <?php
-namespace cmsgears\modules\community\common\models\entities;
+namespace cmsgears\community\common\models\entities;
 
 // CMG Imports
-use cmsgears\modules\core\common\models\entities\NamedActiveRecord;
-use cmsgears\modules\core\common\models\entities\Option;
-use cmsgears\modules\core\common\models\entities\User;
-use cmsgears\modules\core\common\models\entities\CmgFile;
+use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\modules\community\common\models\entities\CommunityTables;
+use cmsgears\core\common\models\entities\NamedCmgEntity;
+use cmsgears\core\common\models\entities\User;
+use cmsgears\core\common\models\entities\CmgFile;
+use cmsgears\core\common\models\traits\MetaTrait;
+use cmsgears\core\common\models\traits\CategoryTrait;
 
-class Group extends NamedActiveRecord {
+class Group extends NamedCmgEntity {
 
 	const STATUS_NEW		=  0;
 	const STATUS_ACTIVE		= 10;
@@ -29,217 +30,88 @@ class Group extends NamedActiveRecord {
 		self::VISIBILITY_PUBLIC => "Public"
 	];
 
+	use MetaTrait;
+
+	public $metaType		= CmnGlobal::META_TYPE_GROUP;
+
+	use CategoryTrait;
+
+	public $categoryType	= CmnGlobal::CATEGORY_TYPE_GROUP;
+
 	// Instance Methods --------------------------------------------
-
-	// db columns
-
-	public function getId() {
-
-		return $this->group_id;
-	}
-
-	public function getOwnerId() {
-
-		return $this->group_owner;	
-	}
 
 	public function getOwner() {
 
-		return $this->hasOne( User::className(), [ 'group_id' => 'group_owner' ] );
-	}
-
-	public function setOwnerId( $owner ) {
-
-		$this->group_owner = $owner;	
-	}
-
-	public function getAvatarId() {
-
-		return $this->group_avatar;
+		return $this->hasOne( User::className(), [ 'id' => 'ownerId' ] );
 	}
 
 	public function getAvatar() {
 
-		return $this->hasOne( CmgFile::className(), [ 'file_id' => 'group_avatar' ] );
-	}
-
-	public function setAvatarId( $avatarId ) {
-
-		$this->group_avatar = $avatarId;
-	}
-
-	public function getBannerId() {
-
-		return $this->group_banner;
+		return $this->hasOne( CmgFile::className(), [ 'id' => 'avatarId' ] );
 	}
 
 	public function getBanner() {
 
-		return $this->hasOne( CmgFile::className(), [ 'file_id' => 'group_banner' ] );
+		return $this->hasOne( CmgFile::className(), [ 'id' => 'bannerId' ] );
 	}
 
-	public function setBannerId( $bannerId ) {
+	/**
+	 * @return array - list of group meta
+	 */
+	public function getMetas() {
 
-		$this->group_banner = $bannerId;
-	}
-
-	public function getName() {
-
-		return $this->group_name;	
-	}
-
-	public function setName( $name ) {
-
-		$this->group_name = $name;	
-	}
-
-	public function getDesc() {
-
-		return $this->group_desc;	
-	}
-
-	public function setDesc( $desc ) {
-
-		$this->group_desc = $desc;	
-	}
-
-	public function getSlug() {
-		
-		return $this->group_slug;	
-	}
-
-	public function setSlug( $slug ) {
-		
-		$this->group_slug = $slug;
-	}
-
-	public function getStatus() {
-
-		return $this->group_status;
+    	return $this->hasMany( GroupMeta::className(), [ 'groupId' => 'id' ] );
 	}
 
 	public function getStatusStr() {
 
-		return self::$statusMap[ $this->group_status ];
-	}
-
-	public function setStatus( $status ) {
-
-		$this->group_status = $status;
-	}
-
-	public function getVisibility() {
-		
-		return $this->group_visibility;
+		return self::$statusMap[ $this->status ];
 	}
 	
 	public function getVisibilityStr() {
 		
-		return self::$visibilityMap[ $this->group_visibility ];
+		return self::$visibilityMap[ $this->visibility ];
 	}
 
-	public function setVisibility( $visibility ) {
-
-		$this->group_visibility = $visibility;
-	}
-
-	public function getCreatedOn() {
-		
-		return $this->group_created_on;
-	}
-	
-	public function setCreatedOn( $date ) {
-		
-		$this->group_created_on = $date;
-	}
-
-	public function getUpdatedOn() {
-		
-		return $this->group_updated_on;
-	}
-	
-	public function setUpdatedOn( $updatedOn ) {
-		
-		$this->group_updated_on = $updatedOn;
-	}
-
-	public function getCategories() {
-
-    	return $this->hasMany( Option::className(), [ 'option_id' => 'category_id' ] )
-					->viaTable( CommunityTables::TABLE_GROUP_CATEGORY, [ 'group_id' => 'group_id' ] );
-	}
-
-	public function getCategoriesMap() {
-
-    	return $this->hasMany( GroupCategory::className(), [ 'group_id' => 'group_id' ] );
-	}
-
-	public function getCategoriesIdList() {
-
-    	$categories 		= $this->categoriesMap;
-		$categoriesList		= array();
-
-		foreach ( $categories as $category ) {
-
-			array_push( $categoriesList, $category->category_id );
-		}
-
-		return $categoriesList;
-	}
-
-	public function getCategoriesIdNameMap() {
-
-		$categories 	= $this->categories;
-		$categoriesMap	= array();
-
-		foreach ( $categories as $category ) {
-
-			$categoriesMap[]	= [ 'id' => $category->getId(), 'name' => $category->getKey() ];
-		}
-
-		return $categoriesMap;
-	}
-
-	// yii\base\Model
+	// yii\base\Model --------------------
 
 	public function rules() {
 
         return [
-            [ [ 'group_name' ], 'required' ],
-            [ [ 'group_name' ], 'alphanumspace' ],
-            [ 'group_name', 'validateNameCreate', 'on' => [ 'create' ] ],
-            [ 'group_name', 'validateNameUpdate', 'on' => [ 'update' ] ],
-            [ [ 'group_desc', 'group_status', 'group_visibility' ], 'safe' ]
+            [ [ 'name' ], 'required' ],
+			[ [ 'description', 'content', 'status', 'type', 'visibility' ], 'safe' ],
+            [ [ 'name' ], 'alphanumhyphenspace' ],
+            [ 'name', 'validateNameCreate', 'on' => [ 'create' ] ],
+            [ 'name', 'validateNameUpdate', 'on' => [ 'update' ] ]
         ];
     }
 
 	public function attributeLabels() {
 
 		return [
-			'group_name' => 'Name',
-			'group_desc' => 'Description'
+			'name' => 'Name',
+			'description' => 'Description',
+			'content' => 'Content',
+			'status' => 'Status',
+			'type' => 'Type',
+			'visibility' => 'Visibility'
 		];
 	}
 
 	// Static Methods ----------------------------------------------
 
-	// yii\db\ActiveRecord
+	// yii\db\ActiveRecord ---------------
 
 	public static function tableName() {
 
-		return CommunityTables::TABLE_GROUP;
+		return CmnTables::TABLE_GROUP;
 	}
 
-	// Group
+	// Group -----------------------------
 
-	public static function findById( $id ) {
+	public static function findBySlug( $slug ) {
 
-		return Group::find()->where( 'group_id=:id', [ ':id' => $id ] )->one();
-	}
-
-	public static function findByName( $name ) {
-
-		return Group::find()->where( 'group_name=:name', [ ':name' => $name ] )->one();
+		return self::find()->where( 'slug=:slug', [ ':slug' => $slug ] )->one();
 	}
 }
 

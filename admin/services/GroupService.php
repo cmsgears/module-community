@@ -1,46 +1,48 @@
 <?php
-namespace cmsgears\modules\community\admin\services;
+namespace cmsgears\community\admin\services;
 
 // Yii Imports
 use \Yii;
 use yii\data\Sort;
 
 // CMG Imports
-use cmsgears\modules\core\common\models\entities\CmgFile;
+use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\modules\community\common\models\entities\Group;
-use cmsgears\modules\community\common\models\entities\GroupCategory;
+use cmsgears\core\common\models\entities\CmgFile;
+use cmsgears\core\common\models\entities\ModelCategory;
 
-use cmsgears\modules\core\admin\services\FileService;
+use cmsgears\community\common\models\entities\Group;
 
-use cmsgears\modules\core\common\utilities\CodeGenUtil;
-use cmsgears\modules\core\common\utilities\DateUtil;
+use cmsgears\core\admin\services\FileService;
 
-class GroupService extends \cmsgears\modules\community\common\services\GroupService {
+use cmsgears\core\common\utilities\CodeGenUtil;
+use cmsgears\core\common\utilities\DateUtil;
+
+class GroupService extends \cmsgears\community\common\services\GroupService {
 
 	// Static Methods ----------------------------------------------
 
 	// Pagination -------
 
-	public static function getPagination() {
+	public static function getPagination( $conditions = [] ) {
 
 	    $sort = new Sort([
 	        'attributes' => [
 	            'name' => [
-	                'asc' => [ 'group_name' => SORT_ASC ],
-	                'desc' => ['group_name' => SORT_DESC ],
+	                'asc' => [ 'name' => SORT_ASC ],
+	                'desc' => ['name' => SORT_DESC ],
 	                'default' => SORT_DESC,
 	                'label' => 'name',
 	            ],
 	            'cdate' => [
-	                'asc' => [ 'group_created_on' => SORT_ASC ],
-	                'desc' => ['group_created_on' => SORT_DESC ],
+	                'asc' => [ 'createdAt' => SORT_ASC ],
+	                'desc' => ['createdAt' => SORT_DESC ],
 	                'default' => SORT_DESC,
 	                'label' => 'cdate',
 	            ],
 	            'udate' => [
-	                'asc' => [ 'group_updated_on' => SORT_ASC ],
-	                'desc' => ['group_updated_on' => SORT_DESC ],
+	                'asc' => [ 'updatedAt' => SORT_ASC ],
+	                'desc' => ['updatedAt' => SORT_DESC ],
 	                'default' => SORT_DESC,
 	                'label' => 'udate',
 	            ]
@@ -50,7 +52,9 @@ class GroupService extends \cmsgears\modules\community\common\services\GroupServ
 	        ]
 	    ]);
 
-		return self::getPaginationDetails( new Group(), [ 'sort' => $sort, 'search-col' => 'group_name' ] );
+		$conditions[ 'type' ]	= 0;
+
+		return self::getPaginationDetails( new Group(), [ 'sort' => $sort, 'conditions' => $conditions, 'search-col' => 'name' ] );
 	}
 
 	// Create -----------
@@ -62,35 +66,19 @@ class GroupService extends \cmsgears\modules\community\common\services\GroupServ
 		$user		= Yii::$app->user->getIdentity();
 
 		// Group Properties
-		$group->setCreatedOn( $date );
-		$group->setOwnerId( $user->getId() );
-		$group->setSlug( CodeGenUtil::generateSlug( $group->getName() ) );
+		$group->createdAt 	= $date;
+		$group->ownerId		= $user->id;
+		$group->slug 		= CodeGenUtil::generateSlug( $group->name );
 
 		// Save Avatar
-		FileService::saveImage( $avatar, $user, Yii::$app->fileManager );
-
-		// New Avatar
-		$avatarId 	= $avatar->getId();
-
-		if( isset( $avatarId ) && intval( $avatarId ) > 0 ) {
-
-			$group->setAvatarId( $avatarId );
-		}
+		FileService::saveImage( $avatar, $user, [ 'model' => $group, 'attribute' => 'avatarId' ] );
 
 		// Save Banner
-		FileService::saveImage( $banner, $user, Yii::$app->fileManager );
-
-		// New Banner
-		$bannerId 	= $banner->getId();
-
-		if( isset( $bannerId ) && intval( $bannerId ) > 0 ) {
-
-			$group->setBannerId( $bannerId );
-		}
+		FileService::saveImage( $banner, $user, [ 'model' => $group, 'attribute' => 'bannerId' ] );
 
 		$group->save();
 
-		return true;
+		return $group;
 	}
 
 	// Update -----------
@@ -99,42 +87,22 @@ class GroupService extends \cmsgears\modules\community\common\services\GroupServ
 		
 		$date 			= DateUtil::getMysqlDate();
 		$user			= Yii::$app->user->getIdentity();
-		$groupToUpdate	= self::findById( $group->getId() );
+		$groupToUpdate	= self::findById( $group->id );
 
-		$groupToUpdate->setName( $group->getName() );
-		$groupToUpdate->setDesc( $group->getDesc() );
-		$groupToUpdate->setUpdatedOn( $date );
-		$groupToUpdate->setAvatarId( $group->getAvatarId() );
-		$groupToUpdate->setBannerId( $group->getBannerId() );
-		$groupToUpdate->setStatus( $group->getStatus() );
-		$groupToUpdate->setVisibility( $group->getVisibility() );
-		$groupToUpdate->setSlug( CodeGenUtil::generateSlug( $group->getName() ) );
+		$groupToUpdate->updatedAt 	= $date;
+		$groupToUpdate->slug 		= CodeGenUtil::generateSlug( $group->name );
+
+		$groupToUpdate->copyForUpdateFrom( $group, [ 'name', 'description', 'avatarId', 'bannerId', 'content', 'visibility', 'status' ] );
 
 		// Save Avatar
-		FileService::saveImage( $avatar, $user, Yii::$app->fileManager );
-
-		// New Avatar
-		$avatarId 	= $avatar->getId();
-
-		if( isset( $avatarId ) && intval( $avatarId ) > 0 ) {
-
-			$groupToUpdate->setAvatarId( $avatarId );
-		}
+		FileService::saveImage( $avatar, $user, [ 'model' => $groupToUpdate, 'attribute' => 'avatarId' ] );
 
 		// Save Banner
-		FileService::saveImage( $banner, $user, Yii::$app->fileManager );
-
-		// New Banner
-		$bannerId 	= $banner->getId();
-
-		if( isset( $bannerId ) && intval( $bannerId ) > 0 ) {
-
-			$groupToUpdate->setBannerId( $bannerId );
-		}
+		FileService::saveImage( $banner, $user, [ 'model' => $groupToUpdate, 'attribute' => 'bannerId' ] );
 
 		$groupToUpdate->update();
 
-		return true;
+		return $groupToUpdate;
 	}
 
 	public static function bindCategories( $binder ) {
@@ -143,7 +111,7 @@ class GroupService extends \cmsgears\modules\community\common\services\GroupServ
 		$categories		= $binder->bindedData;
 
 		// Clear all existing mappings
-		GroupCategory::deleteByGroupId( $groupId );
+		ModelCategory::deleteByParentIdType( $groupId, CmnGlobal::CATEGORY_TYPE_GROUP );
 
 		if( isset( $categories ) && count( $categories ) > 0 ) {
 
@@ -151,10 +119,10 @@ class GroupService extends \cmsgears\modules\community\common\services\GroupServ
 
 				if( isset( $value ) ) {
 
-					$toSave		= new GroupCategory();
-
-					$toSave->setGroupId( $groupId );
-					$toSave->setCategoryId( $value );
+					$toSave				= new ModelCategory();
+					$toSave->parentId 	= $groupId;
+					$toSave->parentType = CmnGlobal::CATEGORY_TYPE_GROUP;
+					$toSave->categoryId	= $value;
 
 					$toSave->save();
 				}
@@ -166,18 +134,9 @@ class GroupService extends \cmsgears\modules\community\common\services\GroupServ
 
 	// Delete -----------
 
-	public static function deleteCategories( $category ) {
-
-		// Clear all existing mappings
-		GroupCategory::deleteByCategory( $category->getId() );
-
-		return true;
-	}
-
 	public static function delete( $group ) {
 
-		$groupId		= $group->getId();
-		$existingGroup	= self::findById( $groupId );
+		$existingGroup	= self::findById( $group->id );
 
 		// Delete Group
 		$existingGroup->delete();

@@ -5,7 +5,7 @@ use yii\helpers\Html;
 $coreProperties = $this->context->getCoreProperties();
 $this->title 	= $coreProperties->getSiteTitle() . ' | Delete Group Member';
 
-$gid			= $group->getId();
+$gid			= $group->id;
 $user 			= $model->user;
 ?>
 <section class="wrap-content container clearfix">
@@ -13,15 +13,16 @@ $user 			= $model->user;
 		<h2>Delete Group Member</h2>
 		<?php $form = ActiveForm::begin( ['id' => 'frm-group-message-delete', 'options' => ['class' => 'frm-split' ] ] );?>
 
-		<label>Username</label><label><?= $user->getUsername() ?></label>
+		<label>Username</label><label><?= $user->username ?></label>
 		<label>Name</label><label><?= $user->getName() ?></label>	
-		<label>Email</label><label><?= $user->getEmail() ?></label>
-		<label>Role</label><label><?= $model->role->getName() ?></label>
-		<label>Status</label><label><?= $model->getStatusStr() ?></label>
-
+		<label>Email</label><label><?= $user->email ?></label>
+		<label>Role</label><label><?= $model->role->name ?></label>
+		
+		<?= $form->field( $model, 'status' )->dropDownList( $statusMap, [ 'readonly'=>'true' ] ) ?>
+		
 		<div class="box-filler"></div>
 
-		<?=Html::a( "Back", [ '/cmgcommunity/group/members/?id=' . $gid ], ['class' => 'btn' ] );?>
+		<?=Html::a( "Back", [ '/cmgcmn/group/members/?id=' . $gid ], ['class' => 'btn' ] );?>
 		<input type="submit" value="Delete" />
 
 		<?php ActiveForm::end(); ?>
@@ -29,6 +30,6 @@ $user 			= $model->user;
 </section>
 
 <script type="text/javascript">
-	initSidebar( "sidebar-group", -1 );
+	initSidebar( "sidebar-group", 3 );
 	initFileUploader();
 </script>

@@ -1,19 +1,25 @@
 <?php
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
+use cmsgears\core\widgets\Editor;
 
 $coreProperties = $this->context->getCoreProperties();
 $this->title 	= $coreProperties->getSiteTitle() . ' | Delete Group';
+
+Editor::widget( [ 'selector' => '.content-editor' ] );
 ?>
 <section class="wrap-content container clearfix">
 	<div class="cud-box">
 		<h2>Delete Group</h2>
 		<?php $form = ActiveForm::begin( ['id' => 'frm-group-update', 'options' => ['class' => 'frm-split' ] ] );?>
 
-    	<?= $form->field( $model, 'group_name' )->textInput( [ 'disabled'=>'true' ] ) ?>
-    	<?= $form->field( $model, 'group_desc' )->textarea( [ 'disabled'=>'true' ] ) ?>
-    	<?= $form->field( $model, 'group_status' )->dropDownList( $status, [ 'disabled'=>'true' ] ) ?>    	
-    	<?= $form->field( $model, 'group_visibility' )->dropDownList( $visibilities, [ 'disabled'=>'true' ] ) ?>
+    	<?= $form->field( $model, 'name' )->textInput( [ 'readonly'=>'true' ] ) ?>
+    	<?= $form->field( $model, 'description' )->textarea( [ 'readonly'=>'true' ] ) ?>
+    	<?= $form->field( $model, 'status' )->dropDownList( $status, [ 'disabled'=>'true' ] ) ?>    	
+    	<?= $form->field( $model, 'visibility' )->dropDownList( $visibilities, [ 'disabled'=>'true' ] ) ?>
+
+    	<h4>Group Content</h4>
+    	<?= $form->field( $model, 'content' )->textarea( [ 'class' => 'content-editor', 'readonly' => 'true' ] ) ?>
 
     	<h4>Group Avatar</h4>
 		<div id="file-avatar" class="file-container" legend="Group Avatar" selector="avatar" utype="image" btn-class="btn file-input-wrap" btn-text="Choose Avatar"></div>
@@ -54,11 +60,11 @@ $this->title 	= $coreProperties->getSiteTitle() . ' | Delete Group';
 	initFileUploader();
 
 	<?php if( isset( $avatar ) ) { ?>
-		jQuery("#file-avatar .file-image").html( "<img src='<?php echo Yii::$app->fileManager->uploadUrl . $avatar->getDisplayUrl(); ?>' />'" );
+		jQuery("#file-avatar .file-image").html( "<img src='<?php echo $avatar->getFileUrl(); ?>' />'" );
 	<?php } ?>
 
 	<?php if( isset( $banner ) ) { ?>
-		jQuery("#file-banner .file-image").html( "<img src='<?php echo Yii::$app->fileManager->uploadUrl . $banner->getDisplayUrl(); ?>' />'" );
+		jQuery("#file-banner .file-image").html( "<img src='<?php $banner->getFileUrl(); ?>' />'" );
 	<?php } ?>
 
 	jQuery( ".file-input").attr( "disabled", "true" );
