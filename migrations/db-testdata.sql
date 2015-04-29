@@ -5,8 +5,8 @@
 --
 
 INSERT INTO `cmg_option` VALUES 
-	(1551,1,'Group','1551'),
-	(1552,2,'Group','1552');
+	(1551,1,'Group',1551,NULL),
+	(1552,2,'Group',1552,NULL);
 
 --
 -- Dumping data for table `cmg_role`

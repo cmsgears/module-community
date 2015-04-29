@@ -5,10 +5,10 @@ namespace cmsgears\community\common\models\entities;
 use cmsgears\community\common\config\CmnGlobal;
 
 use cmsgears\core\common\models\entities\NamedCmgEntity;
-use cmsgears\core\common\models\entities\MetaTrait;
-use cmsgears\core\common\models\entities\CategoryTrait;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\core\common\models\entities\CmgFile;
+use cmsgears\core\common\models\traits\MetaTrait;
+use cmsgears\core\common\models\traits\CategoryTrait;
 
 class Group extends NamedCmgEntity {
 
@@ -32,11 +32,11 @@ class Group extends NamedCmgEntity {
 
 	use MetaTrait;
 
-	public $metaType	= CmnGlobal::META_TYPE_GROUP;
+	public $metaType		= CmnGlobal::META_TYPE_GROUP;
 
 	use CategoryTrait;
 
-	public $parentType	= CmnGlobal::CATEGORY_TYPE_GROUP;
+	public $categoryType	= CmnGlobal::CATEGORY_TYPE_GROUP;
 
 	// Instance Methods --------------------------------------------
 
