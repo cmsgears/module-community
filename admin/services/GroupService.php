@@ -6,10 +6,12 @@ use \Yii;
 use yii\data\Sort;
 
 // CMG Imports
+use cmsgears\community\common\config\CmnGlobal;
+
 use cmsgears\core\common\models\entities\CmgFile;
+use cmsgears\core\common\models\entities\ModelCategory;
 
 use cmsgears\community\common\models\entities\Group;
-use cmsgears\community\common\models\entities\GroupCategory;
 
 use cmsgears\core\admin\services\FileService;
 
@@ -109,7 +111,7 @@ class GroupService extends \cmsgears\community\common\services\GroupService {
 		$categories		= $binder->bindedData;
 
 		// Clear all existing mappings
-		GroupCategory::deleteByGroupId( $groupId );
+		ModelCategory::deleteByParentIdType( $groupId, CmnGlobal::CATEGORY_TYPE_GROUP );
 
 		if( isset( $categories ) && count( $categories ) > 0 ) {
 
@@ -117,8 +119,9 @@ class GroupService extends \cmsgears\community\common\services\GroupService {
 
 				if( isset( $value ) ) {
 
-					$toSave				= new GroupCategory();
-					$toSave->groupId 	= $groupId;
+					$toSave				= new ModelCategory();
+					$toSave->parentId 	= $groupId;
+					$toSave->parentType = CmnGlobal::CATEGORY_TYPE_GROUP;
 					$toSave->categoryId	= $value;
 
 					$toSave->save();

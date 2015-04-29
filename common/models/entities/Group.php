@@ -32,7 +32,7 @@ class Group extends NamedCmgEntity {
 
 	use MetaTrait;
 
-	public $parentType	= CmnGlobal::META_TYPE_GROUP;
+	public $metaType	= CmnGlobal::META_TYPE_GROUP;
 
 	use CategoryTrait;
 
