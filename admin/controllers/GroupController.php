@@ -26,8 +26,6 @@ use cmsgears\core\admin\controllers\BaseController;
 
 class GroupController extends BaseController {
 
-	const URL_ALL 			= 'all';
-
 	// Constructor and Initialisation ------------------------------
 
  	public function __construct( $id, $module, $config = [] ) {
@@ -77,7 +75,7 @@ class GroupController extends BaseController {
 
 	public function actionIndex() {
 
-	    $this->redirect( self::URL_ALL );
+	    $this->redirect( "all" );
 	}
 
 	public function actionAll() {
@@ -126,7 +124,7 @@ class GroupController extends BaseController {
 
 				GroupService::bindCategories( $binder );
 
-				return $this->redirect( [ self::URL_ALL ] );
+				return $this->redirect( [ "all" ] );
 			}
 		}
 
@@ -258,7 +256,7 @@ class GroupController extends BaseController {
 
 			$pagination = GroupMemberService::getPaginationByGroupId( $id );
 
-		    return $this->render('/group/member/all', [
+		    return $this->render('member/all', [
 		         'page' => $pagination['page'],
 		         'pages' => $pagination['pages'],
 		         'total' => $pagination['total'],
@@ -287,7 +285,7 @@ class GroupController extends BaseController {
 				}
 			}
 
-	    	return $this->render( '/group/member/delete', [
+	    	return $this->render( 'member/delete', [
 	    		'group' => $group,
 	    		'model' => $model,
 	    		'statusMap' => GroupMember::$statusMap
@@ -310,7 +308,7 @@ class GroupController extends BaseController {
 
 			$pagination = GroupMessageService::getPaginationByGroupId( $id );
 
-		    return $this->render( '/group/message/all', [
+		    return $this->render( 'message/all', [
 		         'page' => $pagination['page'],
 		         'pages' => $pagination['pages'],
 		         'total' => $pagination['total'],
@@ -339,7 +337,7 @@ class GroupController extends BaseController {
 				}
 			}
 
-	    	return $this->render( '/group/message/delete', [
+	    	return $this->render( 'message/delete', [
 	    		'group' => $group,
 	    		'model' => $model
 	    	]);

@@ -84,5 +84,5 @@ $gid			= $group->id;
 	</div>
 </div>
 <script type="text/javascript">
-	initSidebar( "sidebar-group", 3 );
+	initSidebar( "sidebar-group", 2 );
 </script>

@@ -30,6 +30,5 @@ $user 			= $model->user;
 </section>
 
 <script type="text/javascript">
-	initSidebar( "sidebar-group", 3 );
-	initFileUploader();
+	initSidebar( "sidebar-group", 2 );
 </script>
