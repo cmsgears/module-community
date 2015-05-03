@@ -27,8 +27,6 @@ use cmsgears\core\admin\controllers\BaseController;
 class GroupController extends BaseController {
 
 	const URL_ALL 			= 'all';
-	const URL_ALL_MEMBERS 	= 'members?id=';
-	const URL_ALL_MESSAGES 	= 'messages?id=';
 
 	// Constructor and Initialisation ------------------------------
 
@@ -260,7 +258,7 @@ class GroupController extends BaseController {
 
 			$pagination = GroupMemberService::getPaginationByGroupId( $id );
 
-		    return $this->render('member/all', [
+		    return $this->render('/group/member/all', [
 		         'page' => $pagination['page'],
 		         'pages' => $pagination['pages'],
 		         'total' => $pagination['total'],
@@ -285,11 +283,11 @@ class GroupController extends BaseController {
 
 				if( GroupMemberService::delete( $model ) ) {
 
-					return $this->redirect( [ self::URL_ALL_MEMBERS . $gid ] );
+					return $this->redirect( [ 'members?id=' . $gid ] );
 				}
 			}
 
-	    	return $this->render( 'member/delete', [
+	    	return $this->render( '/group/member/delete', [
 	    		'group' => $group,
 	    		'model' => $model,
 	    		'statusMap' => GroupMember::$statusMap
@@ -312,7 +310,7 @@ class GroupController extends BaseController {
 
 			$pagination = GroupMessageService::getPaginationByGroupId( $id );
 
-		    return $this->render('message/all', [
+		    return $this->render( '/group/message/all', [
 		         'page' => $pagination['page'],
 		         'pages' => $pagination['pages'],
 		         'total' => $pagination['total'],
@@ -337,11 +335,11 @@ class GroupController extends BaseController {
 
 				if( GroupMessageService::delete( $model ) ) {
 
-					return $this->redirect( [ self::URL_ALL_MESSAGES . $gid ] );
+					return $this->redirect( [ 'messages?id=' . $gid ] );
 				}
 			}
 
-	    	return $this->render( 'message/delete', [
+	    	return $this->render( '/group/message/delete', [
 	    		'group' => $group,
 	    		'model' => $model
 	    	]);
