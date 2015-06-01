@@ -3,15 +3,24 @@ namespace cmsgears\community\common\config;
 
 class CmnGlobal {
 
-	// Categories
-	const CATEGORY_TYPE_GROUP		= 1551;
+	// Category Type ---------------------------------------------------
 
-	// Metas
-	const META_TYPE_GROUP			= 1551;
+	const CATEGORY_TYPE_GROUP		= "group";
 
-	// Permissions
+	// Model Traits - Metas, Attachments, Addresses --------------------
+
+	const TYPE_GROUP				= "group";
+
+	// Permissions -----------------------------------------------------
+
 	const PERM_CHAT					= "community-chat";
 	const PERM_GROUP				= "community-group";
+
+	// Model Fields ----------------------------------------------------
+
+	// Generic Fields
+	const FIELD_FRIEND				= "friendField";
+	const FIELD_GROUP				= "groupField";
 }
 
 ?>

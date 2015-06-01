@@ -1,5 +1,3 @@
-SET FOREIGN_KEY_CHECKS=0;
-
 --
 -- Table structure for table `cmg_cmn_friend`
 --
@@ -14,9 +12,7 @@ CREATE TABLE `cmg_cmn_friend` (
   `status` smallint(6) NOT NULL DEFAULT 0,
   PRIMARY KEY (`userId`,`friendId`),
   KEY `fk_cmn_friend_1` (`userId`),
-  KEY `fk_cmn_friend_2` (`friendId`),
-  CONSTRAINT `fk_cmn_friend_1` FOREIGN KEY (`userId`) REFERENCES `cmg_user` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_cmn_friend_2` FOREIGN KEY (`friendId`) REFERENCES `cmg_user` (`id`) ON DELETE CASCADE
+  KEY `fk_cmn_friend_2` (`friendId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -34,12 +30,11 @@ CREATE TABLE `cmg_cmn_message` (
   `type` smallint(6) NOT NULL,
   `content` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
   `createdAt` datetime DEFAULT NULL,
-  `read` tinyint(1) NOT NULL DEFAULT 0,
+  `modifiedAt` datetime DEFAULT NULL,
+  `mark` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `fk_cmn_message_1` (`senderId`),
-  KEY `fk_cmn_message_2` (`recipientId`),
-  CONSTRAINT `fk_cmn_message_1` FOREIGN KEY (`senderId`) REFERENCES `cmg_user` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_cmn_message_2` FOREIGN KEY (`recipientId`) REFERENCES `cmg_user` (`id`) ON DELETE CASCADE
+  KEY `fk_cmn_message_2` (`recipientId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -63,15 +58,11 @@ CREATE TABLE `cmg_cmn_group` (
   `status` smallint(6) DEFAULT 0,
   `visibility` smallint(6) DEFAULT NULL,
   `createdAt` datetime DEFAULT NULL,
-  `updatedAt` datetime DEFAULT NULL,
+  `modifiedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_group_slug` (`slug`),
   KEY `fk_cmn_group_1` (`ownerId`),
   KEY `fk_cmn_group_2` (`avatarId`),
-  KEY `fk_cmn_group_3` (`bannerId`),
-  CONSTRAINT `fk_cmn_group_1` FOREIGN KEY (`ownerId`) REFERENCES `cmg_user` (`id`),
-  CONSTRAINT `fk_cmn_group_2` FOREIGN KEY (`avatarId`) REFERENCES `cmg_file` (`id`),
-  CONSTRAINT `fk_cmn_group_3` FOREIGN KEY (`bannerId`) REFERENCES `cmg_file` (`id`)
+  KEY `fk_cmn_group_3` (`bannerId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -88,15 +79,13 @@ CREATE TABLE `cmg_cmn_group_member` (
   `userId` bigint(20) NOT NULL,
   `roleId` bigint(20) DEFAULT NULL,
   `status` smallint(6) NOT NULL DEFAULT 0,
-  `joinedAt` datetime DEFAULT NULL,
+  `createdAt` datetime DEFAULT NULL,
+  `modifiedAt` datetime DEFAULT NULL,
   `syncedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_cmn_group_member_1` (`groupId`),
   KEY `fk_cmn_group_member_2` (`userId`),
-  KEY `fk_cmn_group_member_3` (`roleId`),
-  CONSTRAINT `fk_cmn_group_member_1` FOREIGN KEY (`groupId`) REFERENCES `cmg_cmn_group` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_cmn_group_member_2` FOREIGN KEY (`userId`) REFERENCES `cmg_user` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_cmn_group_member_3` FOREIGN KEY (`roleId`) REFERENCES `cmg_role` (`id`)
+  KEY `fk_cmn_group_member_3` (`roleId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -114,12 +103,50 @@ CREATE TABLE `cmg_cmn_group_message` (
   `visibility` smallint(6) NOT NULL DEFAULT 0,
   `content` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
   `createdAt` datetime DEFAULT NULL,
+  `modifiedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_cmn_group_message_1` (`groupId`),
-  KEY `fk_cmn_group_message_2` (`memberId`),
-  CONSTRAINT `fk_cmn_group_message_1` FOREIGN KEY (`groupId`) REFERENCES `cmg_cmn_group` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_cmn_group_message_2` FOREIGN KEY (`memberId`) REFERENCES `cmg_cmn_group_member` (`id`) ON DELETE CASCADE
+  KEY `fk_cmn_group_message_2` (`memberId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+SET FOREIGN_KEY_CHECKS=0;
+
+--
+-- Constraints for table `cmg_cmn_friend`
+--
+ALTER TABLE `cmg_cmn_friend`
+	ADD CONSTRAINT `fk_cmn_friend_1` FOREIGN KEY (`userId`) REFERENCES `cmg_user` (`id`) ON DELETE CASCADE,
+  	ADD CONSTRAINT `fk_cmn_friend_2` FOREIGN KEY (`friendId`) REFERENCES `cmg_user` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `cmg_cmn_message`
+--
+ALTER TABLE `cmg_cmn_message`
+	ADD CONSTRAINT `fk_cmn_message_1` FOREIGN KEY (`senderId`) REFERENCES `cmg_user` (`id`) ON DELETE CASCADE,
+	ADD CONSTRAINT `fk_cmn_message_2` FOREIGN KEY (`recipientId`) REFERENCES `cmg_user` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `cmg_cmn_group`
+--
+ALTER TABLE `cmg_cmn_group`
+	ADD CONSTRAINT `fk_cmn_group_1` FOREIGN KEY (`ownerId`) REFERENCES `cmg_user` (`id`),
+	ADD CONSTRAINT `fk_cmn_group_2` FOREIGN KEY (`avatarId`) REFERENCES `cmg_file` (`id`),
+	ADD CONSTRAINT `fk_cmn_group_3` FOREIGN KEY (`bannerId`) REFERENCES `cmg_file` (`id`);
+
+--
+-- Constraints for table `cmg_cmn_group_member`
+--
+ALTER TABLE `cmg_cmn_group_member`
+	ADD CONSTRAINT `fk_cmn_group_member_1` FOREIGN KEY (`groupId`) REFERENCES `cmg_cmn_group` (`id`) ON DELETE CASCADE,
+	ADD CONSTRAINT `fk_cmn_group_member_2` FOREIGN KEY (`userId`) REFERENCES `cmg_user` (`id`) ON DELETE CASCADE,
+	ADD CONSTRAINT `fk_cmn_group_member_3` FOREIGN KEY (`roleId`) REFERENCES `cmg_role` (`id`);
+
+--
+-- Constraints for table `cmg_cmn_group_message`
+--
+ALTER TABLE `cmg_cmn_group_message`
+	ADD CONSTRAINT `fk_cmn_group_message_1` FOREIGN KEY (`groupId`) REFERENCES `cmg_cmn_group` (`id`) ON DELETE CASCADE,
+	ADD CONSTRAINT `fk_cmn_group_message_2` FOREIGN KEY (`memberId`) REFERENCES `cmg_cmn_group_member` (`id`) ON DELETE CASCADE;
 
 SET FOREIGN_KEY_CHECKS=1;

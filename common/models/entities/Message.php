@@ -1,7 +1,15 @@
 <?php
 namespace cmsgears\community\common\models\entities;
 
+// Yii Imports
+use \Yii;
+use yii\behaviors\TimestampBehavior;
+
 // CMG Imports
+use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\community\common\config\CmnGlobal;
+
+use cmsgears\core\common\models\entities\CoreTables;
 use cmsgears\core\common\models\entities\CmgEntity;
 use cmsgears\core\common\models\entities\User;
 
@@ -14,7 +22,8 @@ use cmsgears\core\common\models\entities\User;
  * @property short $type 
  * @property string $content
  * @property datetime $createdAt
- * @property short $read
+ * @property datetime $modifiedAt
+ * @property short $mark
  */
 class Message extends CmgEntity {
 
@@ -25,7 +34,7 @@ class Message extends CmgEntity {
 	 */
 	public function getSender() {
 
-		return $this->hasOne( User::className(), [ 'id' => 'senderId' ] );
+		return $this->hasOne( User::className(), [ 'id' => 'senderId' ] )->from( CoreTables::TABLE_USER . ' sender' );
 	}
 
 	/**
@@ -33,29 +42,52 @@ class Message extends CmgEntity {
 	 */
 	public function getRecipient() {
 
-		return $this->hasOne( User::className(), [ 'id' => 'recipientId' ] );
+		return $this->hasOne( User::className(), [ 'id' => 'recipientId' ] )->from( CoreTables::TABLE_USER . ' recipient' );
 	}
+
+	// yii\base\Component ----------------
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors() {
+
+        return [
+
+            'timestampBehavior' => [
+                'class' => TimestampBehavior::className(),
+				'createdAtAttribute' => 'createdAt',
+ 				'updatedAtAttribute' => 'modifiedAt'
+            ]
+        ];
+    }
 
 	// yii\base\Model --------------------
 
+    /**
+     * @inheritdoc
+     */
 	public function rules() {
 
         return [
             [ [ 'senderId', 'recipientId', 'type', 'content' ], 'required' ],
             [ [ 'id', 'read' ], 'safe' ],
             [ [ 'senderId', 'recipientId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-            [ [ 'createdAt' ], 'date', 'format' => 'yyyy-MM-dd HH:mm:ss' ]
+            [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
 	public function attributeLabels() {
 
 		return [
-			'senderId' => 'Sender',
-			'recipientId' => 'Recipient',
-			'type' => 'Type',
-			'content' => 'Content',
-			'read' => 'Read'
+			'senderId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_SENDER ),
+			'recipientId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_RECIPIENT ),
+			'type' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
+			'content' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
+			'mark' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_MARK )
 		];
 	}
 
@@ -63,12 +95,15 @@ class Message extends CmgEntity {
 
 	// yii\db\ActiveRecord ---------------
 
+    /**
+     * @inheritdoc
+     */
 	public static function tableName() {
 
 		return CmnTables::TABLE_MESSAGE;
 	}
 
-	// Role ------------------------------
+	// Message ---------------------------
 
 }
 
