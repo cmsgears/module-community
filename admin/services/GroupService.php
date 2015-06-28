@@ -6,17 +6,7 @@ use \Yii;
 use yii\data\Sort;
 
 // CMG Imports
-use cmsgears\community\common\config\CmnGlobal;
-
-use cmsgears\core\common\models\entities\CmgFile;
-use cmsgears\core\common\models\entities\ModelCategory;
-
 use cmsgears\community\common\models\entities\Group;
-
-use cmsgears\core\admin\services\FileService;
-
-use cmsgears\core\common\utilities\CodeGenUtil;
-use cmsgears\core\common\utilities\DateUtil;
 
 class GroupService extends \cmsgears\community\common\services\GroupService {
 
@@ -52,96 +42,22 @@ class GroupService extends \cmsgears\community\common\services\GroupService {
 	        ]
 	    ]);
 
-		$conditions[ 'type' ]	= 0;
+		if( !isset( $config[ 'query' ] ) ) {
 
-		return self::getPaginationDetails( new Group(), [ 'sort' => $sort, 'conditions' => $conditions, 'search-col' => 'name' ] );
-	}
-
-	// Create -----------
-
-	public static function create( $group, $avatar, $banner ) {
-
-		// Create Group		
-		$date 		= DateUtil::getMysqlDate();
-		$user		= Yii::$app->user->getIdentity();
-
-		// Group Properties
-		$group->createdAt 	= $date;
-		$group->ownerId		= $user->id;
-		$group->slug 		= CodeGenUtil::generateSlug( $group->name );
-
-		// Save Avatar
-		FileService::saveImage( $avatar, $user, [ 'model' => $group, 'attribute' => 'avatarId' ] );
-
-		// Save Banner
-		FileService::saveImage( $banner, $user, [ 'model' => $group, 'attribute' => 'bannerId' ] );
-
-		$group->save();
-
-		return $group;
-	}
-
-	// Update -----------
-
-	public static function update( $group, $avatar, $banner ) {
-		
-		$date 			= DateUtil::getMysqlDate();
-		$user			= Yii::$app->user->getIdentity();
-		$groupToUpdate	= self::findById( $group->id );
-
-		$groupToUpdate->updatedAt 	= $date;
-		$groupToUpdate->slug 		= CodeGenUtil::generateSlug( $group->name );
-
-		$groupToUpdate->copyForUpdateFrom( $group, [ 'name', 'description', 'avatarId', 'bannerId', 'content', 'visibility', 'status' ] );
-
-		// Save Avatar
-		FileService::saveImage( $avatar, $user, [ 'model' => $groupToUpdate, 'attribute' => 'avatarId' ] );
-
-		// Save Banner
-		FileService::saveImage( $banner, $user, [ 'model' => $groupToUpdate, 'attribute' => 'bannerId' ] );
-
-		$groupToUpdate->update();
-
-		return $groupToUpdate;
-	}
-
-	public static function bindCategories( $binder ) {
-
-		$groupId		= $binder->groupId;
-		$categories		= $binder->bindedData;
-
-		// Clear all existing mappings
-		ModelCategory::deleteByParentIdType( $groupId, CmnGlobal::CATEGORY_TYPE_GROUP );
-
-		if( isset( $categories ) && count( $categories ) > 0 ) {
-
-			foreach ( $categories as $key => $value ) {
-
-				if( isset( $value ) ) {
-
-					$toSave				= new ModelCategory();
-					$toSave->parentId 	= $groupId;
-					$toSave->parentType = CmnGlobal::CATEGORY_TYPE_GROUP;
-					$toSave->categoryId	= $value;
-
-					$toSave->save();
-				}
-			}
+			$config[ 'query' ] = Group::findWithContent();
 		}
 
-		return true;
-	}
+		if( !isset( $config[ 'sort' ] ) ) {
 
-	// Delete -----------
+			$config[ 'sort' ] = $sort;
+		}
 
-	public static function delete( $group ) {
+		if( !isset( $config[ 'search-col' ] ) ) {
 
-		$existingGroup	= self::findById( $group->id );
+			$config[ 'search-col' ] = 'name';
+		}
 
-		// Delete Group
-		$existingGroup->delete();
-
-		return true;
+		return self::getDataProvider( new Group(), $config );
 	}
 }
 

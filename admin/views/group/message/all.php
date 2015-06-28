@@ -9,19 +9,25 @@ $coreProperties = $this->context->getCoreProperties();
 $this->title 	= $coreProperties->getSiteTitle() . " | Group Messages";
 
 $gid			= $group->id;
+
+// Sidebar
+$this->params['sidebar-parent'] = 'sidebar-group';
+$this->params['sidebar-child'] 	= 'group';
+
+// Data
+$pagination		= $dataProvider->getPagination();
+$models			= $dataProvider->getModels();
 ?>
 <div class="cud-box">
 	<h2>Group Messages</h2>
 	<form action="#" class="frm-split">
 		<label>Name</label>
-		<label><?= $group->name ?></label>
-		<label>Description</label>
-		<label><?= $group->description ?></label>			
+		<label><?= $group->name ?></label>		
 	</form>
 </div>
 <div class="data-grid">
 	<div class="grid-header">
-		<?= LinkPager::widget( [ 'pagination' => $pages ] ); ?>
+		<?= LinkPager::widget( [ 'pagination' => $pagination ] ); ?>
 	</div>
 	<div class="wrap-grid">
 		<table>
@@ -40,7 +46,7 @@ $gid			= $group->id;
 			<tbody>
 				<?php
 
-					foreach( $page as $groupMessage ) {
+					foreach( $models as $groupMessage ) {
 
 						$id		= $groupMessage->id;
 						$user 	= $groupMessage->member->user;
@@ -57,7 +63,7 @@ $gid			= $group->id;
 							<?php 
 								} else {
 							?>
-								<img class="avatar" src="<?=Yii::getAlias('@web')?>/assets/images/avatar.png">
+								<img class="avatar" src="<?=Yii::getAlias('@web')?>/images/avatar.png">
 							<?php } ?>
 						</td>
 						<td><?= $user->username ?></td>
@@ -74,10 +80,7 @@ $gid			= $group->id;
 		</table>
 	</div>
 	<div class="grid-footer">
-		<div class="text"> <?=CodeGenUtil::getPaginationDetail( $pages, $page, $total ) ?> </div>
-		<?= LinkPager::widget( [ 'pagination' => $pages ] ); ?>
+		<div class="text"> <?=CodeGenUtil::getPaginationDetail( $dataProvider ) ?> </div>
+		<?= LinkPager::widget( [ 'pagination' => $pagination ] ); ?>
 	</div>
 </div>
-<script type="text/javascript">
-	initSidebar( "sidebar-group", 2 );
-</script>

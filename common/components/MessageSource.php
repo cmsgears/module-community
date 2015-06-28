@@ -29,7 +29,7 @@ class MessageSource extends Component {
 
 	public function getMessage( $messageKey, $params = [], $language = null ) {
 
-		return $this->$messageDb[ $messageKey ];
+		return $this->messageDb[ $messageKey ];
 	}
 }
 

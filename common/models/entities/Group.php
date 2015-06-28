@@ -14,6 +14,7 @@ use cmsgears\core\common\models\entities\CmgFile;
 use cmsgears\core\common\models\traits\MetaTrait;
 use cmsgears\core\common\models\traits\CategoryTrait;
 use cmsgears\core\common\models\traits\TagTrait;
+use cmsgears\core\common\models\traits\CreateModifyTrait;
 use cmsgears\cms\common\models\traits\ContentTrait;
 
 /**
@@ -176,6 +177,14 @@ class Group extends NamedCmgEntity {
 	// Group -----------------------------
 
 	// Read ----
+
+	/**
+	 * @return ActiveRecord - with page content.
+	 */
+	public static function findWithContent() {
+
+		return self::find()->joinWith( 'content' );
+	}
 
 	public static function findBySlug( $slug ) {
 

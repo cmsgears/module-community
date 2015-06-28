@@ -13,11 +13,13 @@ use cmsgears\community\common\config\CmnGlobal;
 use cmsgears\core\common\models\entities\CmgFile;
 use cmsgears\core\common\models\entities\Category;
 
+use cmsgears\core\common\models\forms\Binder;
+use cmsgears\cms\common\models\entities\ModelContent;
 use cmsgears\community\common\models\entities\Group;
 use cmsgears\community\common\models\entities\GroupMember;
-use cmsgears\community\admin\models\forms\GroupCategoryBinderForm;
 
 use cmsgears\core\admin\services\CategoryService;
+use cmsgears\core\admin\services\TemplateService;
 use cmsgears\community\admin\services\GroupService;
 use cmsgears\community\admin\services\GroupMemberService;
 use cmsgears\community\admin\services\GroupMessageService;
@@ -75,70 +77,71 @@ class GroupController extends BaseController {
 
 	public function actionIndex() {
 
-	    $this->redirect( "all" );
+	    $this->redirect( [ 'all' ] );
 	}
 
 	public function actionAll() {
 
-		$pagination = GroupService::getPagination();
+		$dataProvider = GroupService::getPagination();
 
-	    return $this->render('all', [
-	         'page' => $pagination['page'],
-	         'pages' => $pagination['pages'],
-	         'total' => $pagination['total']
+	    return $this->render( 'all', [
+	         'dataProvider' => $dataProvider
 	    ]);
 	}
 
 	public function actionMatrix() {
 
-		$pagination 	= GroupService::getPagination();
-		$allCategories	= CategoryService::getIdNameMapByType( CmnGlobal::CATEGORY_TYPE_GROUP );
+		$dataProvider 	= GroupService::getPagination();
+		$categoriesList	= CategoryService::getIdNameListByType( CmnGlobal::TYPE_GROUP );
 
-	    return $this->render('matrix', [
-	         'page' => $pagination['page'],
-	         'pages' => $pagination['pages'],
-	         'total' => $pagination['total'],
-	         'allCategories' => $allCategories
+	    return $this->render( 'matrix', [
+	         'dataProvider' => $dataProvider,
+	         'categoriesList' => $categoriesList
 	    ]);
 	}
 
 	public function actionCreate() {
 
-		$model	= new Group();
-		$avatar = new CmgFile();
-		$banner = new CmgFile();
+		$model		= new Group();
+		$content	= new ModelContent();
+		$avatar 	= new CmgFile();
+		$banner 	= new CmgFile();
 
-		$model->setScenario( "create" );
+		$model->setScenario( 'create' );
 
-		if( $model->load( Yii::$app->request->post( "Group" ), "" )  && $model->validate() ) {
+		if( $model->load( Yii::$app->request->post(), 'Group' )  && $model->validate() &&
+		    $content->load( Yii::$app->request->post(), 'ModelContent' )  && $content->validate() ) {
 
-			$avatar->load( Yii::$app->request->post( "Avatar" ), "" );
-			$banner->load( Yii::$app->request->post( "Banner" ), "" );
+			$avatar->load( Yii::$app->request->post(), 'Avatar' );
+			$banner->load( Yii::$app->request->post(), 'Banner' );
 
-			if( GroupService::create( $model, $avatar, $banner ) ) {
+			if( GroupService::create( $model, $content, $avatar, $banner ) ) {
 
-				$binder = new GroupCategoryBinderForm();
+				$binder = new Binder();
 
-				$binder->groupId	= $model->id;
-				$binder->load( Yii::$app->request->post( "Binder" ), "" );
+				$binder->binderId	= $model->id;
+				$binder->load( Yii::$app->request->post(), 'Binder' );
 
 				GroupService::bindCategories( $binder );
 
-				return $this->redirect( [ "all" ] );
+				return $this->redirect( [ 'all' ] );
 			}
 		}
 
-		$categories		= CategoryService::getIdNameMapByType( CmnGlobal::CATEGORY_TYPE_GROUP );
-		$visibilities	= Group::$visibilityMap;
-		$status			= Group::$statusMap;
+		$categories		= CategoryService::getIdNameListByType( CmnGlobal::TYPE_GROUP );
+		$visibilityMap	= Group::$visibilityMap;
+		$statusMap		= Group::$statusMap;
+		$templateMap	= TemplateService::getIdNameMap( CmnGlobal::TYPE_GROUP );
 
-    	return $this->render('create', [
+    	return $this->render( 'create', [
     		'model' => $model,
+    		'content' => $content,
     		'avatar' => $avatar,
     		'banner' => $banner,
     		'categories' => $categories,
-	    	'visibilities' => $visibilities,
-	    	'status' => $status
+	    	'visibilityMap' => $visibilityMap,
+	    	'statusMap' => $statusMap,
+	    	'templateMap' => $templateMap
     	]);
 	}
 
@@ -146,101 +149,108 @@ class GroupController extends BaseController {
 
 		// Find Model
 		$model		= GroupService::findById( $id );
-		$avatar 	= new CmgFile();
-		$banner 	= new CmgFile();
 
 		// Update/Render if exist
 		if( isset( $model ) ) {
 
-			$model->setScenario( "update" );
+			$content	= $model->content;
+			$avatar 	= new CmgFile();
+			$banner 	= new CmgFile();
 
-			if( $model->load( Yii::$app->request->post( "Group" ), "" )  && $model->validate() ) {
+			$model->setScenario( 'update' );
 
-				$avatar->load( Yii::$app->request->post( "Avatar" ), "" );
-				$banner->load( Yii::$app->request->post( "Banner" ), "" );
-
-				if( GroupService::update( $model, $avatar, $banner ) ) {
-
-					$binder = new GroupCategoryBinderForm();
+			if( $model->load( Yii::$app->request->post(), 'Group' )  && $model->validate() &&
+			    $content->load( Yii::$app->request->post(), 'ModelContent' )  && $content->validate() ) {
 	
-					$binder->groupId	= $model->id;
-					$binder->load( Yii::$app->request->post( "Binder" ), "" );
+				$avatar->load( Yii::$app->request->post(), 'Avatar' );
+				$banner->load( Yii::$app->request->post(), 'Banner' );
+
+				if( GroupService::update( $model, $content, $avatar, $banner ) ) {
+
+					$binder = new Binder();
+	
+					$binder->binderId	= $model->id;
+					$binder->load( Yii::$app->request->post(), 'Binder' );
 	
 					GroupService::bindCategories( $binder );
 
-					$this->refresh();
+					return $this->redirect( [ 'all' ] );
 				}
 			}
 
-			$categories		= CategoryService::getIdNameMapByType( CmnGlobal::CATEGORY_TYPE_GROUP );
-			$visibilities	= Group::$visibilityMap;
-			$status			= Group::$statusMap;
 			$avatar			= $model->avatar;
-			$banner			= $model->banner;
+			$banner			= $content->banner;
+			$categories		= CategoryService::getIdNameListByType( CmnGlobal::TYPE_GROUP );
+			$visibilityMap	= Group::$visibilityMap;
+			$statusMap		= Group::$statusMap;
+			$templateMap	= TemplateService::getIdNameMap( CmnGlobal::TYPE_GROUP );
 
 	    	return $this->render( 'update', [
 	    		'model' => $model,
+	    		'content' => $content,
 	    		'avatar' => $avatar,
 	    		'banner' => $banner,
 	    		'categories' => $categories,
-	    		'visibilities' => $visibilities,
-	    		'status' => $status
+		    	'visibilityMap' => $visibilityMap,
+		    	'statusMap' => $statusMap,
+		    	'templateMap' => $templateMap
 	    	]);
 		}
 		
 		// Model not found
-		throw new NotFoundHttpException( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 
 	public function actionDelete( $id ) {
 
 		// Find Model
 		$model		= GroupService::findById( $id );
-		$avatar 	= new CmgFile();
-		$banner 	= new CmgFile();
 
 		// Delete/Render if exist
 		if( isset( $model ) ) {
 
-			if( $model->load( Yii::$app->request->post( "Group" ), "" ) ) {
+			$content	= $model->content;
 
-				if( GroupService::delete( $model ) ) {
+			if( $model->load( Yii::$app->request->post(), 'Group' ) ) {
 
-					return $this->redirect( [ self::URL_ALL ] );
+				if( GroupService::delete( $model, $content ) ) {
+
+					return $this->redirect( [ 'all' ] );
 				}
 			}
 
-			$categories		= CategoryService::getIdNameMapByType( CmnGlobal::CATEGORY_TYPE_GROUP );
-			$visibilities	= Group::$visibilityMap;
-			$status			= Group::$statusMap;
 			$avatar			= $model->avatar;
-			$banner			= $model->banner;
+			$banner			= $content->banner;
+			$categories		= CategoryService::getIdNameListByType( CmnGlobal::TYPE_GROUP );
+			$visibilityMap	= Group::$visibilityMap;
+			$statusMap		= Group::$statusMap;
+			$templateMap	= TemplateService::getIdNameMap( CmnGlobal::TYPE_GROUP );
 
 	    	return $this->render( 'delete', [
 	    		'model' => $model,
+	    		'content' => $content,
 	    		'avatar' => $avatar,
 	    		'banner' => $banner,
 	    		'categories' => $categories,
-	    		'visibilities' => $visibilities,
-	    		'status' => $status
+		    	'visibilityMap' => $visibilityMap,
+		    	'statusMap' => $statusMap,
+		    	'templateMap' => $templateMap
 	    	]);
 		}
 
 		// Model not found
-		throw new NotFoundHttpException( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 
 	// Categories -------------------
 
 	public function actionCategories() {
 
-		$pagination = CategoryService::getPaginationByType( CmnGlobal::CATEGORY_TYPE_GROUP );
+		$dataProvider = CategoryService::getPaginationByType( CmnGlobal::TYPE_GROUP );
 
-	    return $this->render('categories', [
-	         'page' => $pagination['page'],
-	         'pages' => $pagination['pages'],
-	         'total' => $pagination['total'],
-	         'type' => CmnGlobal::CATEGORY_TYPE_GROUP
+	    return $this->render( 'categories', [
+	         'dataProvider' => $dataProvider,
+	         'type' => CmnGlobal::TYPE_GROUP
 	    ]);
 	}
 
@@ -254,20 +264,18 @@ class GroupController extends BaseController {
 		// Delete/Render if exist
 		if( isset( $model ) ) {
 
-			$pagination = GroupMemberService::getPaginationByGroupId( $id );
+			$dataProvider = GroupMemberService::getPaginationByGroupId( $id );
 
-		    return $this->render('member/all', [
-		         'page' => $pagination['page'],
-		         'pages' => $pagination['pages'],
-		         'total' => $pagination['total'],
+		    return $this->render( 'member/all', [
+		         'dataProvider' => $dataProvider,
 		         'group' => $model
 		    ]);
 		}
-		
+
 		// Model not found
-		throw new NotFoundHttpException( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
-	
+
 	public function actionDeleteMember( $gid, $id ) {
 
 		// Find Model
@@ -277,7 +285,7 @@ class GroupController extends BaseController {
 		// Delete/Render if exist
 		if( isset( $model ) ) {
 
-			if( $model->load( Yii::$app->request->post( "GroupMember" ), "" ) ) {
+			if( $model->load( Yii::$app->request->post(), 'GroupMember' ) ) {
 
 				if( GroupMemberService::delete( $model ) ) {
 
@@ -293,7 +301,7 @@ class GroupController extends BaseController {
 		}
 
 		// Model not found
-		throw new NotFoundHttpException( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 	
 	// Messages --------------------------------
@@ -306,18 +314,16 @@ class GroupController extends BaseController {
 		// Delete/Render if exist
 		if( isset( $model ) ) {
 
-			$pagination = GroupMessageService::getPaginationByGroupId( $id );
+			$dataProvider = GroupMessageService::getPaginationByGroupId( $id );
 
 		    return $this->render( 'message/all', [
-		         'page' => $pagination['page'],
-		         'pages' => $pagination['pages'],
-		         'total' => $pagination['total'],
+		         'dataProvider' => $dataProvider,
 		         'group' => $model
 		    ]);
 		}
-		
+
 		// Model not found
-		throw new NotFoundHttpException( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 	
 	public function actionDeleteMessage( $gid, $id ) {
@@ -344,7 +350,7 @@ class GroupController extends BaseController {
 		}
 
 		// Model not found
-		throw new NotFoundHttpException( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 }
 

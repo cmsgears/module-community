@@ -9,25 +9,30 @@ $coreProperties = $this->context->getCoreProperties();
 $this->title 	= $coreProperties->getSiteTitle() . " | Group Members";
 
 $gid			= $group->id;
+
+// Sidebar
+$this->params['sidebar-parent'] = 'sidebar-group';
+$this->params['sidebar-child'] 	= 'group';
+
+// Data
+$pagination		= $dataProvider->getPagination();
+$models			= $dataProvider->getModels();
 ?>
 <div class="cud-box">
 	<h2>Group Members</h2>
 	<form action="#" class="frm-split">
 		<label>Name</label>
-		<label><?= $group->name ?></label>
-		<label>Description</label>
-		<label><?= $group->description ?></label>			
+		<label><?= $group->name ?></label>			
 	</form>
 </div>
 <div class="data-grid">
 	<div class="grid-header">
-		<?= LinkPager::widget( [ 'pagination' => $pages ] ); ?>
+		<?= LinkPager::widget( [ 'pagination' => $pagination ] ); ?>
 	</div>
 	<div class="wrap-grid">
 		<table>
 			<thead>
 				<tr>
-					<th> <input type='checkbox' /> </th>
 					<th>Avatar</th>
 					<th>Username</th>
 					<th>Name</th>
@@ -42,14 +47,13 @@ $gid			= $group->id;
 			<tbody>
 				<?php
 
-					foreach( $page as $groupMember ) {
+					foreach( $models as $groupMember ) {
 						
 						$id		= $groupMember->id;
 						$user 	= $groupMember->user;
 						$role	= $groupMember->role;
 				?>
 					<tr>
-						<td> <input type='checkbox' /> </td>
 						<td> 
 							<?php
 								$avatar = $user->avatar;
@@ -68,7 +72,7 @@ $gid			= $group->id;
 						<td><?= $user->email ?></td>
 						<td><?= $role->name ?></td>
 						<td><?= $groupMember->getStatusStr() ?></td>
-						<td><?= $groupMember->joinedAt ?></td>
+						<td><?= $groupMember->createdAt ?></td>
 						<td><?= $groupMember->syncedAt ?></td>
 						<td>
 							<span class="wrap-icon-action" title="Delete Group Member"><?= Html::a( "", ["/cmgcmn/group/delete-member?gid=$gid&id=$id"], ['class'=>'icon-action icon-action-delete'] )  ?></span>
@@ -79,10 +83,7 @@ $gid			= $group->id;
 		</table>
 	</div>
 	<div class="grid-footer">
-		<div class="text"> <?=CodeGenUtil::getPaginationDetail( $pages, $page, $total ) ?> </div>
-		<?= LinkPager::widget( [ 'pagination' => $pages ] ); ?>
+		<div class="text"> <?=CodeGenUtil::getPaginationDetail( $dataProvider ) ?> </div>
+		<?= LinkPager::widget( [ 'pagination' => $pagination ] ); ?>
 	</div>
 </div>
-<script type="text/javascript">
-	initSidebar( "sidebar-group", 2 );
-</script>

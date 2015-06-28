@@ -7,6 +7,10 @@ $this->title 	= $coreProperties->getSiteTitle() . ' | Delete Group Message';
 
 $gid			= $group->id;
 $user 			= $model->member->user;
+
+// Sidebar
+$this->params['sidebar-parent'] = 'sidebar-group';
+$this->params['sidebar-child'] 	= 'group';
 ?>
 <section class="wrap-content container clearfix">
 	<div class="cud-box">
@@ -16,7 +20,8 @@ $user 			= $model->member->user;
 		<label>Username</label><label><?= $user->username ?></label>
 		<label>Name</label><label><?= $user->name ?></label>	
 		<label>Email</label><label><?= $user->email ?></label>
-
+		
+		<?= $form->field( $model, 'groupId' )->hiddenInput()->label( false ) ?>
     	<?= $form->field( $model, 'content' )->textarea( [ 'readonly'=>'true' ] ) ?>
 
 		<div class="box-filler"></div>

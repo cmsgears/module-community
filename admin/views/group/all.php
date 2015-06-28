@@ -9,6 +9,14 @@ $coreProperties = $this->context->getCoreProperties();
 $this->title 	= $coreProperties->getSiteTitle() . ' | All Groups';
 $siteUrl		= $coreProperties->getSiteUrl();
 
+// Sidebar
+$this->params['sidebar-parent'] = 'sidebar-group';
+$this->params['sidebar-child'] 	= 'group';
+
+// Data
+$pagination		= $dataProvider->getPagination();
+$models			= $dataProvider->getModels();
+
 // Searching
 $searchTerms	= Yii::$app->request->getQueryParam("search");
 
@@ -31,13 +39,12 @@ if( !isset( $sortOrder ) ) {
 </div>
 <div class="data-grid">
 	<div class="grid-header">
-		<?= LinkPager::widget( [ 'pagination' => $pages ] ); ?>
+		<?= LinkPager::widget( [ 'pagination' => $pagination ] ); ?>
 	</div>
 	<div class="wrap-grid">
 		<table>
 			<thead>
 				<tr>
-					<th> <input type='checkbox' /> </th>
 					<th>Avatar</th>
 					<th>Name
 						<span class='box-icon-sort'>
@@ -45,10 +52,13 @@ if( !isset( $sortOrder ) ) {
 							<span sort-order='-name' class="icon-sort <?php if( strcmp( $sortOrder, '-name') == 0 ) echo 'icon-down-active'; else echo 'icon-down';?>"></span>
 						</span>
 					</th>
-					<th>Slug</th>	
-					<th>Description</th>
+					<th>Slug</th>
 					<th>Visibility</th>
 					<th>Status</th>
+					<th>SEO Name</th>
+					<th>SEO Description</th>
+					<th>SEO Keywords</th>
+					<th>SEO Robot</th>
 					<th>Created on
 						<span class='box-icon-sort'>
 							<span sort-order='cdate' class="icon-sort <?php if( strcmp( $sortOrder, 'cdate') == 0 ) echo 'icon-up-active'; else echo 'icon-up';?>"></span>
@@ -69,15 +79,15 @@ if( !isset( $sortOrder ) ) {
 
 					$slugBase	= $siteUrl;
 
-					foreach( $page as $group ) {
+					foreach( $models as $group ) {
 
 						$id 		= $group->id;
 						$editUrl	= Html::a( $group->name, [ "/cmgcmn/group/update?id=$id" ] );
 						$slug		= $group->slug;
 						$slugUrl	= "<a href='" . $slugBase . "group/$slug'>$slug</a>";
+						$content	= $group->content;
 				?>
 					<tr>
-						<td> <input type='checkbox' /> </td>
 						<td> 
 							<?php
 								$avatar = $group->avatar;
@@ -88,16 +98,19 @@ if( !isset( $sortOrder ) ) {
 							<?php 
 								} else { 
 							?>
-								<img class="avatar" src="<?=Yii::getAlias('@web')?>/assets/images/avatar.png">
+								<img class="avatar" src="<?=Yii::getAlias('@web')?>/images/avatar.png">
 							<?php } ?>
 						</td>
 						<td><?= $editUrl ?></td>
 						<td><?= $slugUrl ?></td>
-						<td><?= $group->description ?></td>
 						<td><?= $group->getVisibilityStr() ?></td>
 						<td><?= $group->getStatusStr() ?></td>
-						<td><?= $group->createdAt ?></td>
-						<td><?= $group->updatedAt ?></td>
+						<td><?= $content->seoName ?></td>
+						<td><?= $content->seoDescription ?></td>
+						<td><?= $content->seoKeywords ?></td>
+						<td><?= $content->seoRobot ?></td>
+						<td><?= $content->createdAt ?></td>
+						<td><?= $content->modifiedAt ?></td>
 						<td>
 							<span class="wrap-icon-action" title="View Group Members"><?= Html::a( "", ["/cmgcmn/group/members?id=$id"], ['class'=>'icon-action icon-action-edit'] )  ?></span>
 							<span class="wrap-icon-action" title="View Group Messages"><?= Html::a( "", ["/cmgcmn/group/messages?id=$id"], ['class'=>'icon-action icon-action-edit'] )  ?></span>
@@ -110,10 +123,7 @@ if( !isset( $sortOrder ) ) {
 		</table>
 	</div>
 	<div class="grid-footer">
-		<div class="text"> <?=CodeGenUtil::getPaginationDetail( $pages, $page, $total ) ?> </div>
-		<?= LinkPager::widget( [ 'pagination' => $pages ] ); ?>
+		<div class="text"> <?=CodeGenUtil::getPaginationDetail( $dataProvider ) ?> </div>
+		<?= LinkPager::widget( [ 'pagination' => $pagination ] ); ?>
 	</div>
 </div>
-<script type="text/javascript">
-	initSidebar( "sidebar-group", 2 );
-</script>
