@@ -14,8 +14,9 @@ class MessageSource extends Component {
 
 	private $messageDb = [
 		// Generic Fields
-		CmnGlobal::FIELD_FRIEND => "Friend",
-		CmnGlobal::FIELD_GROUP => 'Group'
+		CmnGlobal::FIELD_FRIEND => 'Friend',
+		CmnGlobal::FIELD_GROUP => 'Group',
+		CmnGlobal::FIELD_CHAT => 'Chat'
 	];
 
 	/**

@@ -14,41 +14,27 @@ use cmsgears\core\common\models\entities\CmgEntity;
 use cmsgears\core\common\models\entities\User;
 
 /**
- * Friend Entity
+ * ChatMember Entity
  *
  * @property integer $id
+ * @property integer $chatId 
  * @property integer $userId
- * @property integer $friendId
  * @property datetime $createdAt
  * @property datetime $modifiedAt
- * @property integer $status
+ * @property datetime $syncedAt
  */
-class Friend extends CmgEntity {
+class ChatMember extends CmgEntity {
 
 	// Instance Methods --------------------------------------------
 
-	/**
-	 * @return User
-	 */
+	public function getChat() {
+
+		return $this->hasOne( Chat::className(), [ 'id' => 'chatId' ] );
+	}
+
 	public function getUser() {
 
 		return $this->hasOne( User::className(), [ 'id' => 'userId' ] );
-	}
-
-	/**
-	 * @return User
-	 */
-	public function getFriend() {
-
-		return $this->hasOne( User::className(), [ 'id' => 'friendId' ] );
-	}
-
-	/**
-	 * @return boolean - whether given user created this entry
-	 */
-	public function checkOwner( $user ) {
-
-		return $this->userId	= $user->id;
 	}
 
 	// yii\base\Component ----------------
@@ -77,10 +63,9 @@ class Friend extends CmgEntity {
 	public function rules() {
 
         return [
-            [ [ 'userId', 'friendId' ], 'required' ],
-            [ [ 'id', 'status' ], 'safe' ],
-            [ [ 'userId', 'friendId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+        	[ [ 'chatId', 'userId' ], 'required' ],
+            [ [ 'id' ], 'safe' ],
+            [ [ 'createdAt', 'modifiedAt', 'syncedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
 
@@ -90,9 +75,8 @@ class Friend extends CmgEntity {
 	public function attributeLabels() {
 
 		return [
-			'userId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_USER ),
-			'friendId' => Yii::$app->cmgCmnMessage->getMessage( CmnGlobal::FIELD_FRIEND ),
-			'status' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_STATUS )
+			'chatId' => Yii::$app->cmgCmnMessage->getMessage( CmnGlobal::FIELD_CHAT ),
+			'userId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_USER )
 		];
 	}
 
@@ -105,31 +89,39 @@ class Friend extends CmgEntity {
      */
 	public static function tableName() {
 
-		return CmnTables::TABLE_FRIEND;
+		return CmnTables::TABLE_CHAT_MEMBER;
 	}
 
-	// Friend ----------------------------
+	// ChatMember ------------------------
 
-	// Read
+	// Read ----
 
-	/**
-	 * @return Friend - by id
-	 */
 	public static function findById( $id ) {
 
 		return self::find()->where( 'id=:id', [ ':id' => $id ] )->one();
 	}
 
-	// Delete
+	public static function findByChatIdUserId( $chatId, $userId ) {
 
+		return self::find()->where( 'chatId=:cid AND userId=:uid', [ ':cid' => $chatId, ':uid' => $userId ] )->one();
+	}
+
+	// Delete ----
+
+	/**
+	 * Delete all entries having given chat id.
+	 */
+	public static function deleteByChatId( $chatId ) {
+
+		self::deleteAll( 'chatId=:id', [ ':id' => $chatId ] );
+	}
+
+	/**
+	 * Delete all entries having given user id.
+	 */
 	public static function deleteByUserId( $userId ) {
 
 		self::deleteAll( 'userId=:id', [ ':id' => $userId ] );
-	}
-
-	public static function deleteByFriendId( $friendId ) {
-
-		self::deleteAll( 'friendId=:id', [ ':id' => $friendId ] );
 	}
 }
 

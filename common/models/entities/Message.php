@@ -3,13 +3,13 @@ namespace cmsgears\community\common\models\entities;
 
 // Yii Imports
 use \Yii;
+use yii\db\Expression;
 use yii\behaviors\TimestampBehavior;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\entities\CoreTables;
 use cmsgears\core\common\models\entities\CmgEntity;
 use cmsgears\core\common\models\entities\User;
 
@@ -19,7 +19,7 @@ use cmsgears\core\common\models\entities\User;
  * @property integer $id
  * @property integer $senderId
  * @property integer $recipientId
- * @property short $type 
+ * @property short $type
  * @property string $content
  * @property datetime $createdAt
  * @property datetime $modifiedAt
@@ -27,14 +27,20 @@ use cmsgears\core\common\models\entities\User;
  */
 class Message extends CmgEntity {
 
+	const TYPE_PRIVATE	=  0; // visible only among sender and recipient - ex: private chat
+
+	const TYPE_FRIENDS	=  5; // friends can view the message - ex: wall post
+
+	const TYPE_PUBLIC	= 10; // anyone can view the message - ex: wall post
+
 	// Instance Methods --------------------------------------------
-	
+
 	/**
 	 * @return User
 	 */
 	public function getSender() {
 
-		return $this->hasOne( User::className(), [ 'id' => 'senderId' ] )->from( CoreTables::TABLE_USER . ' sender' );
+		return $this->hasOne( User::className(), [ 'id' => 'senderId' ] );
 	}
 
 	/**
@@ -42,7 +48,7 @@ class Message extends CmgEntity {
 	 */
 	public function getRecipient() {
 
-		return $this->hasOne( User::className(), [ 'id' => 'recipientId' ] )->from( CoreTables::TABLE_USER . ' recipient' );
+		return $this->hasOne( User::className(), [ 'id' => 'recipientId' ] );
 	}
 
 	// yii\base\Component ----------------
@@ -57,7 +63,8 @@ class Message extends CmgEntity {
             'timestampBehavior' => [
                 'class' => TimestampBehavior::className(),
 				'createdAtAttribute' => 'createdAt',
- 				'updatedAtAttribute' => 'modifiedAt'
+ 				'updatedAtAttribute' => 'modifiedAt',
+ 				'value' => new Expression('NOW()')
             ]
         ];
     }
@@ -105,6 +112,15 @@ class Message extends CmgEntity {
 
 	// Message ---------------------------
 
+	// Read
+
+	/**
+	 * @return Message - by id
+	 */
+	public static function findById( $id ) {
+
+		return self::find()->where( 'id=:id', [ ':id' => $id ] )->one();
+	}
 }
 
 ?>
