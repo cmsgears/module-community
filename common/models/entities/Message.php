@@ -19,7 +19,7 @@ use cmsgears\core\common\models\entities\User;
  * @property integer $id
  * @property integer $senderId
  * @property integer $recipientId
- * @property short $type
+ * @property short $visibility
  * @property string $content
  * @property datetime $createdAt
  * @property datetime $modifiedAt
@@ -27,11 +27,15 @@ use cmsgears\core\common\models\entities\User;
  */
 class Message extends CmgEntity {
 
-	const TYPE_PRIVATE	=  0; // visible only among sender and recipient - ex: private chat
+	const VISIBILITY_PRIVATE	=  0; // visible only among sender and recipient - ex: private chat
+	const VISIBILITY_FRIENDS	=  5; // friends can view the message - ex: wall post
+	const VISIBILITY_PUBLIC		= 10; // anyone can view the message - ex: wall post
 
-	const TYPE_FRIENDS	=  5; // friends can view the message - ex: wall post
-
-	const TYPE_PUBLIC	= 10; // anyone can view the message - ex: wall post
+	public static $visibilityMap = [
+		self::VISIBILITY_PRIVATE => "Private",
+		self::VISIBILITY_FRIENDS => "Friends",
+		self::VISIBILITY_PUBLIC => "Public"
+	];
 
 	// Instance Methods --------------------------------------------
 
@@ -77,7 +81,7 @@ class Message extends CmgEntity {
 	public function rules() {
 
         return [
-            [ [ 'senderId', 'recipientId', 'type', 'content' ], 'required' ],
+            [ [ 'senderId', 'recipientId', 'visibility', 'content' ], 'required' ],
             [ [ 'id', 'read' ], 'safe' ],
             [ [ 'senderId', 'recipientId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
@@ -92,7 +96,7 @@ class Message extends CmgEntity {
 		return [
 			'senderId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_SENDER ),
 			'recipientId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_RECIPIENT ),
-			'type' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
+			'visibility' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_VISIBILITY ),
 			'content' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
 			'mark' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_MARK )
 		];

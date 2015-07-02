@@ -41,12 +41,14 @@ class Group extends NamedCmgEntity {
 		self::STATUS_DISABLED => "Disabled"
 	];
 
-	const VISIBILITY_PRIVATE	= 0;
-	const VISIBILITY_PUBLIC		= 1;
+	const VISIBILITY_PRIVATE	=  0; // Only accessed by members, protected by password
+	const VISIBILITY_PUBLIC		=  5; // Visible to logged in users
+	const VISIBILITY_GLOBAL		= 10; // Publicly visible, logged in users can do activities
 
 	public static $visibilityMap = [
 		self::VISIBILITY_PRIVATE => "Private",
-		self::VISIBILITY_PUBLIC => "Public"
+		self::VISIBILITY_PUBLIC => "Public",
+		self::VISIBILITY_GLOBAL => "Global"
 	];
 
 	use MetaTrait;
@@ -102,6 +104,11 @@ class Group extends NamedCmgEntity {
 	public function isPublic() {
 
 		return $this->visibility == self::VISIBILITY_PUBLIC;
+	}
+
+	public function isGlobal() {
+
+		return $this->visibility == self::VISIBILITY_GLOBAL;
 	}
 
 	/**

@@ -31,7 +31,7 @@ CREATE TABLE `cmg_cmn_message` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `senderId` bigint(20) NOT NULL,
   `recipientId` bigint(20) DEFAULT NULL,
-  `type` smallint(6) NOT NULL,
+  `visibility` smallint(6) NOT NULL,
   `content` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
   `createdAt` datetime DEFAULT NULL,
   `modifiedAt` datetime DEFAULT NULL,
