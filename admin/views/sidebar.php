@@ -17,7 +17,7 @@ $user	= Yii::$app->user->getIdentity();
 		<div class="collapsible-tab-content clear">
 			<ul>
 				<li class='group-matrix'><?= Html::a( "Groups Matrix", ['/cmgcmn/group/matrix'] ) ?></li>
-				<li class='group-category'><?= Html::a( "Group Categories", ['/cmgcmn/group/categories'] ) ?></li>
+				<li class='group-category'><?= Html::a( "Group Categories", ['/cmgcmn/group/category/all'] ) ?></li>
 				<li class='group'><?= Html::a( "Groups", ['/cmgcmn/group/all'] ) ?></li>
 				<li class='message'><?= Html::a( "Messages", ['/cmgcmn/message/all'] ) ?></li>
 			</ul>
