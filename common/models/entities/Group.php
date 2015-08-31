@@ -26,6 +26,7 @@ use cmsgears\cms\common\models\traits\ContentTrait;
  * @property int $modifiedBy
  * @property string $name
  * @property string $slug
+ * @property string $type
  * @property short $status
  * @property short $visibility 
  */
@@ -145,8 +146,8 @@ class Group extends NamedCmgEntity {
 	public function rules() {
 
         return [
-            [ [ 'name' ], 'required' ],
-			[ [ 'id', 'avatarId' ], 'safe' ],
+            [ [ 'name', 'type' ], 'required' ],
+			[ [ 'id', 'slug', 'avatarId' ], 'safe' ],
 			[ [ 'status', 'visibility' ], 'number', 'integerOnly' => true ],
             [ [ 'name' ], 'alphanumhyphenspace' ],
             [ 'name', 'validateNameCreate', 'on' => [ 'create' ] ],

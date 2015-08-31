@@ -108,6 +108,7 @@ class GroupController extends BaseController {
 		$banner 	= new CmgFile();
 
 		$model->setScenario( 'create' );
+		$model->type	= CoreGlobal::TYPE_CORE;
 
 		if( $model->load( Yii::$app->request->post(), 'Group' )  && $model->validate() &&
 		    $content->load( Yii::$app->request->post(), 'ModelContent' )  && $content->validate() ) {
@@ -115,14 +116,14 @@ class GroupController extends BaseController {
 			$avatar->load( Yii::$app->request->post(), 'Avatar' );
 			$banner->load( Yii::$app->request->post(), 'Banner' );
 
-			if( GroupService::create( $model, $content, $avatar, $banner ) ) {
+			if( GroupService::create( $model, CmnGlobal::TYPE_GROUP, $content, $avatar, $banner ) ) {
 
 				$binder = new Binder();
 
 				$binder->binderId	= $model->id;
 				$binder->load( Yii::$app->request->post(), 'Binder' );
 
-				GroupService::bindCategories( $binder );
+				GroupService::bindCategories( $binder, CmnGlobal::TYPE_GROUP );
 
 				return $this->redirect( [ 'all' ] );
 			}
@@ -172,7 +173,7 @@ class GroupController extends BaseController {
 					$binder->binderId	= $model->id;
 					$binder->load( Yii::$app->request->post(), 'Binder' );
 	
-					GroupService::bindCategories( $binder );
+					GroupService::bindCategories( $binder, CmnGlobal::TYPE_GROUP );
 
 					return $this->redirect( [ 'all' ] );
 				}

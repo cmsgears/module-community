@@ -41,7 +41,7 @@ class GroupService extends \cmsgears\core\common\services\Service {
 
 	// Create -----------
 
-	public static function create( $group, $content, $avatar = null, $banner = null ) {
+	public static function create( $group, $type, $content, $avatar = null, $banner = null ) {
 
 		$user				= Yii::$app->user->getIdentity();
 
@@ -57,7 +57,7 @@ class GroupService extends \cmsgears\core\common\services\Service {
 		$group->save();
 
 		$content->parentId		= $group->id;
-		$content->parentType	= CmnGlobal::TYPE_GROUP;
+		$content->parentType	= $type;
 
 		// Save Banner
 		if( isset( $banner ) ) {
@@ -104,13 +104,13 @@ class GroupService extends \cmsgears\core\common\services\Service {
 		return $groupToUpdate;
 	}
 
-	public static function bindCategories( $binder ) {
+	public static function bindCategories( $binder, $type ) {
 
 		$groupId		= $binder->binderId;
 		$categories		= $binder->bindedData;
 
 		// Clear all existing mappings
-		ModelCategory::deleteByParentIdType( $groupId, CmnGlobal::TYPE_GROUP );
+		ModelCategory::deleteByParentIdType( $groupId, $type );
 
 		if( isset( $categories ) && count( $categories ) > 0 ) {
 
@@ -121,7 +121,7 @@ class GroupService extends \cmsgears\core\common\services\Service {
 					$toSave		= new ModelCategory();
 
 					$toSave->parentId	= $groupId;
-					$toSave->parentType	= CmnGlobal::TYPE_GROUP;
+					$toSave->parentType	= $type;
 					$toSave->categoryId	= $value;
 
 					$toSave->save();
