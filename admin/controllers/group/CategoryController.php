@@ -11,16 +11,12 @@ use yii\db\IntegrityException;
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
-use cmsgears\core\admin\controllers\BaseCategoryController;
 
 use cmsgears\core\common\models\entities\Category;
 
-use cmsgears\core\admin\services\CategoryService; 
+use cmsgears\core\admin\services\CategoryService;
 
-use cmsgears\core\admin\controllers\BaseController;
-
-// BM Imports
-use billmaid\core\common\config\BmCoreGlobal;  
+use cmsgears\core\admin\controllers\BaseCategoryController;
 
 class CategoryController extends BaseCategoryController {
 
@@ -41,7 +37,10 @@ class CategoryController extends BaseCategoryController {
             'rbac' => [
                 'class' => Yii::$app->cmgCore->getRbacFilterClass(),
                 'actions' => [
-	                'index'  => [ 'permission' => BmCoreGlobal::PERM_ACCOUNT ]
+	                'all'  => [ 'permission' => CmnGlobal::PERM_GROUP ],
+	                'create'  => [ 'permission' => CmnGlobal::PERM_GROUP ],
+	                'update'  => [ 'permission' => CmnGlobal::PERM_GROUP ],
+	                'delete'  => [ 'permission' => CmnGlobal::PERM_GROUP ]
                 ]
             ],
             'verbs' => [
@@ -56,30 +55,29 @@ class CategoryController extends BaseCategoryController {
         ];
     }
 
-	// DropdownController --------------------
+	// CategoryController --------------------
 
 	public function actionAll( $type = null ) {
 		
-		Url::remember( [ "group/category/all" ], 'categories' );
-		
-		$createUrl	= ["group/category/create"];
+		Url::remember( [ 'group/category/all' ], 'categories' );
 
-		return parent::actionAll( CmnGlobal::TYPE_GROUP, false, $createUrl );
+		return parent::actionAll( [ 'parent' => 'sidebar-group', 'child' => 'category' ], CmnGlobal::TYPE_GROUP, false );
 	}
 	
 	public function actionCreate() {
 
-		return parent::actionCreate( Url::previous( "categories" ), CmnGlobal::TYPE_GROUP );
+		return parent::actionCreate( Url::previous( 'categories' ), [ 'parent' => 'sidebar-group', 'child' => 'category' ], CmnGlobal::TYPE_GROUP, false );
 	}
 	 
 	public function actionUpdate( $id ) {
 
-		return parent::actionUpdate( $id, Url::previous( "categories" ), CmnGlobal::TYPE_GROUP );
+		return parent::actionUpdate( $id, Url::previous( 'categories' ), [ 'parent' => 'sidebar-group', 'child' => 'category' ], CmnGlobal::TYPE_GROUP, false );
 	}
 	
 	public function actionDelete( $id ) {
 
-		return parent::actionDelete( $id, Url::previous( "categories" ),CmnGlobal::TYPE_GROUP );
-	}  
+		return parent::actionDelete( $id, Url::previous( 'categories' ), [ 'parent' => 'sidebar-group', 'child' => 'category' ], CmnGlobal::TYPE_GROUP, false );
+	}
 }
+
 ?>

@@ -52,8 +52,7 @@ class GroupService extends \cmsgears\core\common\services\Service {
 
 			FileService::saveImage( $avatar, [ 'model' => $group, 'attribute' => 'avatarId' ] );
 		}
-		// Delete Content
-		$existingContent->delete();
+
 		// Create Group
 		$group->save();
 
@@ -117,11 +116,12 @@ class GroupService extends \cmsgears\core\common\services\Service {
 
 			foreach ( $categories as $key => $value ) {
 
-				if( isset( $value ) ) {
+				if( isset( $value ) && $value > 0 ) {
 
-					$toSave				= new ModelCategory();
-					$toSave->parentId 	= $groupId;
-					$toSave->parentType = CmnGlobal::TYPE_GROUP;
+					$toSave		= new ModelCategory();
+
+					$toSave->parentId	= $groupId;
+					$toSave->parentType	= CmnGlobal::TYPE_GROUP;
 					$toSave->categoryId	= $value;
 
 					$toSave->save();

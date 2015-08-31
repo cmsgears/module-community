@@ -242,18 +242,6 @@ class GroupController extends BaseController {
 		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 
-	// Categories -------------------
-
-	public function actionCategories() {
-
-		$dataProvider = CategoryService::getPaginationByType( CmnGlobal::TYPE_GROUP );
-
-	    return $this->render( 'categories', [
-	         'dataProvider' => $dataProvider,
-	         'type' => CmnGlobal::TYPE_GROUP
-	    ]);
-	}
-
 	// Members --------------------------------
 
 	public function actionMembers( $id ) {

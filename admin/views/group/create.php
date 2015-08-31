@@ -3,7 +3,9 @@ use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 
-use cmsgears\core\widgets\Editor;
+// CMG Imports
+use cmsgears\core\common\widgets\Editor;
+use cmsgears\files\widgets\AvatarUploader;
 use cmsgears\files\widgets\FileUploader;
 
 $coreProperties = $this->context->getCoreProperties();
@@ -32,7 +34,7 @@ Editor::widget( [ 'selector' => '.content-editor' ] );
     	<?= $form->field( $content, 'content' )->textarea( [ 'class' => 'content-editor' ] ) ?>
 
     	<h4>Group Avatar</h4>
-		<?=FileUploader::widget( [ 'options' => [ 'id' => 'avatar-group', 'class' => 'file-uploader' ], 'model' => $model->avatar, 'modelClass' => 'Avatar', 'directory' => 'avatar', 'btnChooserIcon' => 'icon-action icon-action-edit' ] );?>
+		<?=AvatarUploader::widget( [ 'options' => [ 'id' => 'avatar-group', 'class' => 'file-uploader' ], 'model' => $avatar, 'modelClass' => 'Avatar',  'directory' => 'avatar', 'btnChooserIcon' => 'icon-action icon-action-edit' ] );?>
 
     	<h4>Group Banner</h4>
 		<?=FileUploader::widget( [ 'options' => [ 'id' => 'banner-group', 'class' => 'file-uploader' ], 'model' => $content->banner, 'modelClass' => 'Banner', 'directory' => 'banner', 'btnChooserIcon' => 'icon-action icon-action-edit' ] );?>
