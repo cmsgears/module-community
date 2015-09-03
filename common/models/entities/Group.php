@@ -11,6 +11,7 @@ use cmsgears\community\common\config\CmnGlobal;
 
 use cmsgears\core\common\models\entities\NamedCmgEntity;
 use cmsgears\core\common\models\entities\CmgFile;
+use cmsgears\core\common\models\entities\User;
 use cmsgears\core\common\models\traits\MetaTrait;
 use cmsgears\core\common\models\traits\CategoryTrait;
 use cmsgears\core\common\models\traits\TagTrait;
@@ -118,7 +119,7 @@ class Group extends NamedCmgEntity {
 	public function checkOwner( $user ) {
 
 		return $this->createdBy	= $user->id;		
-	}
+	} 
 
 	// yii\base\Component ----------------
 
