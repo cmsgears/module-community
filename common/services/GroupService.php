@@ -50,8 +50,8 @@ class GroupService extends \cmsgears\core\common\services\Service {
 		// Save Avatar
 		if( isset( $avatar ) ) {
 
-			FileService::saveImage( $avatar, [ 'model' => $group, 'attribute' => 'avatarId' ] );
-		}
+			FileService::saveImage( $avatar, [ 'model' => $group, 'attribute' => 'avatarId' ] ); 
+		} 
 
 		// Create Group
 		$group->save();
