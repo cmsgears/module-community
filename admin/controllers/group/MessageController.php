@@ -1,9 +1,8 @@
 <?php
-namespace cmsgears\community\admin\controllers\apix;
+namespace cmsgears\community\admin\controllers\group;
 
 // Yii Imports
 use \Yii;
-use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
 
@@ -11,13 +10,10 @@ use yii\web\NotFoundHttpException;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\forms\Binder;
-
 use cmsgears\community\admin\services\GroupService;
+use cmsgears\community\admin\services\GroupMessageService;
 
-use cmsgears\core\common\utilities\AjaxUtil;
-
-class GroupController extends Controller {
+class MessageController extends \cmsgears\core\admin\controllers\BaseController {
 
 	// Constructor and Initialisation ------------------------------
 
@@ -36,35 +32,30 @@ class GroupController extends Controller {
             'rbac' => [
                 'class' => Yii::$app->cmgCore->getRbacFilterClass(),
                 'actions' => [
-	                'bindCategories'  => [ 'permission' => CmnGlobal::PERM_GROUP ]
+	                'all' => [ 'permission' => CmnGlobal::PERM_GROUP ],
+	                'delete' => [ 'permission' => CmnGlobal::PERM_GROUP ]
                 ]
             ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-	                'bindCategories'  => ['get']
+	                'all'    => ['get'],
+	                'delete' => ['get', 'post']
                 ]
             ]
         ];
     }
 
-	// UserController
+	// MemberController
 
-	public function actionBindCategories() {
+	public function actionAll( $id ) {
 
-		$binder = new Binder();
+		return parent::actionAll( $id, [ 'parent' => 'sidebar-group', 'child' => 'group' ] );
+	}
 
-		if( $binder->load( Yii::$app->request->post(), 'Binder' ) ) {
+	public function actionDelete( $gid, $id ) {
 
-			if( GroupService::bindCategories( $binder, CmnGlobal::TYPE_GROUP ) ) {
-
-				// Trigger Ajax Success
-				return AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ) );
-			}
-		}
-
-		// Trigger Ajax Failure
-        return AjaxUtil::generateFailure( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_REQUEST ) );
+		return parent::actionDelete( $gid, $id, [ 'parent' => 'sidebar-group', 'child' => 'group' ] );
 	}
 }
 

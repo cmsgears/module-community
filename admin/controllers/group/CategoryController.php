@@ -16,9 +16,7 @@ use cmsgears\core\common\models\entities\Category;
 
 use cmsgears\core\admin\services\CategoryService;
 
-use cmsgears\core\admin\controllers\BaseCategoryController;
-
-class CategoryController extends BaseCategoryController {
+class CategoryController extends \cmsgears\core\admin\controllers\BaseCategoryController {
 
 	// Constructor and Initialisation ------------------------------
 

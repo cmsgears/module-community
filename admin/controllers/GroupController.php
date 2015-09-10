@@ -16,17 +16,12 @@ use cmsgears\core\common\models\entities\Category;
 use cmsgears\core\common\models\forms\Binder;
 use cmsgears\cms\common\models\entities\ModelContent;
 use cmsgears\community\common\models\entities\Group;
-use cmsgears\community\common\models\entities\GroupMember;
 
 use cmsgears\core\admin\services\CategoryService;
 use cmsgears\core\admin\services\TemplateService;
 use cmsgears\community\admin\services\GroupService;
-use cmsgears\community\admin\services\GroupMemberService;
-use cmsgears\community\admin\services\GroupMessageService;
 
-use cmsgears\core\admin\controllers\BaseController;
-
-class GroupController extends BaseController {
+class GroupController extends \cmsgears\core\admin\controllers\BaseController {
 
 	// Constructor and Initialisation ------------------------------
 
@@ -49,11 +44,7 @@ class GroupController extends BaseController {
 	                'all'    => [ 'permission' => CmnGlobal::PERM_GROUP ],
 	                'create' => [ 'permission' => CmnGlobal::PERM_GROUP ],
 	                'update' => [ 'permission' => CmnGlobal::PERM_GROUP ],
-	                'delete' => [ 'permission' => CmnGlobal::PERM_GROUP ],
-	                'members' => [ 'permission' => CmnGlobal::PERM_GROUP ],
-	                'deleteMember' => [ 'permission' => CmnGlobal::PERM_GROUP ],
-	                'messages' => [ 'permission' => CmnGlobal::PERM_GROUP ],
-	                'deleteMessage' => [ 'permission' => CmnGlobal::PERM_GROUP ]
+	                'delete' => [ 'permission' => CmnGlobal::PERM_GROUP ]
                 ]
             ],
             'verbs' => [
@@ -63,11 +54,7 @@ class GroupController extends BaseController {
 	                'all'    => ['get'],
 	                'create' => ['get', 'post'],
 	                'update' => ['get', 'post'],
-	                'delete' => ['get', 'post'],
-	                'members' => ['get'],
-	                'deleteMember' => ['get', 'post'],
-	                'messages' => ['get'],
-	                'deleteMessage' => ['get', 'post']
+	                'delete' => ['get', 'post']
                 ]
             ]
         ];
@@ -102,16 +89,16 @@ class GroupController extends BaseController {
 
 	public function actionCreate() {
 
-		$model		= new Group();
-		$content	= new ModelContent();
-		$avatar 	= new CmgFile();
-		$banner 	= new CmgFile();
+		$model			= new Group();
+		$content		= new ModelContent();
+		$avatar 		= new CmgFile();
+		$banner 		= new CmgFile();
 
 		$model->setScenario( 'create' );
 		$model->type	= CoreGlobal::TYPE_CORE;
 
-		if( $model->load( Yii::$app->request->post(), 'Group' )  && $model->validate() &&
-		    $content->load( Yii::$app->request->post(), 'ModelContent' )  && $content->validate() ) {
+		if( $model->load( Yii::$app->request->post(), 'Group' )  && $content->load( Yii::$app->request->post(), 'ModelContent' ) &&
+		    $model->validate() && $content->validate() ) {
 
 			$avatar->load( Yii::$app->request->post(), 'Avatar' );
 			$banner->load( Yii::$app->request->post(), 'Banner' );
@@ -155,32 +142,27 @@ class GroupController extends BaseController {
 		if( isset( $model ) ) {
 
 			$content	= $model->content;
-			$avatar 	= new CmgFile();
-			$banner 	= new CmgFile();
+			$avatar 	= CmgFile::loadFile( $model->avatar, 'Avatar' );
+			$banner 	= CmgFile::loadFile( $content->banner, 'Banner' );
 
 			$model->setScenario( 'update' );
 
-			if( $model->load( Yii::$app->request->post(), 'Group' )  && $model->validate() &&
-			    $content->load( Yii::$app->request->post(), 'ModelContent' )  && $content->validate() ) {
-	
-				$avatar->load( Yii::$app->request->post(), 'Avatar' );
-				$banner->load( Yii::$app->request->post(), 'Banner' );
+			if( $model->load( Yii::$app->request->post(), 'Group' )  && $content->load( Yii::$app->request->post(), 'ModelContent' ) &&
+			    $model->validate() && $content->validate() ) {
 
 				if( GroupService::update( $model, $content, $avatar, $banner ) ) {
 
 					$binder = new Binder();
-	
+
 					$binder->binderId	= $model->id;
 					$binder->load( Yii::$app->request->post(), 'Binder' );
-	
+
 					GroupService::bindCategories( $binder, CmnGlobal::TYPE_GROUP );
 
 					return $this->redirect( [ 'all' ] );
 				}
 			}
 
-			$avatar			= $model->avatar;
-			$banner			= $content->banner;
 			$categories		= CategoryService::getIdNameListByType( CmnGlobal::TYPE_GROUP );
 			$visibilityMap	= Group::$visibilityMap;
 			$statusMap		= Group::$statusMap;
@@ -236,105 +218,6 @@ class GroupController extends BaseController {
 		    	'visibilityMap' => $visibilityMap,
 		    	'statusMap' => $statusMap,
 		    	'templateMap' => $templateMap
-	    	]);
-		}
-
-		// Model not found
-		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
-	}
-
-	// Members --------------------------------
-
-	public function actionMembers( $id ) {
-
-		// Find Model
-		$model		= GroupService::findById( $id );
-
-		// Delete/Render if exist
-		if( isset( $model ) ) {
-
-			$dataProvider = GroupMemberService::getPaginationByGroupId( $id );
-
-		    return $this->render( 'member/all', [
-		         'dataProvider' => $dataProvider,
-		         'group' => $model
-		    ]);
-		}
-
-		// Model not found
-		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
-	}
-
-	public function actionDeleteMember( $gid, $id ) {
-
-		// Find Model
-		$group	= GroupService::findById( $gid );
-		$model	= GroupMemberService::findById( $id );
-
-		// Delete/Render if exist
-		if( isset( $model ) ) {
-
-			if( $model->load( Yii::$app->request->post(), 'GroupMember' ) ) {
-
-				if( GroupMemberService::delete( $model ) ) {
-
-					return $this->redirect( [ 'members?id=' . $gid ] );
-				}
-			}
-
-	    	return $this->render( 'member/delete', [
-	    		'group' => $group,
-	    		'model' => $model,
-	    		'statusMap' => GroupMember::$statusMap
-	    	]);
-		}
-
-		// Model not found
-		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
-	}
-	
-	// Messages --------------------------------
-
-	public function actionMessages( $id ) {
-
-		// Find Model
-		$model		= GroupService::findById( $id );
-
-		// Delete/Render if exist
-		if( isset( $model ) ) {
-
-			$dataProvider = GroupMessageService::getPaginationByGroupId( $id );
-
-		    return $this->render( 'message/all', [
-		         'dataProvider' => $dataProvider,
-		         'group' => $model
-		    ]);
-		}
-
-		// Model not found
-		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
-	}
-	
-	public function actionDeleteMessage( $gid, $id ) {
-
-		// Find Model
-		$group	= GroupService::findById( $gid );
-		$model	= GroupMessageService::findById( $id );
-
-		// Delete/Render if exist
-		if( isset( $model ) ) {
-
-			if( $model->load( Yii::$app->request->post( "GroupMessage" ), "" ) ) {
-
-				if( GroupMessageService::delete( $model ) ) {
-
-					return $this->redirect( [ 'messages?id=' . $gid ] );
-				}
-			}
-
-	    	return $this->render( 'message/delete', [
-	    		'group' => $group,
-	    		'model' => $model
 	    	]);
 		}
 

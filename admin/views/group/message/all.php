@@ -11,8 +11,8 @@ $this->title 	= $coreProperties->getSiteTitle() . " | Group Messages";
 $gid			= $group->id;
 
 // Sidebar
-$this->params['sidebar-parent'] = 'sidebar-group';
-$this->params['sidebar-child'] 	= 'group';
+$this->params[ 'sidebar-parent' ] 	= $sidebar[ 'parent' ];
+$this->params[ 'sidebar-child' ] 	= $sidebar[ 'child' ];
 
 // Data
 $pagination		= $dataProvider->getPagination();
@@ -33,7 +33,6 @@ $models			= $dataProvider->getModels();
 		<table>
 			<thead>
 				<tr>
-					<th> <input type='checkbox' /> </th>
 					<th>Avatar</th>
 					<th>Username</th>
 					<th>Name</th>
@@ -52,27 +51,14 @@ $models			= $dataProvider->getModels();
 						$user 	= $groupMessage->member->user;
 				?>
 					<tr>
-						<td> <input type='checkbox' /> </td>
-						<td> 
-							<?php
-								$avatar = $user->avatar;
-
-								if( isset( $avatar ) ) { 
-							?> 
-								<img class="avatar" src="<?= $avatar->getThumbUrl() ?>">
-							<?php 
-								} else {
-							?>
-								<img class="avatar" src="<?=Yii::getAlias('@web')?>/images/avatar.png">
-							<?php } ?>
-						</td>
+						<td><?= CodeGenUtil::getImageThumbTag( $user->avatar, [ 'class' => 'avatar', 'image' => 'avatar' ] ) ?></td>
 						<td><?= $user->username ?></td>
 						<td><?= $user->name ?></td>
 						<td><?= $user->email ?></td>
 						<td><?= $groupMessage->content ?></td>
 						<td><?= $groupMessage->createdAt ?></td>
 						<td>
-							<span class="wrap-icon-action" title="Delete Group Message"><?= Html::a( "", ["/cmgcmn/group/delete-message?gid=$gid&id=$id"], ['class'=>'icon-action icon-action-delete'] )  ?></span>
+							<span class="wrap-icon-action" title="Delete Group Message"><?= Html::a( "", ["/cmgcmn/group/message/delete?gid=$gid&id=$id"], ['class'=>'icon-action icon-action-delete'] )  ?></span>
 						</td>
 					</tr>
 				<?php } ?>

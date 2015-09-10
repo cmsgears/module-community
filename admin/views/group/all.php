@@ -55,10 +55,7 @@ if( !isset( $sortOrder ) ) {
 					<th>Slug</th>
 					<th>Visibility</th>
 					<th>Status</th>
-					<th>SEO Name</th>
-					<th>SEO Description</th>
-					<th>SEO Keywords</th>
-					<th>SEO Robot</th>
+					<th>Group SEO</th>
 					<th>Created on
 						<span class='box-icon-sort'>
 							<span sort-order='cdate' class="icon-sort <?php if( strcmp( $sortOrder, 'cdate') == 0 ) echo 'icon-up-active'; else echo 'icon-up';?>"></span>
@@ -88,32 +85,24 @@ if( !isset( $sortOrder ) ) {
 						$content	= $group->content;
 				?>
 					<tr>
-						<td> 
-							<?php
-								$avatar = $group->avatar;
-
-								if( isset( $avatar ) ) { 
-							?> 
-								<img class="avatar" src="<?= $avatar->getThumbUrl() ?>">
-							<?php 
-								} else { 
-							?>
-								<img class="avatar" src="<?=Yii::getAlias('@web')?>/images/avatar.png">
-							<?php } ?>
-						</td>
+						<td><?= CodeGenUtil::getImageThumbTag( $group->avatar, [ 'class' => 'avatar', 'image' => 'avatar' ] ) ?></td>
 						<td><?= $editUrl ?></td>
 						<td><?= $slugUrl ?></td>
 						<td><?= $group->getVisibilityStr() ?></td>
 						<td><?= $group->getStatusStr() ?></td>
-						<td><?= $content->seoName ?></td>
-						<td><?= $content->seoDescription ?></td>
-						<td><?= $content->seoKeywords ?></td>
-						<td><?= $content->seoRobot ?></td>
+						<td>
+							<table>
+								<tr><td>Name</td><td><?= $content->seoName ?></td></tr>
+								<tr><td>Description</td><td><?= $content->seoDescription ?></td></tr>
+								<tr><td>Keywords</td><td><?= $content->seoKeywords ?></td></tr>
+								<tr><td>Robot</td><td><?= $content->seoRobot ?></td></tr>
+							</table>
+						</td>
 						<td><?= $content->createdAt ?></td>
 						<td><?= $content->modifiedAt ?></td>
 						<td>
-							<span class="wrap-icon-action" title="View Group Members"><?= Html::a( "", ["/cmgcmn/group/members?id=$id"], ['class'=>'icon-action icon-action-edit'] )  ?></span>
-							<span class="wrap-icon-action" title="View Group Messages"><?= Html::a( "", ["/cmgcmn/group/messages?id=$id"], ['class'=>'icon-action icon-action-edit'] )  ?></span>
+							<span class="wrap-icon-action" title="View Group Members"><?= Html::a( "", ["/cmgcmn/group/member/all?id=$id"], ['class'=>'icon-action icon-action-edit'] )  ?></span>
+							<span class="wrap-icon-action" title="View Group Messages"><?= Html::a( "", ["/cmgcmn/group/message/all?id=$id"], ['class'=>'icon-action icon-action-edit'] )  ?></span>
 							<span class="wrap-icon-action" title="Update Group"><?= Html::a( "", ["/cmgcmn/group/update?id=$id"], ['class'=>'icon-action icon-action-edit'] )  ?></span>
 							<span class="wrap-icon-action" title="Delete Group"><?= Html::a( "", ["/cmgcmn/group/delete?id=$id"], ['class'=>'icon-action icon-action-delete'] )  ?></span>
 						</td>

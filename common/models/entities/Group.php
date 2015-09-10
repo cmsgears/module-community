@@ -78,6 +78,11 @@ class Group extends NamedCmgEntity {
 		return $this->hasOne( CmgFile::className(), [ 'id' => 'avatarId' ] );
 	}
 
+	public function getMembers() {
+
+		return $this->hasMany( GroupMember::className(), [ 'groupId' => 'id' ] );
+	}
+
 	public function getStatusStr() {
 
 		return self::$statusMap[ $this->status ];

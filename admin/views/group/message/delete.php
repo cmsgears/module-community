@@ -9,8 +9,8 @@ $gid			= $group->id;
 $user 			= $model->member->user;
 
 // Sidebar
-$this->params['sidebar-parent'] = 'sidebar-group';
-$this->params['sidebar-child'] 	= 'group';
+$this->params[ 'sidebar-parent' ] 	= $sidebar[ 'parent' ];
+$this->params[ 'sidebar-child' ] 	= $sidebar[ 'child' ];
 ?>
 <section class="wrap-content container clearfix">
 	<div class="cud-box">
@@ -26,13 +26,9 @@ $this->params['sidebar-child'] 	= 'group';
 
 		<div class="box-filler"></div>
 
-		<?=Html::a( "Back", [ '/cmgcmn/group/messages/?id=' . $gid ], ['class' => 'btn' ] );?>
+		<?=Html::a( "Back", [ '/cmgcmn/group/message/all/?id=' . $gid ], ['class' => 'btn' ] );?>
 		<input type="submit" value="Delete" />
 
 		<?php ActiveForm::end(); ?>
 	</div>
 </section>
-
-<script type="text/javascript">
-	initSidebar( "sidebar-group", 2 );
-</script>
