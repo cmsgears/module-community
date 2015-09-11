@@ -42,22 +42,27 @@ class GroupService extends \cmsgears\community\common\services\GroupService {
 	        ]
 	    ]);
 
-		if( !isset( $config[ 'query' ] ) ) {
+		if( !isset( $conditions[ 'query' ] ) ) {
 
-			$config[ 'query' ] = Group::findWithContent();
+			$conditions[ 'query' ] = Group::findWithContent();
 		}
 
-		if( !isset( $config[ 'sort' ] ) ) {
+		if( !isset( $conditions[ 'sort' ] ) ) {
 
-			$config[ 'sort' ] = $sort;
+			$conditions[ 'sort' ] = $sort;
 		}
 
-		if( !isset( $config[ 'search-col' ] ) ) {
+		if( !isset( $conditions[ 'search-col' ] ) ) {
 
-			$config[ 'search-col' ] = 'name';
+			$conditions[ 'search-col' ] = 'name';
 		}
 
-		return self::getDataProvider( new Group(), $config );
+		return self::getDataProvider( new Group(), $conditions );
+	}
+
+	public static function getPaginationByType( $type ) {
+		
+		return self::getPagination( [ 'conditions' => [ 'type' => $type ] ] );
 	}
 }
 

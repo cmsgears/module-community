@@ -13,7 +13,7 @@ use cmsgears\community\common\config\CmnGlobal;
 use cmsgears\community\admin\services\GroupService;
 use cmsgears\community\admin\services\GroupMessageService;
 
-class MessageController extends \cmsgears\core\admin\controllers\BaseController {
+class MessageController extends BaseMessageController{
 
 	// Constructor and Initialisation ------------------------------
 

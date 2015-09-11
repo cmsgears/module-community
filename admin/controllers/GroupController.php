@@ -69,7 +69,7 @@ class GroupController extends \cmsgears\core\admin\controllers\BaseController {
 
 	public function actionAll() {
 
-		$dataProvider = GroupService::getPagination();
+		$dataProvider = GroupService::getPaginationByType( CoreGlobal::TYPE_CORE );
 
 	    return $this->render( 'all', [
 	         'dataProvider' => $dataProvider
@@ -78,7 +78,7 @@ class GroupController extends \cmsgears\core\admin\controllers\BaseController {
 
 	public function actionMatrix() {
 
-		$dataProvider 	= GroupService::getPagination();
+		$dataProvider 	= GroupService::getPaginationByType( CoreGlobal::TYPE_CORE );
 		$categoriesList	= CategoryService::getIdNameListByType( CmnGlobal::TYPE_GROUP );
 
 	    return $this->render( 'matrix', [
