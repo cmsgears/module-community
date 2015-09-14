@@ -9,17 +9,20 @@ use yii\behaviors\TimestampBehavior;
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
-use cmsgears\core\common\models\entities\CmgEntity;
+use cmsgears\core\common\behaviors\AuthorBehavior;
 
 /**
  * Chat Entity
  *
  * @property int $id
+ * @property int $createdBy
+ * @property int $modifiedBy 
  * @property string $sessionId
+ * @property integer $status
  * @property date $createdAt
  * @property date $modifiedAt
  */
-class Chat extends CmgEntity {
+class Chat extends \cmsgears\core\common\models\entities\CmgEntity {
 
 	// Instance Methods --------------------------------------------
 
@@ -32,6 +35,9 @@ class Chat extends CmgEntity {
 
         return [
 
+			'authorBehavior' => [
+				'class' => AuthorBehavior::className()
+			],
             'timestampBehavior' => [
                 'class' => TimestampBehavior::className(),
 				'createdAtAttribute' => 'createdAt',
@@ -50,7 +56,8 @@ class Chat extends CmgEntity {
 
         return [
             [ [ 'sessionId' ], 'required' ],
-			[ [ 'id' ], 'safe' ],
+			[ [ 'id', 'status' ], 'safe' ],
+			[ [ 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
@@ -61,7 +68,8 @@ class Chat extends CmgEntity {
 	public function attributeLabels() {
 
 		return [
-			'sessionId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_SESSION )
+			'sessionId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_SESSION ),
+			'status' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_STATUS )
 		];
 	}
 
@@ -79,15 +87,6 @@ class Chat extends CmgEntity {
 
 	// Chat ------------------------------
 
-	// Read ----
-
-	/**
-	 * @return Chat - by id
-	 */
-	public static function findById( $id ) {
-
-		return self::find()->where( 'id=:id', [ ':id' => $id ] )->one();
-	}
 }
 
 ?>

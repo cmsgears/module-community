@@ -42,6 +42,7 @@ class GroupController extends \cmsgears\core\admin\controllers\BaseController {
                 'actions' => [
 	                'index'  => [ 'permission' => CmnGlobal::PERM_GROUP ],
 	                'all'    => [ 'permission' => CmnGlobal::PERM_GROUP ],
+	                'matrix' => [ 'permission' => CmnGlobal::PERM_GROUP ],
 	                'create' => [ 'permission' => CmnGlobal::PERM_GROUP ],
 	                'update' => [ 'permission' => CmnGlobal::PERM_GROUP ],
 	                'delete' => [ 'permission' => CmnGlobal::PERM_GROUP ]
@@ -52,6 +53,7 @@ class GroupController extends \cmsgears\core\admin\controllers\BaseController {
                 'actions' => [
 	                'index'  => ['get'],
 	                'all'    => ['get'],
+	                'matrix' => ['get'],
 	                'create' => ['get', 'post'],
 	                'update' => ['get', 'post'],
 	                'delete' => ['get', 'post']
@@ -97,20 +99,20 @@ class GroupController extends \cmsgears\core\admin\controllers\BaseController {
 		$model->setScenario( 'create' );
 		$model->type	= CoreGlobal::TYPE_CORE;
 
-		if( $model->load( Yii::$app->request->post(), 'Group' )  && $content->load( Yii::$app->request->post(), 'ModelContent' ) &&
+		if( $model->load( Yii::$app->request->post(), 'Group' ) && $content->load( Yii::$app->request->post(), 'ModelContent' ) &&
 		    $model->validate() && $content->validate() ) {
 
 			$avatar->load( Yii::$app->request->post(), 'Avatar' );
 			$banner->load( Yii::$app->request->post(), 'Banner' );
 
-			if( GroupService::create( $model, CmnGlobal::TYPE_GROUP, $content, $avatar, $banner ) ) {
+			if( GroupService::create( $model, $content, $avatar, $banner ) ) {
 
 				$binder = new Binder();
 
 				$binder->binderId	= $model->id;
 				$binder->load( Yii::$app->request->post(), 'Binder' );
 
-				GroupService::bindCategories( $binder, CmnGlobal::TYPE_GROUP );
+				GroupService::bindCategories( $binder );
 
 				return $this->redirect( [ 'all' ] );
 			}
@@ -147,7 +149,7 @@ class GroupController extends \cmsgears\core\admin\controllers\BaseController {
 
 			$model->setScenario( 'update' );
 
-			if( $model->load( Yii::$app->request->post(), 'Group' )  && $content->load( Yii::$app->request->post(), 'ModelContent' ) &&
+			if( $model->load( Yii::$app->request->post(), 'Group' ) && $content->load( Yii::$app->request->post(), 'ModelContent' ) &&
 			    $model->validate() && $content->validate() ) {
 
 				if( GroupService::update( $model, $content, $avatar, $banner ) ) {
@@ -157,7 +159,7 @@ class GroupController extends \cmsgears\core\admin\controllers\BaseController {
 					$binder->binderId	= $model->id;
 					$binder->load( Yii::$app->request->post(), 'Binder' );
 
-					GroupService::bindCategories( $binder, CmnGlobal::TYPE_GROUP );
+					GroupService::bindCategories( $binder );
 
 					return $this->redirect( [ 'all' ] );
 				}

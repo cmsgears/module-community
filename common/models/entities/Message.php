@@ -10,7 +10,6 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\entities\CmgEntity;
 use cmsgears\core\common\models\entities\User;
 
 /**
@@ -21,20 +20,29 @@ use cmsgears\core\common\models\entities\User;
  * @property integer $recipientId
  * @property short $visibility
  * @property string $content
+ * @property short $consumed
+ * @property short $type
  * @property datetime $createdAt
  * @property datetime $modifiedAt
- * @property short $mark
  */
-class Message extends CmgEntity {
+class Message extends \cmsgears\core\common\models\entities\CmgEntity {
 
-	const VISIBILITY_PRIVATE	=  0; // visible only among sender and recipient - ex: private chat
-	const VISIBILITY_FRIENDS	=  5; // friends can view the message - ex: wall post
-	const VISIBILITY_PUBLIC		= 10; // anyone can view the message - ex: wall post
+	const VISIBILITY_PRIVATE	=  0; // visible only among sender and recipient
+	const VISIBILITY_FRIENDS	=  5; // friends can view the message
+	const VISIBILITY_PUBLIC		= 10; // anyone can view the message
 
 	public static $visibilityMap = [
-		self::VISIBILITY_PRIVATE => "Private",
-		self::VISIBILITY_FRIENDS => "Friends",
-		self::VISIBILITY_PUBLIC => "Public"
+		self::VISIBILITY_PRIVATE => 'Private',
+		self::VISIBILITY_FRIENDS => 'Friends',
+		self::VISIBILITY_PUBLIC => 'Public'
+	];
+
+	const TYPE_WALL		= 0;
+	const TYPE_CHAT		= 5;
+
+	public static $typeMap = [
+		self::TYPE_WALL => 'Wall',
+		self::TYPE_CHAT => 'Chat'
 	];
 
 	// Instance Methods --------------------------------------------
@@ -53,6 +61,14 @@ class Message extends CmgEntity {
 	public function getRecipient() {
 
 		return $this->hasOne( User::className(), [ 'id' => 'recipientId' ] );
+	}
+
+	/**
+	 * @return String
+	 */
+	public function getTypeStr() {
+
+		return self::$typeMap[ $this->type ];
 	}
 
 	// yii\base\Component ----------------
@@ -82,7 +98,7 @@ class Message extends CmgEntity {
 
         return [
             [ [ 'senderId', 'recipientId', 'visibility', 'content' ], 'required' ],
-            [ [ 'id', 'read' ], 'safe' ],
+            [ [ 'id', 'consumed', 'type' ], 'safe' ],
             [ [ 'senderId', 'recipientId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
@@ -98,7 +114,8 @@ class Message extends CmgEntity {
 			'recipientId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_RECIPIENT ),
 			'visibility' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_VISIBILITY ),
 			'content' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
-			'mark' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_MARK )
+			'consumed' => Yii::$app->cmgCmnMessage->getMessage( CmnGlobal::FIELD_CONSUMED ),
+			'type' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_TYPE )
 		];
 	}
 
@@ -116,15 +133,6 @@ class Message extends CmgEntity {
 
 	// Message ---------------------------
 
-	// Read
-
-	/**
-	 * @return Message - by id
-	 */
-	public static function findById( $id ) {
-
-		return self::find()->where( 'id=:id', [ ':id' => $id ] )->one();
-	}
 }
 
 ?>

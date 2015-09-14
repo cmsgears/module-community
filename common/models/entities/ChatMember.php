@@ -10,7 +10,6 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\entities\CmgEntity;
 use cmsgears\core\common\models\entities\User;
 
 /**
@@ -23,7 +22,7 @@ use cmsgears\core\common\models\entities\User;
  * @property datetime $modifiedAt
  * @property datetime $syncedAt
  */
-class ChatMember extends CmgEntity {
+class ChatMember extends \cmsgears\core\common\models\entities\CmgEntity {
 
 	// Instance Methods --------------------------------------------
 
@@ -95,16 +94,6 @@ class ChatMember extends CmgEntity {
 	// ChatMember ------------------------
 
 	// Read ----
-
-	public static function findById( $id ) {
-
-		return self::find()->where( 'id=:id', [ ':id' => $id ] )->one();
-	}
-
-	public static function findByChatIdUserId( $chatId, $userId ) {
-
-		return self::find()->where( 'chatId=:cid AND userId=:uid', [ ':cid' => $chatId, ':uid' => $userId ] )->one();
-	}
 
 	// Delete ----
 

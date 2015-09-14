@@ -10,7 +10,6 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\entities\CmgEntity;
 use cmsgears\core\common\models\entities\User;
 
 /**
@@ -23,7 +22,7 @@ use cmsgears\core\common\models\entities\User;
  * @property datetime $modifiedAt
  * @property integer $status
  */
-class Friend extends CmgEntity {
+class Friend extends \cmsgears\core\common\models\entities\CmgEntity {
 
 	// Instance Methods --------------------------------------------
 
@@ -111,14 +110,6 @@ class Friend extends CmgEntity {
 	// Friend ----------------------------
 
 	// Read
-
-	/**
-	 * @return Friend - by id
-	 */
-	public static function findById( $id ) {
-
-		return self::find()->where( 'id=:id', [ ':id' => $id ] )->one();
-	}
 
 	// Delete
 

@@ -16,7 +16,8 @@ class MessageSource extends Component {
 		// Generic Fields
 		CmnGlobal::FIELD_FRIEND => 'Friend',
 		CmnGlobal::FIELD_GROUP => 'Group',
-		CmnGlobal::FIELD_CHAT => 'Chat'
+		CmnGlobal::FIELD_CHAT => 'Chat',
+		CmnGlobal::FIELD_CONSUMED => 'Consumed'
 	];
 
 	/**

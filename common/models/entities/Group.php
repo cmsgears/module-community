@@ -9,7 +9,8 @@ use yii\behaviors\SluggableBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\entities\NamedCmgEntity;
+use cmsgears\core\common\behaviors\AuthorBehavior;
+
 use cmsgears\core\common\models\entities\CmgFile;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\core\common\models\traits\MetaTrait;
@@ -31,16 +32,16 @@ use cmsgears\cms\common\models\traits\ContentTrait;
  * @property short $status
  * @property short $visibility 
  */
-class Group extends NamedCmgEntity {
+class Group extends \cmsgears\core\common\models\entities\CmgEntity {
 
 	const STATUS_NEW		=  0;
 	const STATUS_ACTIVE		= 10;
 	const STATUS_DISABLED	= 20;
 
 	public static $statusMap = [
-		self::STATUS_NEW => "New",
-		self::STATUS_ACTIVE => "Active",
-		self::STATUS_DISABLED => "Disabled"
+		self::STATUS_NEW => 'New',
+		self::STATUS_ACTIVE => 'Active',
+		self::STATUS_DISABLED => 'Disabled'
 	];
 
 	const VISIBILITY_PRIVATE	=  0; // Only accessed by members, protected by password
@@ -48,9 +49,9 @@ class Group extends NamedCmgEntity {
 	const VISIBILITY_GLOBAL		= 10; // Publicly visible, logged in users can do activities
 
 	public static $visibilityMap = [
-		self::VISIBILITY_PRIVATE => "Private",
-		self::VISIBILITY_PUBLIC => "Public",
-		self::VISIBILITY_GLOBAL => "Global"
+		self::VISIBILITY_PRIVATE => 'Private',
+		self::VISIBILITY_PUBLIC => 'Public',
+		self::VISIBILITY_GLOBAL => 'Global'
 	];
 
 	use MetaTrait;
@@ -135,6 +136,9 @@ class Group extends NamedCmgEntity {
 
         return [
 
+			'authorBehavior' => [
+				'class' => AuthorBehavior::className()
+			],
             'sluggableBehavior' => [
                 'class' => SluggableBehavior::className(),
                 'attribute' => 'name',
@@ -176,6 +180,39 @@ class Group extends NamedCmgEntity {
 		];
 	}
 
+	// Province --------------------------
+
+	/**
+	 * Validates whether a group exists with the same name for same type.
+	 */
+    public function validateNameCreate( $attribute, $params ) {
+
+        if( !$this->hasErrors() ) {
+
+            if( self::isExistByNameType( $this->name, $this->type ) ) {
+
+                $this->addError( $attribute, Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_EXIST ) );
+            }
+        }
+    }
+
+	/**
+	 * Validates whether a province existing with the same name for same country.
+	 */
+    public function validateNameUpdate( $attribute, $params ) {
+
+        if( !$this->hasErrors() ) {
+
+			$existingGroup = self::findByNameType( $this->name, $this->type );
+
+			if( isset( $existingGroup ) && $this->name == $existingGroup->name && 
+				$this->id != $existingGroup->id && strcmp( $existingGroup->name, $this->name ) == 0 ) {
+
+				$this->addError( $attribute, Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_EXIST ) );
+			}
+        }
+    }
+
 	// Static Methods ----------------------------------------------
 
 	// yii\db\ActiveRecord ---------------
@@ -203,6 +240,24 @@ class Group extends NamedCmgEntity {
 	public static function findBySlug( $slug ) {
 
 		return self::find()->where( 'slug=:slug', [ ':slug' => $slug ] )->one();
+	}
+
+	/**
+	 * @return Group - by name and type
+	 */
+	public static function findByNameType( $name, $type ) {
+
+		return self::find()->where( 'name=:name AND type=:type', [ ':name' => $name, ':type' => $type ] )->one();
+	}
+
+	/**
+	 * @return Group - check whether a group exist by the provided name and type
+	 */
+	public static function isExistByNameType( $name, $type ) {
+
+		$group = self::findByNameType( $name, $type );
+
+		return isset( $group );
 	}
 }
 

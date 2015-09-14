@@ -42,7 +42,7 @@ Editor::widget( [ 'selector' => '.content-editor' ] );
 		);?>
 
     	<h4>Group Banner</h4>
-		<?=FileUploader::widget( [ 'options' => [ 'id' => 'banner-group', 'class' => 'file-uploader' ], 'model' => $content->banner, 'modelClass' => 'Banner', 'directory' => 'banner', 'btnChooserIcon' => 'icon-action icon-action-edit' ] );?>
+		<?=FileUploader::widget( [ 'options' => [ 'id' => 'banner-group', 'class' => 'file-uploader' ], 'model' => $banner, 'modelClass' => 'Banner', 'directory' => 'banner', 'btnChooserIcon' => 'icon-action icon-action-edit' ] );?>
 
 		<h4>Group SEO</h4>
     	<?= $form->field( $content, 'seoName' ) ?>

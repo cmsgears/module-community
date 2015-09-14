@@ -19,7 +19,7 @@ $user	= Yii::$app->user->getIdentity();
 				<li class='matrix <?php if( strcmp( $child, 'matrix' ) == 0 ) echo 'active';?>'><?= Html::a( "Groups Matrix", ['/cmgcmn/group/matrix'] ) ?></li>
 				<li class='category <?php if( strcmp( $child, 'category' ) == 0 ) echo 'active';?>'><?= Html::a( "Group Categories", ['/cmgcmn/group/category/all'] ) ?></li>
 				<li class='group <?php if( strcmp( $child, 'group' ) == 0 ) echo 'active';?>'><?= Html::a( "Groups", ['/cmgcmn/group/all'] ) ?></li>
-				<li class='message <?php if( strcmp( $child, 'message' ) == 0 ) echo 'active';?>'><?= Html::a( "Messages", ['/cmgcmn/message/all'] ) ?></li>
+				<!--<li class='message <?php if( strcmp( $child, 'message' ) == 0 ) echo 'active';?>'><?= Html::a( "Messages", ['/cmgcmn/message/all'] ) ?></li>-->
 			</ul>
 		</div>
 	</div>

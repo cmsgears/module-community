@@ -14,7 +14,7 @@ class GroupService extends \cmsgears\community\common\services\GroupService {
 
 	// Pagination -------
 
-	public static function getPagination( $conditions = [] ) {
+	public static function getPagination( $config = [] ) {
 
 	    $sort = new Sort([
 	        'attributes' => [
@@ -62,6 +62,11 @@ class GroupService extends \cmsgears\community\common\services\GroupService {
 
 	public static function getPaginationByType( $type ) {
 		
+		return self::getPagination( [ 'conditions' => [ 'type' => $type ] ] );
+	}
+
+	public static function getPaginationByType( $type ) {
+
 		return self::getPagination( [ 'conditions' => [ 'type' => $type ] ] );
 	}
 }

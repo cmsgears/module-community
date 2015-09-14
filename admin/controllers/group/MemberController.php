@@ -7,7 +7,6 @@ use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
 
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
 class MemberController extends BaseMemberController {

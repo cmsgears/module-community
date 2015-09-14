@@ -33,9 +33,10 @@ CREATE TABLE `cmg_cmn_message` (
   `recipientId` bigint(20) DEFAULT NULL,
   `visibility` smallint(6) NOT NULL,
   `content` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `consumed` tinyint(1) NOT NULL DEFAULT 0,
+  `type` smallint(6) NOT NULL DEFAULT 0,
   `createdAt` datetime DEFAULT NULL,
   `modifiedAt` datetime DEFAULT NULL,
-  `mark` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `fk_cmg_cmn_message_1` (`senderId`),
   KEY `fk_cmg_cmn_message_2` (`recipientId`)
@@ -51,10 +52,15 @@ DROP TABLE IF EXISTS `cmg_cmn_chat`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cmg_cmn_chat` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `createdBy` bigint(20) NOT NULL,
+  `modifiedBy` bigint(20) DEFAULT NULL,
   `sessionId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` smallint(6) NOT NULL DEFAULT 0,
   `createdAt` datetime DEFAULT NULL,
   `modifiedAt` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `fk_cmg_cmn_chat_1` (`createdBy`),
+  KEY `fk_cmg_cmn_chat_2` (`modifiedBy`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -178,6 +184,13 @@ ALTER TABLE `cmg_cmn_friend`
 ALTER TABLE `cmg_cmn_message`
 	ADD CONSTRAINT `fk_cmg_cmn_message_1` FOREIGN KEY (`senderId`) REFERENCES `cmg_core_user` (`id`) ON DELETE CASCADE,
 	ADD CONSTRAINT `fk_cmg_cmn_message_2` FOREIGN KEY (`recipientId`) REFERENCES `cmg_core_user` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `cmg_cmn_chat`
+--
+ALTER TABLE `cmg_cmn_chat`
+	ADD CONSTRAINT `fk_cmg_cmn_chat_1` FOREIGN KEY (`createdBy`) REFERENCES `cmg_core_user` (`id`),
+	ADD CONSTRAINT `fk_cmg_cmn_chat_2` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_core_user` (`id`);
 
 --
 -- Constraints for table `cmg_cmn_chat_member`

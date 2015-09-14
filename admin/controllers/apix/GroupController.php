@@ -56,7 +56,7 @@ class GroupController extends Controller {
 
 		if( $binder->load( Yii::$app->request->post(), 'Binder' ) ) {
 
-			if( GroupService::bindCategories( $binder, CmnGlobal::TYPE_GROUP ) ) {
+			if( GroupService::bindCategories( $binder ) ) {
 
 				// Trigger Ajax Success
 				return AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ) );

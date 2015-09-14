@@ -9,8 +9,6 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\entities\CoreTables;
-use cmsgears\core\common\models\entities\CmgEntity;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\core\common\models\entities\Role;
 
@@ -26,7 +24,7 @@ use cmsgears\core\common\models\entities\Role;
  * @property datetime $modifiedAt
  * @property datetime $syncedAt
  */
-class GroupMember extends CmgEntity {
+class GroupMember extends \cmsgears\core\common\models\entities\CmgEntity {
 
 	const STATUS_NEW		= 0;
 	const STATUS_ACTIVE		= 1;
@@ -42,17 +40,17 @@ class GroupMember extends CmgEntity {
 
 	public function getGroup() {
 
-		return $this->hasOne( Group::className(), [ 'id' => 'groupId' ] )->from( CmnTables::TABLE_GROUP . ' group' );
+		return $this->hasOne( Group::className(), [ 'id' => 'groupId' ] );
 	}
 
 	public function getUser() {
 
-		return $this->hasOne( User::className(), [ 'id' => 'userId' ] )->from( CoreTables::TABLE_USER . ' user' );
+		return $this->hasOne( User::className(), [ 'id' => 'userId' ] );
 	}
 
 	public function getRole() {
 
-		return $this->hasOne( Role::className(), [ 'id' => 'roleId' ] )->from( CoreTables::TABLE_ROLE . ' role' );
+		return $this->hasOne( Role::className(), [ 'id' => 'roleId' ] );
 	}
 
 	public function getStatusStr() {
@@ -119,16 +117,6 @@ class GroupMember extends CmgEntity {
 	// GroupMember -----------------------
 	
 	// Read ----
-
-	public static function findById( $id ) {
-
-		return self::find()->where( 'id=:id', [ ':id' => $id ] )->one();
-	}
-	
-	public static function findByGroupIdUserId( $groupId, $userId ) {
-
-		return self::find()->where( 'groupId=:gid AND userId=:uid', [ ':gid' => $groupId, ':uid' => $userId ] )->one();
-	}
 
 	// Delete ----
 	

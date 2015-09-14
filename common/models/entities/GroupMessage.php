@@ -29,9 +29,9 @@ class GroupMessage extends CmgEntity {
 	const VISIBILITY_MEMBERS	= 2;	// Visible to group members
 
 	public static $visibilityMap = [
-		self::VISIBILITY_PUBLIC => "Public",
-		self::VISIBILITY_PRIVATE => "Private",
-		self::VISIBILITY_MEMBERS => "Members"
+		self::VISIBILITY_PUBLIC => 'Public',
+		self::VISIBILITY_PRIVATE => 'Private',
+		self::VISIBILITY_MEMBERS => 'Members'
 	];
 
 	// Instance Methods --------------------------------------------
@@ -116,10 +116,6 @@ class GroupMessage extends CmgEntity {
 	
 	// Read ----
 
-	public static function findById( $id ) {
-
-		return self::find()->where( 'id=:id', [ ':id' => $id ] )->one();
-	}
 }
 
 ?>

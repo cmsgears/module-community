@@ -8,8 +8,6 @@ use \Yii;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\entities\CmgEntity;
-
 /**
  * ChatMessage Entity
  *
@@ -17,7 +15,7 @@ use cmsgears\core\common\models\entities\CmgEntity;
  * @property integer $chatId
  * @property integer $messageId
  */
-class ChatMessage extends CmgEntity {
+class ChatMessage extends \cmsgears\core\common\models\entities\CmgEntity {
 
 	// Instance Methods --------------------------------------------
 
@@ -40,8 +38,7 @@ class ChatMessage extends CmgEntity {
 
         return [
         	[ [ 'chatId', 'messageId' ], 'required' ],
-            [ [ 'id' ], 'safe' ],
-            [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+            [ [ 'id' ], 'safe' ]
         ];
     }
 
@@ -68,14 +65,8 @@ class ChatMessage extends CmgEntity {
 		return CmnTables::TABLE_CHAT_MESSAGE;
 	}
 
-	// ChatMessage ----------------------
+	// ChatMessage -----------------------
 
-	// Read ----
-
-	public static function findById( $id ) {
-
-		return self::find()->where( 'id=:id', [ ':id' => $id ] )->one();
-	}
 }
 
 ?>
