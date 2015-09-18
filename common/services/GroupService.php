@@ -71,13 +71,10 @@ class GroupService extends \cmsgears\core\common\services\Service {
 
 	public static function update( $group, $content, $avatar = null, $banner = null ) {
 
-		$user				= Yii::$app->user->getIdentity();
 		$groupToUpdate		= self::findById( $group->id );
 		$contentToUpdate	= ModelContent::findById( $content->id );
 
 		$groupToUpdate->copyForUpdateFrom( $group, [ 'avatarId', 'name', 'visibility', 'status' ] );
-
-		$groupToUpdate->modifiedBy	= $user->id;
 
 		$contentToUpdate->copyForUpdateFrom( $content, [ 'bannerId', 'templateId', 'summary', 'content', 'seoName', 'seoDescription', 'seoKeywords', 'seoRobot' ] );
 

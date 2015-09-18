@@ -3,7 +3,7 @@
 	"description": "The Community module having features including friends, message, groups, group members, group messages.",
 	"homepage": "http://www.cmsgears.com", 
 	"type": "package",
-	"keywords": [ "yii2", "cmsgears", "module", "community" ],
+	"keywords": [ "yii", "yii2", "cmsgears", "module", "community" ],
 	"license": "http://www.cmsgears.com/license",
 	"support": {
 		"forum": "http://forum.cmsgears.com/",
