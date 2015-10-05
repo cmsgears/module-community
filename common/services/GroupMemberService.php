@@ -16,8 +16,7 @@ class GroupMemberService extends \cmsgears\core\common\services\Service {
 	public static function findById( $id ) {
 
 		return GroupMember::findById( $id );
-	}
-
+	} 
 	// Data Provider ----
 
 	/**

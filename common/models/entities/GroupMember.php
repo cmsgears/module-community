@@ -134,7 +134,7 @@ class GroupMember extends \cmsgears\core\common\models\entities\CmgEntity {
 	public static function deleteByUserId( $userId ) {
 
 		self::deleteAll( 'userId=:id', [ ':id' => $userId ] );
-	}
+	} 
 }
 
 ?>

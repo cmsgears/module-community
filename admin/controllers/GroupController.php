@@ -105,14 +105,14 @@ class GroupController extends \cmsgears\core\admin\controllers\BaseController {
 			$avatar->load( Yii::$app->request->post(), 'Avatar' );
 			$banner->load( Yii::$app->request->post(), 'Banner' );
 
-			if( GroupService::create( $model, $content, $avatar, $banner ) ) {
+			if( $modelGroup =  GroupService::create( $model, $content, $avatar, $banner ) ) {
 
 				$binder = new Binder();
 
 				$binder->binderId	= $model->id;
 				$binder->load( Yii::$app->request->post(), 'Binder' );
 
-				GroupService::bindCategories( $binder );
+				GroupService::bindCategories( $binder, $modelGroup->type );
 
 				return $this->redirect( [ 'all' ] );
 			}
