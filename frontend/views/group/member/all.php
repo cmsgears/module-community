@@ -8,7 +8,7 @@ use cmsgears\core\common\utilities\CodeGenUtil;
 use cmsgears\core\common\utilities\DateUtil;
 
 $coreProperties = $this->context->getCoreProperties();
-$this->title 	= $coreProperties->getSiteTitle() . ' | All Groups';
+$this->title 	= $coreProperties->getSiteTitle() . ' | All Members';
 $siteUrl		= $coreProperties->getSiteUrl();
  
 
@@ -30,10 +30,11 @@ if( !isset( $sortOrder ) ) {
 // Quick Links 
 $quickLinkItems = [
 
-	[ 'label' => 'Create New Group', 'url' => ['group/create'], 'options' => [ 'class' => 'btn-create-group' ] ]
+	[ 'label' => 'Invite Members', 'url' => ['/'], 'options' => [ 'class' => 'btn-invite-members' ] ]
 ]; 
 
-include_once"delete.php";
+include_once"invite.php";
+ 
 ?>
 <div class="quick-links left">
 	<?php	
@@ -45,7 +46,7 @@ include_once"delete.php";
 </div> 
 <section class="grid-data grid-basic max-cols"> 
 	<div class="grid-title">
-		<h3 class="title-main"> Groups </h3>
+		<h3 class="title-main"> Group Members </h3>
 	</div>  
 	<div class="grid-content">
 	<?php if( count( $models ) == 0 ) { ?>		
@@ -82,51 +83,34 @@ include_once"delete.php";
 			<?php
 				$slugBase	= $siteUrl;
 				
-				foreach( $models as $group ) {
-							
-					if( $group->createdBy == $user->id || $group->status == $statusActive ) {	
-					
-					$id				= $group->id;   
-					$editUrl		= Html::a( $group->name, [ "/cmgcmn/group/update?id=$id" ] );
-					$slug			= $group->slug;
-					$slugUrl		= "<a href='" . $slugBase . "group/$slug'>$slug</a>";
-					$content		= $group->content;
-					$members		= $group->members;
-					$memberCount	= 0;
-					
-					foreach( $members as $member ) {
-						
-						if( $member->status==1 ) {
-							
-							$memberCount++;
-						}
-					}					
+				foreach( $models as $member ) {
+
+					$id			= $member->id;   
+					$memberUser	= $member->user; 
+					 					
 				?>				
 					
 					<div class="grid-row" id="grid-row-<?=$id?>">						
 						<div class="grid-row-data clearfix">
 							<div class="col12x4 clearfix">
-								<span class="label-header col1"><?=$group->name?></span>
-								<span class="data-account-name col1"><?= CodeGenUtil::getImageThumbTag( $group->avatar, [ 'class' => 'avatar', 'image' => 'avatar' ] ) ?></span> 
-							</div>  	
+								<span class="label-header col1"><?=$memberUser->username?></span>
+								<span class="data-account-name col1"><?= CodeGenUtil::getImageThumbTag( $user->avatar, [ 'class' => 'avatar', 'image' => 'avatar' ] ) ?></span> 
+							</div> 
+							<?php if( $member->status == $statusBlocked && $member->group->createdBy == $user->id ) { ?>  	
 							<div class="col12x4 clearfix">
-								<span class="label-header col1">Members</span> 
-								<span title="View Group Members"><?= Html::a( $memberCount, ["/cmgcmn/group/member/all?id=$id"], ['class'=>'link'] )  ?></span>
-							</div>							 
+								<span class="label-header col1">Status</span>
+								<span class="label-header col1"> <?= $member->getStatusStr() ?> </span> 
+							</div>	
+							<?php } ?>				 
 							<div class="col12x4 clearfix"> 
-								<div class="col1 wrap-action-icons">									
-									<span title="View Group Messages"><?= Html::a( "", ["/cmgcmn/group/message/all?id=$id"], ['class'=>'fa fa-envelope'] )  ?></span>
-									<span title="Update Group"><?= Html::a( "", ["/cmgcmn/group/update?id=$id"], ['class'=>'fa fa-edit'] )  ?></span>
-									<span> 
-										<a class="fa fa-remove btn-delete-group" title="Delete Group"></a>
-										<span id="action-url" class="hidden"><?= Url::toRoute( 'apix/group/delete?id='.$id ) ?></span>										 		
-										<span data="grid-row-<?= $id ?>"></span>	 
-									</span>
+								<div class="col1 wrap-action-icons">
+									<span title="View Group Members"><?= Html::a( "", ["/cmgcmn/group/member/all?id=$id"], ['class'=>'fa fa-users'] )  ?></span>
+									
 								</div>	
 							</div>
 						</div>
 					</div>
-	<?php 	} } ?>
+	<?php 	} ?>
 		</div>
 		</div>
 	<?php } ?>

@@ -37,6 +37,11 @@ class GroupMessageService extends \cmsgears\core\common\services\Service {
 
 		return true;
 	}
+	
+	public static function deleteByGroupId( $groupId ) {
+
+		GroupMessage::deleteByGroupId( $groupId );
+	}
 }
 
 ?>

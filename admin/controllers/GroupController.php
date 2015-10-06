@@ -159,7 +159,7 @@ class GroupController extends \cmsgears\core\admin\controllers\BaseController {
 					$binder->binderId	= $model->id;
 					$binder->load( Yii::$app->request->post(), 'Binder' );
 
-					GroupService::bindCategories( $binder );
+					GroupService::bindCategories( $binder, $model->type );
 
 					return $this->redirect( [ 'all' ] );
 				}

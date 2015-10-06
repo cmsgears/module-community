@@ -14,6 +14,8 @@ use cmsgears\cms\common\models\entities\ModelContent;
 use cmsgears\community\common\models\entities\Group;
 
 use cmsgears\core\admin\services\FileService;
+use cmsgears\community\common\services\GroupMemberService;
+use cmsgears\community\common\services\GroupMessageService;
 
 /**
  * The class GroupService is base class to perform database activities for Group Entity.
@@ -177,8 +179,17 @@ class GroupService extends \cmsgears\core\common\services\Service {
 	public static function delete( $group, $content ) {
 
 		$existingGroup		= self::findById( $group->id );
-		$existingContent	= ModelContent::findById( $content->id );
-
+		$existingContent	= ModelContent::findById( $content->id ); 
+		$existingMessages	= null;
+		
+		// Delete Members
+		
+		GroupMemberService::deleteByGroupId( $group->id );
+		
+		// Delete Messages
+		
+		GroupMessageService::deleteByGroupId( $group->id );
+		
 		// Delete Group
 		$existingGroup->delete();
 

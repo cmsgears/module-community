@@ -115,6 +115,18 @@ class GroupMessage extends CmgEntity {
 	// GroupMessage ----------------------
 	
 	// Read ----
+	
+	// Update ----
+	
+	// Delete ----
+	
+	/**
+	 * Delete all entries having given group id.
+	 */
+	public static function deleteByGroupId( $groupId ) {
+
+		self::deleteAll( 'groupId=:id', [ ':id' => $groupId ] );
+	}
 
 }
 
