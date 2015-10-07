@@ -95,11 +95,8 @@ include_once"delete.php";
 					$memberCount	= 0;
 					
 					foreach( $members as $member ) {
-						
-						if( $member->status==1 ) {
-							
-							$memberCount++;
-						}
+						 
+						$memberCount++;					 
 					}					
 				?>				
 					

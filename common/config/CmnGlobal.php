@@ -6,6 +6,14 @@ class CmnGlobal {
 	// Model Traits - Metas, Attachments, Addresses --------------------
 
 	const TYPE_GROUP				= 'group';
+	
+	// Roles -----------------------------------------------------------
+	
+	const ROLE_GROUP_MANAGER		= 'group-manager';
+	const ROLE_GROUP_SUPER_ADMIN	= 'group-super-admin';
+	const ROLE_GROUP_ADMIN			= 'group-admin';
+	const ROLE_GROUP_MODERATOR		= 'group-moderator';
+	const ROLE_GROUP_MEMBER			= 'group-member'; 
 
 	// Permissions -----------------------------------------------------
 

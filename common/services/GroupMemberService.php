@@ -7,6 +7,8 @@ use yii\data\Sort;
 
 // CMG Imports
 use cmsgears\community\common\models\entities\GroupMember;
+use cmsgears\community\common\config\CmnGlobal;
+use cmsgears\core\common\services\RoleService;
 
 class GroupMemberService extends \cmsgears\core\common\services\Service {
 
@@ -18,6 +20,22 @@ class GroupMemberService extends \cmsgears\core\common\services\Service {
 
 		return GroupMember::findById( $id );
 	} 
+	
+	// create ----------
+	
+	public static function addMember( $groupId, $userId ) {
+		
+		$model			= new GroupMember();		
+		$role			= RoleService::findBySlug( CmnGlobal::ROLE_GROUP_MEMBER );		
+		$model->groupId	= $groupId;
+		$model->userId	= $userId;
+		$model->roleId	= $role->id;
+		$model->status	= GroupMember::STATUS_ACTIVE;
+		$model->save();
+		
+		return $model;
+	}	
+	
 	// Data Provider ----
  
 	/**

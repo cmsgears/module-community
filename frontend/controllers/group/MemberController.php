@@ -10,6 +10,7 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\core\frontend\config\WebGlobalCore; 
 
 use cmsgears\community\common\services\GroupMemberService;   
+use cmsgears\community\common\services\GroupService; 
 use cmsgears\community\common\models\entities\GroupMember;
 
 class MemberController extends \cmsgears\core\common\controllers\BaseController {
@@ -51,13 +52,15 @@ class MemberController extends \cmsgears\core\common\controllers\BaseController 
 		
 		$dataProvider	= GroupMemberService::getPagination( [ 'conditions' => [ 'groupId' => $id ] ] );
 		$user			= Yii::$app->user->getIdentity(); 
-		$statusBlocked	= GroupMember::STATUS_BLOCKED;
+		$statusBlocked	= GroupMember::STATUS_BLOCKED; 
+		$group			= GroupService::findById( $id );
 		 		
 		return $this->render( 'all', [
 			
 			'dataProvider' => $dataProvider,
 			'user' => $user,
-			'statusBlocked' => $statusBlocked
+			'statusBlocked' => $statusBlocked,
+			'group' => $group 
 		] );
 	}    
 }
