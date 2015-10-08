@@ -3,7 +3,7 @@ namespace cmsgears\community\frontend\controllers\group;
 
 // Yii Imports
 use Yii;
-use yii\filters\VerbFilter; 
+use yii\filters\VerbFilter;  
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal; 
@@ -49,20 +49,25 @@ class MemberController extends \cmsgears\core\common\controllers\BaseController 
 	// MemberController
 	
 	public function actionAll( $id ) {
-		
+		 
 		$dataProvider	= GroupMemberService::getPagination( [ 'conditions' => [ 'groupId' => $id ] ] );
-		$user			= Yii::$app->user->getIdentity(); 
-		$statusBlocked	= GroupMember::STATUS_BLOCKED; 
+		$user			= Yii::$app->user->getIdentity();  
 		$group			= GroupService::findById( $id );
+		$statusNew		= GroupMember::STATUS_NEW;
+		$statusActive	= GroupMember::STATUS_ACTIVE;
+		$statusBlocked	= GroupMember::STATUS_BLOCKED; 
 		 		
 		return $this->render( 'all', [
 			
 			'dataProvider' => $dataProvider,
 			'user' => $user,
+			'statusNew' => $statusNew,
+			'statusActive' => $statusActive,
 			'statusBlocked' => $statusBlocked,
-			'group' => $group 
+			'group' => $group
 		] );
-	}    
+	} 
+   
 }
 
 ?>

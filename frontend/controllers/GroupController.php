@@ -15,7 +15,8 @@ use cmsgears\core\common\models\entities\Category;
 
 use cmsgears\core\common\models\forms\Binder;
 use cmsgears\cms\common\models\entities\ModelContent;
-use cmsgears\community\common\models\entities\Group;
+use cmsgears\community\common\models\entities\Group; 
+use cmsgears\community\common\models\entities\GroupMember; 
 use cmsgears\core\admin\services\CategoryService;
 use cmsgears\core\admin\services\TemplateService;
 
@@ -48,7 +49,7 @@ class GroupController extends \cmsgears\core\common\controllers\BaseController {
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'index' => [ 'get' ],
-                    'update' => [ 'get' ]
+                    'update' => [ 'get', 'post' ]
                 ]
             ]
         ];
@@ -58,14 +59,20 @@ class GroupController extends \cmsgears\core\common\controllers\BaseController {
 
     public function actionIndex() {
     	
-		$dataProvider		= GroupService::getPaginationDetailsByType( CoreGlobal::TYPE_CORE );
-		$user				= Yii::$app->user->getIdentity(); 
-		$statusActive		= Group::STATUS_ACTIVE; 
+		$dataProvider			= GroupService::getPaginationDetailsByType( CoreGlobal::TYPE_CORE );
+		$user					= Yii::$app->user->getIdentity(); 
+		$statusActive			= Group::STATUS_ACTIVE;	
+		$memberStatusNew		= GroupMember::STATUS_NEW;
+		$memberStatusActive		= GroupMember::STATUS_ACTIVE;
+		$memberStatusBlocked	= GroupMember::STATUS_BLOCKED; 	
 
 	    return $this->render( WebGlobalCore::PAGE_INDEX, [
 	         'dataProvider' => $dataProvider,
 	         'user' => $user,
-	         'statusActive' => $statusActive
+	         'statusActive' => $statusActive,
+	         'memberStatusNew' => $memberStatusNew,
+			 'memberStatusActive' => $memberStatusActive,
+			 'memberStatusBlocked' => $memberStatusBlocked,
 	    ]);
     }
 	

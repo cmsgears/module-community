@@ -34,6 +34,7 @@ $quickLinkItems = [
 ]; 
 
 include_once"delete.php";
+include_once"join.php";
 ?>
 <div class="quick-links left">
 	<?php	
@@ -93,10 +94,16 @@ include_once"delete.php";
 					$content		= $group->content;
 					$members		= $group->members;
 					$memberCount	= 0;
+					$memberStatus	= -1;
 					
 					foreach( $members as $member ) {
 						 
-						$memberCount++;					 
+						$memberCount++;	
+						
+						if( $user->id == $member->userId ) {
+							
+							$memberStatus	= $member->status;
+						}			 
 					}					
 				?>				
 					
@@ -111,14 +118,33 @@ include_once"delete.php";
 								<span title="View Group Members"><?= Html::a( $memberCount, ["/cmgcmn/group/member/all?id=$id"], ['class'=>'link'] )  ?></span>
 							</div>							 
 							<div class="col12x4 clearfix"> 
-								<div class="col1 wrap-action-icons">									
+								<div class="col1 wrap-action-icons">	
+									<?php if($group->createdBy != $user->id) { ?>
+										<span>
+											
+											<?php if( $memberStatus == -1 ) { ?>
+												<a class="fa fa-plus-square btn-join-group" title="Join Group"></a> 
+												<span class="hidden"><?= Url::toRoute( [ '/cmgcmn/apix/group/member/join?id='.$user->id ] ) ?></span>
+											<?php } ?>
+											<?php if( $memberStatus == $memberStatusNew ) { ?>
+												<a class="fa fa-exclamation" title="Request Pending"></a>  
+											<?php } ?>
+											<?php if( $memberStatus == $memberStatusBlocked) { ?>
+												<a class="fa fa-ban" title="Request Blocked"></a>  
+											<?php } ?>
+											
+											<span class="hidden"><?= 'grid-row-'.$id ?></span>
+											<span class="hidden"><?= $id ?></span>
+										</span>
+										
+									<?php } ?>								
 									<span title="View Group Messages"><?= Html::a( "", ["/cmgcmn/group/message/all?id=$id"], ['class'=>'fa fa-envelope'] )  ?></span>
 									<span title="Update Group"><?= Html::a( "", ["/cmgcmn/group/update?id=$id"], ['class'=>'fa fa-edit'] )  ?></span>
 									<span> 
 										<a class="fa fa-remove btn-delete-group" title="Delete Group"></a>
 										<span id="action-url" class="hidden"><?= Url::toRoute( 'apix/group/delete?id='.$id ) ?></span>										 		
 										<span data="grid-row-<?= $id ?>"></span>	 
-									</span>
+									</span>									
 								</div>	
 							</div>
 						</div>

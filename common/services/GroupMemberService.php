@@ -23,14 +23,17 @@ class GroupMemberService extends \cmsgears\core\common\services\Service {
 	
 	// create ----------
 	
-	public static function addMember( $groupId, $userId ) {
+	public static function addMember( $groupId, $userId, $join = false ) {
 		
 		$model			= new GroupMember();		
 		$role			= RoleService::findBySlug( CmnGlobal::ROLE_GROUP_MEMBER );		
 		$model->groupId	= $groupId;
 		$model->userId	= $userId;
 		$model->roleId	= $role->id;
-		$model->status	= GroupMember::STATUS_ACTIVE;
+		
+		if( !$join ) {
+			$model->status	= GroupMember::STATUS_ACTIVE;
+		}	
 		$model->save();
 		
 		return $model;
@@ -46,27 +49,15 @@ class GroupMemberService extends \cmsgears\core\common\services\Service {
 
 		  $sort = new Sort([
 	        'attributes' => [
-	            'name' => [
-	                'asc' => [ 'name' => SORT_ASC ],
-	                'desc' => ['name' => SORT_DESC ],
-	                'default' => SORT_DESC,
-	                'label' => 'name',
-	            ],
-	            'cdate' => [
-	                'asc' => [ 'createdAt' => SORT_ASC ],
-	                'desc' => ['createdAt' => SORT_DESC ],
-	                'default' => SORT_DESC,
-	                'label' => 'cdate',
-	            ],
-	            'udate' => [
-	                'asc' => [ 'updatedAt' => SORT_ASC ],
-	                'desc' => ['updatedAt' => SORT_DESC ],
-	                'default' => SORT_DESC,
-	                'label' => 'udate',
-	            ]
+	            'status' => [
+	                'asc' => [ 'status' => SORT_ASC ],
+	                'desc' => ['status' => SORT_DESC ],
+	                'default' => SORT_ASC,
+	                'label' => 'status',
+	            ], 
 	        ],
 	        'defaultOrder' => [
-	        	'cdate' => SORT_DESC
+	        	'status' => SORT_ASC
 	        ]
 	    ]);
 
@@ -88,7 +79,16 @@ class GroupMemberService extends \cmsgears\core\common\services\Service {
 		return self::getDataProvider( new GroupMember(), $conditions );
 	}
 	
+	// Update ---------------
 	
+	public static function changeStatus( $memberId, $status ) {
+		
+		$model			= self::findById( $memberId );
+		$model->status	= $status;
+		$model->update();
+		
+		return $model;
+	} 
 
 	// Delete ----------------
 
