@@ -40,6 +40,7 @@ include_once"activate.php";
 include_once"template-activate-row.php";
 include_once"template-deactivate-row.php";
 include_once"template-block-row.php";
+include_once"template-update-role.php";
 ?>
 <div class="quick-links left">
 	<?php	
@@ -106,7 +107,19 @@ include_once"template-block-row.php";
 								<span class="data-account-name col1"><?= CodeGenUtil::getImageThumbTag( $user->avatar, [ 'class' => 'avatar', 'image' => 'avatar' ] ) ?></span> 
 							</div> 
 							<?php if( $member->group->createdBy == $user->id ) { ?>
-									 
+								<div class="col12x4 clearfix">
+									<span class="label-header col1">Role</span>
+									<span class="col12x8" id="role-name-<?=$id?>">
+										<?=$member->role->name?>
+									</span>	
+									<div class="col12x8 wrap-role-list hidden"> 
+										<select class="bm-select cmt-select hidden" name="GroupMember[roleId]">	
+											<?= CodeGenUtil::generateSelectOptionsIdName( $roleList, "{$member->roleId}" ); ?>
+										</select>
+										<span class="hidden">role-name-<?=$id?></span>	
+										<span class="hidden"> <?= Url::toRoute( [ '/cmgcmn/apix/group/member/update-role?id='.$id ] ) ?> </span>									
+									</div>	 				 
+								</div>	 
 								<div class="col12x4 clearfix"> 
 									<div class="col1 wrap-action-icons">
 										<?php if( $member->status == $statusNew ) { ?>
@@ -127,7 +140,8 @@ include_once"template-block-row.php";
 											<span class="hidden"><?= Url::toRoute( [ '/cmgcmn/apix/group/member/deactivate?id='.$id ] ) ?></span>	
 											<span class="hidden"><?= 'grid-row-'.$id ?></span>									
 										<?php } } ?>
-									</div>	
+										<span><a data="role-name-<?=$id?>" class="fa fa-edit btn-update-role align-left" title="Update Role"></a></span>	
+									</div>									
 								</div>
 							<?php } ?>			
 						</div>
@@ -142,3 +156,11 @@ include_once"template-block-row.php";
 		<?= LinkPager::widget( [ 'pagination' => $pagination ] ); ?>
 	</div>
 </section> 
+
+<!--- Update Role Form -------------------------------- -->
+
+<div id="frm-update-member-role" class="frm-split-40-60 data-form request-ajax hidden" cmt-controller="member" cmt-action="role-update" action="" method="post">
+	<input type="hidden" name="GroupMember[roleId]" id="member_role_id">
+	<input type="hidden" name="row_id" id="member_row_id">
+	<a class="btn cmt-submit" cmt-request="frm-update-member-role"></a>
+<div class="max-area-cover spinner"><div class="valign-center fa fa-3x fa-refresh fa-spin"></div></div>

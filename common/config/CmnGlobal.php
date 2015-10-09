@@ -7,9 +7,12 @@ class CmnGlobal {
 
 	const TYPE_GROUP				= 'group';
 	
+	// Role Type -------------------------------
+	
+	const TYPE_COMMUNITY			= 'community';
+	
 	// Roles -----------------------------------------------------------
 	
-	const ROLE_GROUP_MANAGER		= 'group-manager';
 	const ROLE_GROUP_SUPER_ADMIN	= 'group-super-admin';
 	const ROLE_GROUP_ADMIN			= 'group-admin';
 	const ROLE_GROUP_MODERATOR		= 'group-moderator';

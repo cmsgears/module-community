@@ -91,7 +91,7 @@ class GroupService extends \cmsgears\core\common\services\Service {
 	// Create -----------
 
 	public static function create( $group, $content, $avatar = null, $banner = null ) {
-
+		
 		// Save Avatar
 		if( isset( $avatar ) ) {
 
@@ -109,6 +109,8 @@ class GroupService extends \cmsgears\core\common\services\Service {
 
 			FileService::saveImage( $banner, [ 'model' => $content, 'attribute' => 'bannerId' ] );
 		}
+		
+		GroupMemberService::addMember( $group->id, $group->createdBy, false, true );
 
 		// Create Content
 		$content->save();

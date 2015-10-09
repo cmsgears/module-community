@@ -8,9 +8,12 @@ use yii\filters\VerbFilter;
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal; 
 use cmsgears\core\common\utilities\AjaxUtil;
+use cmsgears\core\common\utilities\CodeGenUtil;
 use cmsgears\core\common\models\entities\User;
-use cmsgears\community\common\models\entities\GroupMember;
 use cmsgears\core\common\services\UserService;
+use cmsgears\core\common\services\RoleService;
+use cmsgears\community\common\config\CmnGlobal;
+use cmsgears\community\common\models\entities\GroupMember;
 use cmsgears\community\common\services\GroupMemberService;
 
 class MemberController extends \cmsgears\core\frontend\controllers\BaseController {
@@ -91,10 +94,12 @@ class MemberController extends \cmsgears\core\frontend\controllers\BaseControlle
 					GroupMemberService::addMember( $groupId, $userByEmail->id ); 
 					Yii::$app->cmgCommunityMailer->sendInvitationMail( $userByEmail );
 				}
-				
+				 				
 				else {
 					
-					$username		= UserService::splitEmail( $userData );						
+					// Register New User
+					
+					$username		= CodeGenUtil::splitEmail( $userData );						
 					$user->email 	= $userData;
 					$user->username	= $username;
 					 
@@ -157,6 +162,33 @@ class MemberController extends \cmsgears\core\frontend\controllers\BaseControlle
 			
 			return AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ), $grid );
 		}
+	}
+	
+	public function actionUpdateRole( $id ) {
+		
+		$row			= Yii::$app->request->post( 'row_id' );		
+		$model			= GroupMemberService::findById( $id );		
+		$responseData	= [];
+		
+		if( $model->load( Yii::$app->request->post(), 'GroupMember' ) && $model->validate() ) {
+			
+			if( GroupMemberService::update( $model ) ) {
+				
+				$roleListLi		= RoleService::getIdNameList( [ 'conditions' => [ 'type' => CmnGlobal::TYPE_COMMUNITY ] ] );								
+				$roleListLi		= CodeGenUtil::generateListItemsIdName( $roleListLi);
+				$roleList		= RoleService::getIdNameList( [ 'conditions' => [ 'type' => CmnGlobal::TYPE_COMMUNITY ] ] );
+				$roleList		= CodeGenUtil::generateSelectOptionsIdName( $roleList, "{$model->role->name}" );
+				$responseData	= [ 'row' => $row, 'role' => $model->role->name, 'roleList' => $roleList, 'roleListLi' => $roleListLi ];
+				
+				return AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ), $responseData );
+			}
+			else {
+			
+				// Trigger Ajax Not Found
+		        return AjaxUtil::generateFailure( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );	
+			}
+		}		
+		
 	}
 }
 ?>

@@ -23,17 +23,28 @@ class GroupMemberService extends \cmsgears\core\common\services\Service {
 	
 	// create ----------
 	
-	public static function addMember( $groupId, $userId, $join = false ) {
+	public static function addMember( $groupId, $userId, $join = false, $admin = false ) {
 		
 		$model			= new GroupMember();		
-		$role			= RoleService::findBySlug( CmnGlobal::ROLE_GROUP_MEMBER );		
+		$role			= null;
+				
+		if( $admin ) {
+			
+			$role		= RoleService::findBySlug( CmnGlobal::ROLE_GROUP_SUPER_ADMIN );
+		}
+		else {
+				
+			$role		= RoleService::findBySlug( CmnGlobal::ROLE_GROUP_MEMBER );		
+		}
+		
 		$model->groupId	= $groupId;
 		$model->userId	= $userId;
 		$model->roleId	= $role->id;
 		
 		if( !$join ) {
 			$model->status	= GroupMember::STATUS_ACTIVE;
-		}	
+		}		
+		
 		$model->save();
 		
 		return $model;
@@ -89,6 +100,13 @@ class GroupMemberService extends \cmsgears\core\common\services\Service {
 		
 		return $model;
 	} 
+	
+	public static function update( $model ) {
+		
+		$model->update();
+		
+		return $model;
+	}
 
 	// Delete ----------------
 
