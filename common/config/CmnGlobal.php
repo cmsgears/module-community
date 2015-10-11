@@ -30,6 +30,12 @@ class CmnGlobal {
 	const FIELD_GROUP				= 'groupField';
 	const FIELD_CHAT				= 'chatField';
 	const FIELD_CONSUMED			= 'consumedField';
+	
+	// Message Visibility
+	
+	const VISIBILITY_PUBLIC			= 0;	// Visible to All
+	const VISIBILITY_PRIVATE		= 1;	// Visible to logged in users
+	const VISIBILITY_MEMBERS		= 2;	// Visible to group members
 }
 
 ?>

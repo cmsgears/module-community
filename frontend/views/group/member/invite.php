@@ -4,9 +4,9 @@
 		<i class="fa fa-times-circle popup-close"></i>
 		<h6 class="popup-wrap-title"> Invite Members </h6>		 
 		<div id="frm-invite-members" class="data-form request-ajax" cmt-controller="member" cmt-action="invite" action="<?= Url::toRoute( 'apix/group/member/invite' ) ?>" method="post">			
-			<div id="wrap-users">				
-				<input type="text" data="0" name="User[0][username]" placeholder="Username or Email"> 
+			<div id="wrap-users">								
 				<input type="hidden" name="group_id" value="<?= $group->id ?>">
+				<input type="text" data="0" name="User[0][username]" placeholder="Username or Email"> 
 			</div>	 
 			<label><i class="fa fa-plus action-inline no-margin" id="btn-add-row">Add More User </i></label> 
 			<div class="row clearfix">

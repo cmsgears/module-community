@@ -4,6 +4,7 @@ namespace cmsgears\community\frontend\controllers\apix\group;
 // Yii Imports
 use \Yii;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal; 
@@ -38,7 +39,9 @@ class MemberController extends \cmsgears\core\frontend\controllers\BaseControlle
 	                'invite' => [ 'permission' => CoreGlobal::PERM_USER ],
 	                'activate' => [ 'permission' => CoreGlobal::PERM_USER ],
 	                'deactivate' => [ 'permission' => CoreGlobal::PERM_USER ],
-	                'join' => [ 'permission' => CoreGlobal::PERM_USER ]
+	                'join' => [ 'permission' => CoreGlobal::PERM_USER ],
+	                'update-role' => [ 'permission' => CoreGlobal::PERM_USER ],
+	                'delete' => [ 'permission' => CoreGlobal::PERM_USER ]
                 ]
             ],
             'verbs' => [
@@ -47,7 +50,9 @@ class MemberController extends \cmsgears\core\frontend\controllers\BaseControlle
                     'invite' => [ 'post' ],
                     'activate' => [ 'post' ],
                     'deactivate' => [ 'post' ],
-                    'join' => [ 'post' ]
+                    'join' => [ 'post' ],
+                    'update-role' => [ 'post' ],
+                    'delete' => [ 'post' ]
                 ]
             ]
         ];
@@ -59,6 +64,10 @@ class MemberController extends \cmsgears\core\frontend\controllers\BaseControlle
 		$groupId	= Yii::$app->request->post( 'group_id' ); 	
 		$count 		= count( $users );		
 		$users		= [];
+		$model		= null;
+		$modelData	= [];
+		$roleList	= RoleService::getIdNameList( [ 'conditions' => [ 'type' => CmnGlobal::TYPE_COMMUNITY ] ] );		 
+ 		$avatar		= Yii::getAlias('@images').'/avatar.png';
 
 		for ( $i = 0; $i < $count; $i++ ) {
 
@@ -67,11 +76,11 @@ class MemberController extends \cmsgears\core\frontend\controllers\BaseControlle
 		 		
 		if( User::loadMultiple( $users, Yii::$app->request->post(), 'User' ) ) {
 			
-			$count	= 0;
+			$counter = 0;			 
 
 			foreach ( $users as $user ) {
 				
-				$count++;
+				$counter++; 
 				
 				$userData		= $user->username;
 				
@@ -85,13 +94,15 @@ class MemberController extends \cmsgears\core\frontend\controllers\BaseControlle
 				
 				if( isset( $userByName ) ) {
 					
-					GroupMemberService::addMember( $groupId, $userByName->id );					 					
+					$model	= GroupMemberService::addMember( $groupId, $userByName->id );	
+									 					
 					Yii::$app->cmgCommunityMailer->sendInvitationMail( $userByName );
 				} 
 				
 				else if( isset( $userByEmail ) ) {
 					 
-					GroupMemberService::addMember( $groupId, $userByEmail->id ); 
+					$model	= GroupMemberService::addMember( $groupId, $userByEmail->id ); 
+					
 					Yii::$app->cmgCommunityMailer->sendInvitationMail( $userByEmail );
 				}
 				 				
@@ -105,13 +116,32 @@ class MemberController extends \cmsgears\core\frontend\controllers\BaseControlle
 					 
 					if(  $userModel = UserService::create( $user ) ) {
 						
-						GroupMemberService::addMember( $groupId, $userModel->id ); 
-						Yii::$app->cmgCommunityMailer->sendCreateUserMail( $user );						
-										 
+						$model	= GroupMemberService::addMember( $groupId, $userModel->id ); 
+						
+						Yii::$app->cmgCommunityMailer->sendCreateUserMail( $user );
 					}
+				} 
+				
+				if( isset( $model->user->avatar )) {
+					
+					$avatar	= Yii::$app->fileManager->uploadUrl.$model->user->avatar->thumb;
 				}
 				
-				return AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ) );		
+				$modelData	+= [ $counter => [ 
+								'name' => $model->user->username, 
+								'avatar' => $avatar,
+								'roleName' => $model->role->name,
+								'memberId' => $model->id,
+								'roleList' => CodeGenUtil::generateSelectOptionsIdName( $roleList, "{$model->role->name}" ),
+								'deactivateUrl' => Url::toRoute( [ '/cmgcmn/apix/group/member/deactivate?id='.$model->id] ),
+								'updateUrl' => Url::toRoute( [ '/cmgcmn/apix/group/member/update-role?id='.$model->id] ),
+								'deleteUrl' => Url::toRoute( [ '/cmgcmn/apix/group/member/delete?id='.$model->id ] )
+								] ];		
+			}
+
+			if( $counter == $count ) {
+				
+				return AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ), $modelData );
 			} 
 		}
 		
@@ -189,6 +219,22 @@ class MemberController extends \cmsgears\core\frontend\controllers\BaseControlle
 			}
 		}		
 		
+	}
+
+	public function actionDelete( $id ) {
+		
+		$row	= Yii::$app->request->post( 'id' );	
+		$model	= GroupMemberService::findById( $id );
+		
+		if( isset( $model ) ) {
+			
+			if( ( GroupMemberService::delete( $model ) ) ) {
+				
+				return AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ), $row );
+			}
+		}
+		
+		return AjaxUtil::generateFailure( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 }
 ?>

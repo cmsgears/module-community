@@ -8,6 +8,7 @@ use yii\data\Sort;
 // CMG Imports
 use cmsgears\community\common\models\entities\GroupMember;
 use cmsgears\community\common\config\CmnGlobal;
+use cmsgears\community\common\services\GroupMessageService;
 use cmsgears\core\common\services\RoleService;
 
 class GroupMemberService extends \cmsgears\core\common\services\Service {
@@ -19,6 +20,11 @@ class GroupMemberService extends \cmsgears\core\common\services\Service {
 	public static function findById( $id ) {
 
 		return GroupMember::findById( $id );
+	}
+	
+	public function findByUserId( $id ) {
+		
+		return GroupMember::findByUserId( $id );
 	} 
 	
 	// create ----------
@@ -60,15 +66,15 @@ class GroupMemberService extends \cmsgears\core\common\services\Service {
 
 		  $sort = new Sort([
 	        'attributes' => [
-	            'status' => [
-	                'asc' => [ 'status' => SORT_ASC ],
-	                'desc' => ['status' => SORT_DESC ],
+	            'createdAt' => [
+	                'asc' => [ 'createdAt' => SORT_ASC ],
+	                'desc' => ['createdAt' => SORT_DESC ],
 	                'default' => SORT_ASC,
-	                'label' => 'status',
+	                'label' => 'createdAt',
 	            ], 
 	        ],
 	        'defaultOrder' => [
-	        	'status' => SORT_ASC
+	        	'createdAt' => SORT_DESC
 	        ]
 	    ]);
 
@@ -110,11 +116,14 @@ class GroupMemberService extends \cmsgears\core\common\services\Service {
 
 	// Delete ----------------
 
-	public static function delete( $member ) {
+	public static function delete( $member ) { 
+		
+		GroupMessageService::deleteByGroupId( $member->groupId );
 
 		$member->delete();
 
 		return true;
+		 
 	}
 	
 	public static function deleteByGroupId( $groupId ) {

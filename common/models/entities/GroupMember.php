@@ -125,6 +125,11 @@ class GroupMember extends \cmsgears\core\common\models\entities\CmgEntity {
 		return self::find()->joinWith( 'user' )->joinWith( 'group' );
 	}
 
+	public static function findByUserId( $id ) {
+		
+		return self::find()->where( [ 'userId' => $id ] )->one();
+	}
+
 	// Delete ----
 	
 	/**
