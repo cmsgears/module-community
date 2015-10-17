@@ -178,25 +178,33 @@ class GroupService extends \cmsgears\core\common\services\Service {
 
 	// Delete -----------
 
-	public static function delete( $group, $content ) {
+	public static function delete( $group, $content = null) {
 
 		$existingGroup		= self::findById( $group->id );
-		$existingContent	= ModelContent::findById( $content->id ); 
+		$existingContent	= null;
+		
+		if( isset( $content ) ) {
+				
+			$existingContent	= ModelContent::findById( $content->id );
+		}	 
+		
 		$existingMessages	= null;
 		
-		// Delete Members
-		
+		// Delete Members		
 		GroupMemberService::deleteByGroupId( $group->id );
 		
-		// Delete Messages
-		
+		// Delete Messages		
 		GroupMessageService::deleteByGroupId( $group->id );
 		
 		// Delete Group
 		$existingGroup->delete();
-
+		
 		// Delete Content
-		$existingContent->delete();
+		
+		if( isset( $content ) ) {
+				
+			$existingContent->delete();
+		}	
 
 		return true;
 	}
