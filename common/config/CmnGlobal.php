@@ -3,15 +3,30 @@ namespace cmsgears\community\common\config;
 
 class CmnGlobal {
 
-	// Categories
-	const CATEGORY_TYPE_GROUP		= 1551;
+	// Model Traits - Metas, Attachments, Addresses --------------------
 
-	// Metas
-	const META_TYPE_GROUP			= 1551;
+	const TYPE_GROUP				= 'group';
+	
+	// Roles -----------------------------------------------------------
+	
+	const ROLE_GROUP_MANAGER		= 'group-manager';
+	const ROLE_GROUP_SUPER_ADMIN	= 'group-super-admin';
+	const ROLE_GROUP_ADMIN			= 'group-admin';
+	const ROLE_GROUP_MODERATOR		= 'group-moderator';
+	const ROLE_GROUP_MEMBER			= 'group-member'; 
 
-	// Permissions
-	const PERM_CHAT					= "community-chat";
-	const PERM_GROUP				= "community-group";
+	// Permissions -----------------------------------------------------
+
+	const PERM_CHAT					= 'community-chat';
+	const PERM_GROUP				= 'community-group';
+
+	// Model Fields ----------------------------------------------------
+
+	// Generic Fields
+	const FIELD_FRIEND				= 'friendField';
+	const FIELD_GROUP				= 'groupField';
+	const FIELD_CHAT				= 'chatField';
+	const FIELD_CONSUMED			= 'consumedField';
 }
 
 ?>

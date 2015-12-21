@@ -1,9 +1,27 @@
 <?php
 namespace cmsgears\community\common\models\entities;
 
+// Yii Imports
+use \Yii;
+use yii\behaviors\TimestampBehavior;
+
 // CMG Imports
+use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\community\common\config\CmnGlobal;
+
 use cmsgears\core\common\models\entities\CmgEntity;
 
+/**
+ * GroupMember Entity
+ *
+ * @property integer $id
+ * @property integer $groupId
+ * @property integer $memberId
+ * @property integer $visibility
+ * @property integer $content
+ * @property datetime $createdAt
+ * @property datetime $modifiedAt
+ */
 class GroupMessage extends CmgEntity {
 
 	const VISIBILITY_PUBLIC		= 0;	// Visible to All
@@ -11,21 +29,21 @@ class GroupMessage extends CmgEntity {
 	const VISIBILITY_MEMBERS	= 2;	// Visible to group members
 
 	public static $visibilityMap = [
-		self::VISIBILITY_PUBLIC => "Public",
-		self::VISIBILITY_PRIVATE => "Private",
-		self::VISIBILITY_MEMBERS => "Members"
+		self::VISIBILITY_PUBLIC => 'Public',
+		self::VISIBILITY_PRIVATE => 'Private',
+		self::VISIBILITY_MEMBERS => 'Members'
 	];
 
 	// Instance Methods --------------------------------------------
 
 	public function getGroup() {
 
-		return $this->hasOne( Group::className(), [ 'id' => 'groupId' ] );
+		return $this->hasOne( Group::className(), [ 'id' => 'groupId' ] )->from( CmnTables::TABLE_GROUP . ' group' );
 	}
 
 	public function getMember() {
 
-		return $this->hasOne( GroupMember::className(), [ 'id' => 'memberId' ] );
+		return $this->hasOne( GroupMember::className(), [ 'id' => 'memberId' ] )->from( CmnTables::TABLE_GROUP_MEMBER . ' member' );
 	}
 
 	public function getVisibilityStr() {
@@ -38,21 +56,47 @@ class GroupMessage extends CmgEntity {
 		$this->message_visibility = $visibility;
 	}
 
+	// yii\base\Component ----------------
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors() {
+
+        return [
+
+            'timestampBehavior' => [
+                'class' => TimestampBehavior::className(),
+				'createdAtAttribute' => 'createdAt',
+ 				'updatedAtAttribute' => 'modifiedAt'
+            ]
+        ];
+    }
+
 	// yii\base\Model --------------------
 
+    /**
+     * @inheritdoc
+     */
 	public function rules() {
 
         return [
         	[ [ 'groupId', 'memberId' ], 'required' ],
-            [ [ 'visibility', 'content' ], 'safe' ]
+            [ [ 'visibility', 'content' ], 'safe' ],
+            [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
 	public function attributeLabels() {
 
 		return [
-			'visibility' => 'Visibility',
-			'content' => 'Content'
+			'groupId' => Yii::$app->cmgCmnMessage->getMessage( CmnGlobal::FIELD_GROUP ),
+			'memberId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_MEMBER ),
+			'visibility' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_VISIBILITY ),
+			'content' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_CONTENT )
 		];
 	}
 
@@ -60,17 +104,30 @@ class GroupMessage extends CmgEntity {
 
 	// yii\db\ActiveRecord ---------------
 
+    /**
+     * @inheritdoc
+     */
 	public static function tableName() {
 
 		return CmnTables::TABLE_GROUP_MESSAGE;
 	}
 
 	// GroupMessage ----------------------
+	
+	// Read ----
+	
+	// Update ----
+	
+	// Delete ----
+	
+	/**
+	 * Delete all entries having given group id.
+	 */
+	public static function deleteByGroupId( $groupId ) {
 
-	public static function findById( $id ) {
-
-		return self::find()->where( 'id=:id', [ ':id' => $id ] )->one();
+		self::deleteAll( 'groupId=:id', [ ':id' => $groupId ] );
 	}
+
 }
 
 ?>

@@ -11,7 +11,7 @@ use yii\web\NotFoundHttpException;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\community\admin\models\forms\GroupCategoryBinderForm;
+use cmsgears\core\common\models\forms\Binder;
 
 use cmsgears\community\admin\services\GroupService;
 
@@ -52,19 +52,19 @@ class GroupController extends Controller {
 
 	public function actionBindCategories() {
 
-		$binder = new GroupCategoryBinderForm();
+		$binder = new Binder();
 
-		if( $binder->load( Yii::$app->request->post(), "" ) ) {
+		if( $binder->load( Yii::$app->request->post(), 'Binder' ) ) {
 
 			if( GroupService::bindCategories( $binder ) ) {
 
 				// Trigger Ajax Success
-				AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::MESSAGE_REQUEST ) );
+				return AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ) );
 			}
 		}
 
 		// Trigger Ajax Failure
-        AjaxUtil::generateFailure( Yii::$app->cmgCoreMessageSource->getMessage( CoreGlobal::ERROR_REQUEST ) );
+        return AjaxUtil::generateFailure( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_REQUEST ) );
 	}
 }
 

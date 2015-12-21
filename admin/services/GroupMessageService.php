@@ -5,10 +5,6 @@ namespace cmsgears\community\admin\services;
 use \Yii;
 
 // CMG Imports
-use cmsgears\community\common\models\entities\Group;
-use cmsgears\community\common\models\entities\GroupMessage;
-
-use cmsgears\core\common\utilities\DateUtil;
 
 class GroupMessageService extends \cmsgears\community\common\services\GroupMessageService {
 
@@ -16,23 +12,9 @@ class GroupMessageService extends \cmsgears\community\common\services\GroupMessa
 
 	// Pagination ------------
 
-	public static function getPagination( $conditions = [] ) {
-
-		return self::getPaginationDetails( new GroupMessage(), [ 'conditions' => $conditions ] );
-	}
-
 	public static function getPaginationByGroupId( $groupId ) {
 
-		return self::getPagination( [ 'groupId' => $groupId ] );
-	}
-
-	// Delete ----------------
-
-	public static function delete( $message ) {
-
-		$message->delete();
-
-		return true;
+		return self::getPagination( [ 'sort' => false, 'conditions' => [ 'groupId' => $groupId ] ] );
 	}
 }
 
