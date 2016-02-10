@@ -18,4 +18,6 @@ DROP TABLE IF EXISTS `cmg_cmn_group_member`;
 
 DROP TABLE IF EXISTS `cmg_cmn_group_message`;
 
+DROP TABLE IF EXISTS `cmg_cmn_follow`;
+
 SET FOREIGN_KEY_CHECKS=1;

@@ -22,6 +22,9 @@ class CmnTables {
 	const TABLE_GROUP				= "cmg_cmn_group";
 	const TABLE_GROUP_MEMBER		= "cmg_cmn_group_member";
 	const TABLE_GROUP_MESSAGE		= "cmg_cmn_group_message";
+	
+	// Followers
+	const TABLE_FOLLOW				= "cmg_cmn_follow";
 }
 
 ?>
