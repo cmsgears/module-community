@@ -5,9 +5,9 @@ namespace cmsgears\community\common\services;
 use \Yii;
 
 // CMG Imports    
-use cmsgears\community\common\models\entities\Follow; 
+use cmsgears\community\common\models\entities\Follower; 
 
-class FollowService extends \cmsgears\core\common\services\Service {
+class FollowerService extends \cmsgears\core\common\services\Service {
 
 	// Static Methods ----------------------------------------------
 

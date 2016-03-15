@@ -172,13 +172,13 @@ CREATE TABLE `cmg_cmn_group_message` (
 
 
 --
--- Table structure for table `cmg_cmn_follow`
+-- Table structure for table `cmg_cmn_follower`
 --
 
-DROP TABLE IF EXISTS `cmg_cmn_follow`;
+DROP TABLE IF EXISTS `cmg_cmn_follower`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cmg_cmn_follow` (
+CREATE TABLE `cmg_cmn_follower` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `userId` bigint(20) NOT NULL,
   `parentId` bigint(20) NOT NULL,
@@ -188,7 +188,7 @@ CREATE TABLE `cmg_cmn_follow` (
   `createdAt` datetime NOT NULL,
   `modifiedAt` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_follow_1` (`userId`)
+  KEY `fk_follower_1` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -254,10 +254,10 @@ ALTER TABLE `cmg_cmn_group_message`
 	ADD CONSTRAINT `fk_cmg_cmn_group_message_2` FOREIGN KEY (`memberId`) REFERENCES `cmg_cmn_group_member` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `cmg_cmn_follow`
+-- Constraints for table `cmg_cmn_follower`
 --
-ALTER TABLE `cmg_cmn_follow` 
-	ADD CONSTRAINT `fk_follow_1` FOREIGN KEY (`userId`) REFERENCES `cmg_core_user` (`id`); 
+ALTER TABLE `cmg_cmn_follower` 
+	ADD CONSTRAINT `fk_follower_1` FOREIGN KEY (`userId`) REFERENCES `cmg_core_user` (`id`); 
 
 
 SET FOREIGN_KEY_CHECKS=1;

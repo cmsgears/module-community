@@ -24,15 +24,12 @@ use cmsgears\core\common\models\entities\User;
  * @property int $createdAt
  * @property int $modifiedAt
  */
-class Follow extends \cmsgears\core\common\models\entities\CmgEntity { 
-	
+class Follower extends \cmsgears\core\common\models\entities\CmgEntity {
+
 	// Pre-Defined Type
-	const TYPE_LIKE		= 5;
+	const TYPE_LIKE		=  0;
 	const TYPE_FOLLOW	= 10;
-	const TYPE_WISHLIST	= 15; 
-	
-	const ACTIVE		= 1;
-	const INACTIVE		= 0;
+	const TYPE_WISHLIST	= 20; 
 
 	// Instance Methods --------------------------------------------
 
@@ -93,7 +90,7 @@ class Follow extends \cmsgears\core\common\models\entities\CmgEntity {
 		];
 	}
 
-	// Follow ---------------------------
+	// Follower --------------------------
 
 	// Static Methods ----------------------------------------------
 
@@ -107,7 +104,8 @@ class Follow extends \cmsgears\core\common\models\entities\CmgEntity {
 		return CmnTables::TABLE_FOLLOW;
 	}
 
-	// Follow ---------------------------
+	// Follower --------------------------
+
 	public static function findAllbyUserIdType( $userId, $type ) {
 		
 		return self::find()->where( 'userId=:uid AND type=:type AND active=1', [ ':uid' => $userId, ':type' => $type ] )->all();
