@@ -27,12 +27,16 @@ use cmsgears\core\common\models\entities\User;
 class Follower extends \cmsgears\core\common\models\entities\CmgEntity {
 
 	// Pre-Defined Type
-	const TYPE_LIKE		=  0;
-	const TYPE_FOLLOW	= 10;
-	const TYPE_WISHLIST	= 20; 
+	const TYPE_LIKE		=  0; // User Likes
+	const TYPE_FOLLOW	= 10; // User Followers
+	const TYPE_WISHLIST	= 20; // User who wish to have this model - specially if model is doing sales
 
 	// Instance Methods --------------------------------------------
 
+	public function getUser() {
+
+		return $this->hasOne( User::className(), [ 'id' => 'userId' ] );
+	}
 
 	// yii\base\Component ----------------
 
@@ -62,13 +66,14 @@ class Follower extends \cmsgears\core\common\models\entities\CmgEntity {
 		// model rules
         $rules = [
             [ [ 'userId', 'parentId', 'parentType' ], 'required' ],
-            [ [ 'id', 'type', 'active', 'createdAt', 'modifiedAt' ], 'safe' ]
+            [ [ 'id', 'type', 'active' ], 'safe' ],
+            [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
 
 		// trim if required
 		if( Yii::$app->cmgCore->trimFieldValue ) {
 
-			$trim[] = [ [ 'userId', 'parentId', 'parentType', 'type', 'active', 'createdAt', 'modifiedAt' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
+			$trim[] = [ [ 'parentType', 'type' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
 
 			return ArrayHelper::merge( $trim, $rules );
 		}
@@ -101,29 +106,19 @@ class Follower extends \cmsgears\core\common\models\entities\CmgEntity {
      */
 	public static function tableName() {
 
-		return CmnTables::TABLE_FOLLOW;
+		return CmnTables::TABLE_FOLLOWER;
 	}
 
 	// Follower --------------------------
 
-	public static function findAllbyUserIdType( $userId, $type ) {
-		
-		return self::find()->where( 'userId=:uid AND type=:type AND active=1', [ ':uid' => $userId, ':type' => $type ] )->all();
+	public static function findByParentUserId( $parentId, $parentType, $userId, $type ) {
+
+		return self::find()->where( 'parentId =:pid AND parentType =:pType AND userId=:uid AND type=:type ', [ ':pid' => $parentId, ':pType' => $parentType, ':uid' => $userId, ':type' => $type ] );
 	}
-	
-	public static function findAllByParentIdType( $parentId, $type ) {
-		
-		return self::find()->where( 'parentId=:lid AND type=:type', [ ':lid' => $parentId, ':type' => $type ] )->all();
-	}
-	
-	public static function findAllByParentIdParentTypeActive( $parentId, $parentType, $type, $active ) {
-		
-		return self::find()->where( 'parentId=:lid AND parentType=:pType AND type=:type AND active=:active', [ ':lid' => $parentId, ':pType' => $parentType, ':type' => $type, ':active' => $active ] )->all();
-	}
-	
-	public static function findByUserParentIdType( $userId, $parentId, $parentType, $type ) {
-		
-		return self::find()->where( 'userId=:uid AND parentId=:pid AND parentType =:pType AND type=:type ', [ ':uid' => $userId, ':pid' => $parentId,':pType' => $parentType, ':type' => $type ] )->one();
+
+	public static function findByParentTypeUserId( $parentType, $userId, $type ) {
+
+		return self::find()->where( 'parentType =:pType AND userId=:uid AND type=:type ', [ ':pType' => $parentType, ':uid' => $userId, ':type' => $type ] );
 	}
 }
 

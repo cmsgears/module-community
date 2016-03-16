@@ -5,6 +5,8 @@ namespace cmsgears\community\common\services;
 use \Yii;
 
 // CMG Imports    
+use cmsgears\core\common\config\CoreGlobal;
+
 use cmsgears\community\common\models\entities\Follower; 
 
 class FollowerService extends \cmsgears\core\common\services\Service {
@@ -15,52 +17,52 @@ class FollowerService extends \cmsgears\core\common\services\Service {
 
 	public static function findById( $id ) {
 
-		return Follow::findOne( $id );
+		return Follower::findById( $id );
 	}
-	
-	public static function findAllbyUserIdType( $userId, $type = Follow::TYPE_FOLLOW ) {
-		
-		return Follow::findAllbyUserIdType( $userId, $type );
+
+	public static function getUserLikeCount( $parentType ) {
+
+		$user	= Yii::$app->user->identity;
+
+		return Follower::findByParentTypeUserId( $parentType, $user->id, Follower::TYPE_LIKE )->count();
 	}
-	
-	public static function findAllByParentIdType( $parentId, $type = Follow::TYPE_FOLLOW ) {
-		
-		return Follow::findAllByParentIdType( $parentId, $type );
+
+	public static function getUserFollowCount( $parentType ) {
+
+		$user	= Yii::$app->user->identity;
+
+		return Follower::findByParentTypeUserId( $parentType, $user->id, Follower::TYPE_FOLLOW )->count();
 	}
-	
-	public static function findAllByParentIdParentTypeActive( $parentId, $parentType, $type, $active	= Follow::ACTIVE ) {
-		
-		return Follow::findAllByParentIdParentTypeActive( $parentId, $parentType, $type, $active );
+
+	public static function getUserWishlistCount( $parentType ) {
+
+		$user	= Yii::$app->user->identity;
+
+		return Follower::findByParentTypeUserId( $parentType, $user->id, Follower::TYPE_WISHLIST )->count();
 	}
-	
-	public static function findByUserParentIdType(  $userId, $parentId, $parentType, $type ) {
-		
-		return Follow::findByUserParentIdType(  $userId, $parentId, $parentType, $type );
-	}
-	  
+
 	// Create ----------------
-	
-	public static function createOrUpdatedByExisting( $userId, $parentId, $parentType, $type ) {
-		
-		$follower	= self::findByUserParentIdType( $userId, $parentId, $parentType, $type );
-		 
+
+	public static function createOrUpdate( $parentId, $parentType, $userId, $type ) {
+
+		$follower	= Follower::findByParentUserId( $parentId, $parentType, $userId, $type )->one();
+
 		if( isset( $follower ) ) {
-			 
-			self::update( $follower );
+
+			$follower = self::update( $follower );
 		}
 		else {
-			
-			$follower	= new Follow();
-			
-			$follower->userId		= $userId;
+
+			$follower				= new Follower();
 			$follower->parentId		= $parentId;
 			$follower->parentType	= $parentType;
+			$follower->userId		= $userId;
 			$follower->type			= $type;
-			$follower->active		= Follow::ACTIVE;
-			
-			self::create( $follower );
+			$follower->active		= CoreGlobal::STATUS_ACTIVE;
+
+			$follower = self::create( $follower );
 		}
-		
+
 		return $follower;
 	}
 
@@ -72,20 +74,20 @@ class FollowerService extends \cmsgears\core\common\services\Service {
  	}
 
 	// Update ----------------
-	
+
 	public static function update( $model ) {
 
-		if( $model->active	== Follow::INACTIVE ) {
-			
-			$model->active	= Follow::ACTIVE;
+		if( $model->active == CoreGlobal::STATUS_INACTIVE ) {
+
+			$model->active	= CoreGlobal::STATUS_ACTIVE;
 		}
 		else {
-			
-			$model->active	= Follow::INACTIVE;
+
+			$model->active	= CoreGlobal::STATUS_INACTIVE;
 		}
-		
+
 		$model->update();
-		
+
 		return $model;
  	}
 }

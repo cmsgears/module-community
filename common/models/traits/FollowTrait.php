@@ -13,6 +13,7 @@ trait FollowTrait {
 
 	private $followCounts;
 	private $userFollows;
+	private $userFollowCounts;
 
 	public function getModelFollowers() {
 
@@ -21,6 +22,8 @@ trait FollowTrait {
 	public function getFollowers() {
 
 	}
+
+	// Model Followers ---------------------------------
 
 	public function generateFollowCounts() {
 
@@ -31,7 +34,7 @@ trait FollowTrait {
 
     	$query->select( [ 'type', 'count(id) as total' ] )
 				->from( $followerTable )
-				->where( [ 'parentId' => $this->id, 'active' => true ] )
+				->where( [ 'parentId' => $this->id, 'parentType' => $this->parentType, 'active' => true ] )
 				->groupBy( 'type' );
 
 		$counts 	= $query->all();
@@ -74,6 +77,8 @@ trait FollowTrait {
 		return $this->followCounts[ Follower::TYPE_WISHLIST ];
 	}
 
+	// User Follow Tests -------------------------------
+
 	public function generateUserFollows() {
 
 		$user		= Yii::$app->user->identity;
@@ -86,7 +91,7 @@ trait FollowTrait {
 
 	    	$query->select( [ 'type', 'active' ] )
 					->from( $followerTable )
-					->where( [ 'parentId' => $this->id, 'userId' => $user->id ] );
+					->where( [ 'parentId' => $this->id, 'parentType' => $this->parentType, 'userId' => $user->id ] );
 
 			$follows = $query->all();
 
@@ -127,6 +132,34 @@ trait FollowTrait {
 		}
 
 		return $this->userFollows[ Follower::TYPE_WISHLIST ];
+	}
+
+	public static function getStatusCounts( $type = ListingFollower::TYPE_FOLLOW ) {
+
+		$returnArr		= [ 'all' => 0, CoreGlobal::STATUS_ACTIVE => 0, CoreGlobal::STATUS_INACTIVE => 0 ];
+
+		$followerTable	= CmnTables::TABLE_FOLLOWER;
+		$query			= new Query();
+
+    	$query->select( [ 'active', 'count(id) as total' ] )
+				->from( $followerTable )
+				->where( [ 'parentId' => $this->id, 'parentType' => $this->parentType, 'type' => $type ] )
+				->groupBy( 'active' );
+
+		$counts 	= $query->all();
+		$returnArr	= [];
+		$counter	= 0;
+
+		foreach ( $counts as $count ) {
+
+			$returnArr[ $count[ 'active' ] ] = $count[ 'total' ];
+
+			$counter	= $counter + $count[ 'total' ];
+		}
+
+		$returnArr[ 'all' ] = $counter;
+
+		return $returnArr;
 	}
 }
 
