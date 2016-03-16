@@ -110,6 +110,11 @@ class Follower extends \cmsgears\core\common\models\entities\CmgEntity {
 	}
 
 	// Follower --------------------------
+	
+	public static function findByParentType( $parentType, $type ) {
+
+        return self::find()->where( 'parentType =:pType AND type=:type ', [ ':pType' => $parentType, ':type' => $type ] );
+	}
 
 	public static function findByParentUserId( $parentId, $parentType, $userId, $type ) {
 

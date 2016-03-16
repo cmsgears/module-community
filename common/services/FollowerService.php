@@ -40,6 +40,21 @@ class FollowerService extends \cmsgears\core\common\services\Service {
 
 		return Follower::findByParentTypeUserId( $parentType, $user->id, Follower::TYPE_WISHLIST )->count();
 	}
+    
+    public static function getModelLikeCount( $parentType ) {
+
+        return Follower::findByParentType( $parentType, Follower::TYPE_LIKE )->count();
+    }
+
+    public static function getModelFollowCount( $parentType ) {
+
+        return Follower::findByParentType( $parentType, Follower::TYPE_FOLLOW )->count();
+    }
+
+    public static function getModelWishlistCount( $parentType ) {
+
+        return Follower::findByParentType( $parentType, Follower::TYPE_WISHLIST )->count();
+    }
 
 	// Create ----------------
 
