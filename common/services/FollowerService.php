@@ -3,10 +3,12 @@ namespace cmsgears\community\common\services;
 
 // Yii Imports
 use \Yii;
+use yii\db\Query;
 
 // CMG Imports    
 use cmsgears\core\common\config\CoreGlobal;
 
+use cmsgears\community\common\models\entities\CmnTables;
 use cmsgears\community\common\models\entities\Follower; 
 
 class FollowerService extends \cmsgears\core\common\services\Service {
@@ -54,6 +56,52 @@ class FollowerService extends \cmsgears\core\common\services\Service {
     public static function getModelWishlistCount( $parentType ) {
 
         return Follower::findByParentType( $parentType, Follower::TYPE_WISHLIST )->count();
+    }
+    
+    public static function getFollowerStatus( $userId, $parentId, $type = Follower::TYPE_FOLLOW ) {
+        
+        return Follower::findByParentTypeUserId( $userId, $parentId, $type )->one();
+    }
+    
+    public static function getFollowingIdList( $userId, $parentType ) {
+        
+        return self::findList( 'parentId', CmnTables::TABLE_FOLLOWER, [ 'conditions' => [ 'userId' => $userId, 'type' => Follower::TYPE_FOLLOW, 'active' => CoreGlobal::STATUS_ACTIVE, 'parentType' => $parentType ] ] );
+    }
+    
+    public static function getStatusCounts( $parentId, $type = Follower::TYPE_FOLLOW ) {
+
+        $followerTable  = CmnTables::TABLE_FOLLOWER;
+        $query          = new Query();
+
+        $query->select( [ 'active', 'count(id) as total' ] )
+                ->from( $followerTable )
+                ->where( [ 'parentId' => $parentId, 'type' => $type ] )
+                ->groupBy( 'active' );
+
+        $counts     = $query->all();
+        $returnArr  = [];
+        $counter    = 0;
+
+        foreach ( $counts as $count ) {
+
+            $returnArr[ $count[ 'active' ] ] = $count[ 'total' ];
+
+            $counter    = $counter + $count[ 'total' ];
+        }
+
+        $returnArr[ 'all' ] = $counter;
+
+        if( !isset( $returnArr[ CoreGlobal::STATUS_INACTIVE ] ) ) {
+
+            $returnArr[ CoreGlobal::STATUS_INACTIVE ]   = 0;
+        }
+
+        if( !isset( $returnArr[ CoreGlobal::STATUS_ACTIVE ] ) ) {
+
+            $returnArr[ CoreGlobal::STATUS_ACTIVE ] = 0;
+        }
+
+        return $returnArr;
     }
 
 	// Create ----------------

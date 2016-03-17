@@ -20,7 +20,8 @@ trait FollowTrait {
 	}
 
 	public function getFollowers() {
-
+        
+        return $this->hasMany( Follower::className(), [ 'parentId' => 'id' ] );
 	}
 
 	// Model Followers ---------------------------------
