@@ -182,7 +182,7 @@ CREATE TABLE `cmg_cmn_follower` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `userId` bigint(20) NOT NULL,
   `parentId` bigint(20) NOT NULL,
-  `parentType` bigint(20) NOT NULL,
+  `parentType` varchar(50) NOT NULL,
   `type` tinyint(4) NOT NULL,
   `active` tinyint(4) NOT NULL,
   `createdAt` datetime NOT NULL,

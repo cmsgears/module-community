@@ -50,7 +50,7 @@ class FollowerService extends \cmsgears\core\common\services\Service {
 
     public static function getModelFollowCount( $parentType ) {
 
-        return Follower::findByParentType( $parentType, Follower::TYPE_FOLLOW )->count();
+        return Follower::findByParentType( $parentType, Follower::TYPE_FOLLOW )->andWhere( [ 'active' => CoreGlobal::STATUS_ACTIVE ] )->count();
     }
 
     public static function getModelWishlistCount( $parentType ) {
@@ -58,9 +58,9 @@ class FollowerService extends \cmsgears\core\common\services\Service {
         return Follower::findByParentType( $parentType, Follower::TYPE_WISHLIST )->count();
     }
     
-    public static function getFollowerStatus( $userId, $parentId, $type = Follower::TYPE_FOLLOW ) {
+    public static function getFollowerStatus( $parentType, $userId, $type = Follower::TYPE_FOLLOW ) {
         
-        return Follower::findByParentTypeUserId( $userId, $parentId, $type )->one();
+        return Follower::findByParentTypeUserId( $parentType, $userId, $type )->one();
     }
     
     public static function getFollowingIdList( $userId, $parentType ) {
