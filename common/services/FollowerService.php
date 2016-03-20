@@ -33,7 +33,7 @@ class FollowerService extends \cmsgears\core\common\services\Service {
 
 		$user	= Yii::$app->user->identity;
 
-		return Follower::findByParentTypeUserId( $parentType, $user->id, Follower::TYPE_FOLLOW )->count();
+		return Follower::findByParentTypeUserId( $parentType, $user->id, Follower::TYPE_FOLLOW )->andWhere( [ 'active' => CoreGlobal::STATUS_ACTIVE ] )->count();
 	}
 
 	public static function getUserWishlistCount( $parentType ) {
