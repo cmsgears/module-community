@@ -1,14 +1,14 @@
 <?php
-namespace cmsgears\community\common\services;
+namespace cmsgears\community\common\services\resources;
 
 // Yii Imports
 use \Yii;
 use yii\data\Sort;
 
 // CMG Imports
-use cmsgears\community\common\models\entities\GroupMessage;
+use cmsgears\community\common\models\entities\resources\GroupMessage;
 
-class GroupMessageService extends \cmsgears\core\common\services\Service {
+class GroupMessageService extends \cmsgears\core\common\services\base\Service {
 
 	// Static Methods ----------------------------------------------
 
@@ -34,12 +34,12 @@ class GroupMessageService extends \cmsgears\core\common\services\Service {
 	                'desc' => ['createdAt' => SORT_DESC ],
 	                'default' => SORT_ASC,
 	                'label' => 'createdAt',
-	            ], 
+	            ],
 	        ],
 	        'defaultOrder' => [
 	        	'createdAt' => SORT_DESC
 	        ]
-	    ]); 
+	    ]);
 
 		if( !isset( $conditions[ 'sort' ] ) ) {
 
@@ -62,7 +62,7 @@ class GroupMessageService extends \cmsgears\core\common\services\Service {
 
 		return true;
 	}
-	
+
 	public static function deleteByGroupId( $groupId ) {
 
 		GroupMessage::deleteByGroupId( $groupId );

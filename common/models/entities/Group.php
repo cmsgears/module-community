@@ -9,15 +9,17 @@ use yii\behaviors\SluggableBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\behaviors\AuthorBehavior;
-
-use cmsgears\core\common\models\entities\CmgFile;
 use cmsgears\core\common\models\entities\User;
+use cmsgears\core\common\models\resources\CmgFile;
+use cmsgears\community\common\models\base\CmnTables;
+
 use cmsgears\core\common\models\traits\MetaTrait;
 use cmsgears\core\common\models\traits\CategoryTrait;
 use cmsgears\core\common\models\traits\TagTrait;
 use cmsgears\core\common\models\traits\CreateModifyTrait;
 use cmsgears\cms\common\models\traits\ContentTrait;
+
+use cmsgears\core\common\behaviors\AuthorBehavior;
 
 /**
  * Group Entity
@@ -30,7 +32,7 @@ use cmsgears\cms\common\models\traits\ContentTrait;
  * @property string $slug
  * @property string $type
  * @property short $status
- * @property short $visibility 
+ * @property short $visibility
  */
 class Group extends \cmsgears\core\common\models\entities\CmgEntity {
 
@@ -100,7 +102,7 @@ class Group extends \cmsgears\core\common\models\entities\CmgEntity {
 	}
 
 	public function getVisibilityStr() {
-		
+
 		return self::$visibilityMap[ $this->visibility ];
 	}
 
@@ -124,8 +126,8 @@ class Group extends \cmsgears\core\common\models\entities\CmgEntity {
 	 */
 	public function checkOwner( $user ) {
 
-		return $this->createdBy	= $user->id;		
-	} 
+		return $this->createdBy	= $user->id;
+	}
 
 	// yii\base\Component ----------------
 
@@ -205,7 +207,7 @@ class Group extends \cmsgears\core\common\models\entities\CmgEntity {
 
 			$existingGroup = self::findByNameType( $this->name, $this->type );
 
-			if( isset( $existingGroup ) && $this->name == $existingGroup->name && 
+			if( isset( $existingGroup ) && $this->name == $existingGroup->name &&
 				$this->id != $existingGroup->id && strcmp( $existingGroup->name, $this->name ) == 0 ) {
 
 				$this->addError( $attribute, Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_EXIST ) );

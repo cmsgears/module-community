@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\community\common\models\entities;
+namespace cmsgears\community\common\models\resources;
 
 // Yii Imports
 use \Yii;
@@ -11,9 +11,10 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
 use cmsgears\core\common\models\entities\User;
+use cmsgears\community\common\models\base\CmnTables;
 
 /**
- * Message Entity
+ * WallMessage Entity
  *
  * @property integer $id
  * @property integer $senderId
@@ -25,7 +26,7 @@ use cmsgears\core\common\models\entities\User;
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  */
-class Message extends \cmsgears\core\common\models\entities\CmgEntity {
+class WallMessage extends \cmsgears\core\common\models\base\CmgEntity {
 
 	const VISIBILITY_PRIVATE	=  0; // visible only among sender and recipient
 	const VISIBILITY_FRIENDS	=  5; // friends can view the message

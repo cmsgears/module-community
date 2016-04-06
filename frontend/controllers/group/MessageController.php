@@ -3,21 +3,21 @@ namespace cmsgears\community\frontend\controllers\group;
 
 // Yii Imports
 use Yii;
-use yii\filters\VerbFilter;  
+use yii\filters\VerbFilter;
 
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal; 
-use cmsgears\core\frontend\config\WebGlobalCore;  
- 
-use cmsgears\community\common\services\GroupMessageService; 
-use cmsgears\community\common\services\GroupMemberService;  
+use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\core\frontend\config\WebGlobalCore;
+
+use cmsgears\community\common\services\resources\GroupMessageService;
+use cmsgears\community\common\services\mappers\GroupMemberService;
 
 class MessageController extends \cmsgears\core\common\controllers\BaseController {
 
 	// Constructor and Initialisation ------------------------------
 
  	public function __construct( $id, $module, $config = [] ) {
- 		
+
 		$this->layout	= WebGlobalCore::LAYOUT_PRIVATE;
 
         parent::__construct( $id, $module, $config );
@@ -46,20 +46,20 @@ class MessageController extends \cmsgears\core\common\controllers\BaseController
     }
 
 	// MemberController
-	
+
 	public function actionAll( $id ) {
-		 
+
 		$dataProvider	= GroupMessageService::getPagination( [ 'conditions' => [ 'groupId' => $id ] ] );
 		$member			= GroupMemberService::findByUserId( Yii::$app->user->getIdentity()->id );
-		 
+
 		return $this->render( 'all', [
-			
+
 			'dataProvider' => $dataProvider,
 			'groupId' => $id,
 			'memberId' => $member->id
 		] );
-	} 
-   
+	}
+
 }
 
 ?>

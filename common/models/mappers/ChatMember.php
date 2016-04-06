@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\community\common\models\entities;
+namespace cmsgears\community\common\models\mappers;
 
 // Yii Imports
 use \Yii;
@@ -11,52 +11,30 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
 use cmsgears\core\common\models\entities\User;
-use cmsgears\core\common\models\entities\Role;
+use cmsgears\community\common\models\base\CmnTables;
 
 /**
- * GroupMember Entity
+ * ChatMember Entity
  *
  * @property integer $id
+ * @property integer $chatId
  * @property integer $userId
- * @property integer $groupId
- * @property integer $roleId
- * @property integer $status
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  * @property datetime $syncedAt
  */
-class GroupMember extends \cmsgears\core\common\models\entities\CmgEntity {
-
-	const STATUS_NEW		= 0;
-	const STATUS_ACTIVE		= 1;
-	const STATUS_BLOCKED	= 2;
-
-	public static $statusMap = [
-		self::STATUS_NEW => "New",
-		self::STATUS_ACTIVE => "Active",
-		self::STATUS_BLOCKED => "Blocked"
-	];
+class ChatMember extends \cmsgears\core\common\models\base\CmgEntity {
 
 	// Instance Methods --------------------------------------------
 
-	public function getGroup() {
+	public function getChat() {
 
-		return $this->hasOne( Group::className(), [ 'id' => 'groupId' ] );
+		return $this->hasOne( Chat::className(), [ 'id' => 'chatId' ] );
 	}
 
 	public function getUser() {
 
 		return $this->hasOne( User::className(), [ 'id' => 'userId' ] );
-	}
-
-	public function getRole() {
-
-		return $this->hasOne( Role::className(), [ 'id' => 'roleId' ] );
-	}
-
-	public function getStatusStr() {
-
-		return self::$statusMap[ $this->status ];
 	}
 
 	// yii\base\Component ----------------
@@ -85,8 +63,8 @@ class GroupMember extends \cmsgears\core\common\models\entities\CmgEntity {
 	public function rules() {
 
         return [
-        	[ [ 'groupId', 'userId', 'roleId' ], 'required' ],
-            [ [ 'status' ], 'safe' ],
+        	[ [ 'chatId', 'userId' ], 'required' ],
+            [ [ 'id' ], 'safe' ],
             [ [ 'createdAt', 'modifiedAt', 'syncedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
@@ -97,10 +75,8 @@ class GroupMember extends \cmsgears\core\common\models\entities\CmgEntity {
 	public function attributeLabels() {
 
 		return [
-			'groupId' => Yii::$app->cmgCmnMessage->getMessage( CmnGlobal::FIELD_GROUP ),
-			'userId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_USER ),
-			'roleId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_ROLE ),
-			'status' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_STATUS )
+			'chatId' => Yii::$app->cmgCmnMessage->getMessage( CmnGlobal::FIELD_CHAT ),
+			'userId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_USER )
 		];
 	}
 
@@ -113,31 +89,21 @@ class GroupMember extends \cmsgears\core\common\models\entities\CmgEntity {
      */
 	public static function tableName() {
 
-		return CmnTables::TABLE_GROUP_MEMBER;
+		return CmnTables::TABLE_CHAT_MEMBER;
 	}
 
-	// GroupMember -----------------------
-	
+	// ChatMember ------------------------
+
 	// Read ----
-	
-	public static function findWithAll() {
-		
-		return self::find()->joinWith( 'user' )->joinWith( 'group' );
-	}
-
-	public static function findByUserId( $id ) {
-		
-		return self::find()->where( [ 'userId' => $id ] )->one();
-	}
 
 	// Delete ----
-	
-	/**
-	 * Delete all entries having given group id.
-	 */
-	public static function deleteByGroupId( $groupId ) {
 
-		self::deleteAll( 'groupId=:id', [ ':id' => $groupId ] );
+	/**
+	 * Delete all entries having given chat id.
+	 */
+	public static function deleteByChatId( $chatId ) {
+
+		self::deleteAll( 'chatId=:id', [ ':id' => $chatId ] );
 	}
 
 	/**
@@ -146,7 +112,7 @@ class GroupMember extends \cmsgears\core\common\models\entities\CmgEntity {
 	public static function deleteByUserId( $userId ) {
 
 		self::deleteAll( 'userId=:id', [ ':id' => $userId ] );
-	} 
+	}
 }
 
 ?>

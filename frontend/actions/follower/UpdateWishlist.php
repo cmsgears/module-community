@@ -9,13 +9,13 @@ use cmsgears\core\common\config\CoreGlobal;
 
 use cmsgears\community\common\models\entities\Follower;
 
-use cmsgears\community\common\services\FollowerService;
+use cmsgears\community\common\services\entities\FollowerService;
 
 use cmsgears\core\common\utilities\AjaxUtil;
 
 /**
  * UpdateWishlist can be used to add wishlist for a model.
- * 
+ *
  * The controller must provide modelService variable using approprite service class.
  */
 class UpdateWishlist extends \cmsgears\core\frontend\actions\common\ModelAction {

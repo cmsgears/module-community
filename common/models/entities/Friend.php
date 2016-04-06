@@ -11,6 +11,7 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
 use cmsgears\core\common\models\entities\User;
+use cmsgears\community\common\models\base\CmnTables;
 
 /**
  * Friend Entity
@@ -22,7 +23,7 @@ use cmsgears\core\common\models\entities\User;
  * @property datetime $modifiedAt
  * @property integer $status
  */
-class Friend extends \cmsgears\core\common\models\entities\CmgEntity {
+class Friend extends \cmsgears\core\common\models\base\CmgEntity {
 
 	// Instance Methods --------------------------------------------
 

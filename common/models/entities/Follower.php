@@ -10,7 +10,8 @@ use yii\behaviors\TimestampBehavior;
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
-use cmsgears\core\common\models\entities\User; 
+use cmsgears\core\common\models\entities\User;
+use cmsgears\community\common\models\base\CmnTables;
 
 /**
  * Follow Entity
@@ -24,7 +25,7 @@ use cmsgears\core\common\models\entities\User;
  * @property int $createdAt
  * @property int $modifiedAt
  */
-class Follower extends \cmsgears\core\common\models\entities\CmgEntity {
+class Follower extends \cmsgears\core\common\models\base\CmgEntity {
 
 	// Pre-Defined Type
 	const TYPE_LIKE		=  0; // User Likes
@@ -43,7 +44,7 @@ class Follower extends \cmsgears\core\common\models\entities\CmgEntity {
     /**
      * @inheritdoc
      */
-     
+
      public function behaviors() {
 
         return [
@@ -110,7 +111,7 @@ class Follower extends \cmsgears\core\common\models\entities\CmgEntity {
 	}
 
 	// Follower --------------------------
-	
+
 	public static function findByParentType( $parentType, $type ) {
 
         return self::find()->where( 'parentType =:pType AND type=:type', [ ':pType' => $parentType, ':type' => $type ] );

@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\community\common\models\entities;
+namespace cmsgears\community\common\models\resources;
 
 // Yii Imports
 use \Yii;
@@ -8,6 +8,8 @@ use \Yii;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
+use cmsgears\community\common\models\base\CmnTables;
+
 /**
  * ChatMessage Entity
  *
@@ -15,7 +17,7 @@ use cmsgears\community\common\config\CmnGlobal;
  * @property integer $chatId
  * @property integer $messageId
  */
-class ChatMessage extends \cmsgears\core\common\models\entities\CmgEntity {
+class ChatMessage extends \cmsgears\core\common\models\base\CmgEntity {
 
 	// Instance Methods --------------------------------------------
 

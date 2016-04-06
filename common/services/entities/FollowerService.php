@@ -1,17 +1,17 @@
 <?php
-namespace cmsgears\community\common\services;
+namespace cmsgears\community\common\services\entities;
 
 // Yii Imports
 use \Yii;
 use yii\db\Query;
 
-// CMG Imports    
+// CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
-use cmsgears\community\common\models\entities\CmnTables;
-use cmsgears\community\common\models\entities\Follower; 
+use cmsgears\community\common\models\base\CmnTables;
+use cmsgears\community\common\models\entities\Follower;
 
-class FollowerService extends \cmsgears\core\common\services\Service {
+class FollowerService extends \cmsgears\core\common\services\base\Service {
 
 	// Static Methods ----------------------------------------------
 
@@ -42,7 +42,7 @@ class FollowerService extends \cmsgears\core\common\services\Service {
 
 		return Follower::findByParentTypeUserId( $parentType, $user->id, Follower::TYPE_WISHLIST )->count();
 	}
-    
+
     public static function getModelLikeCount( $parentType ) {
 
         return Follower::findByParentType( $parentType, Follower::TYPE_LIKE )->count();
@@ -57,17 +57,17 @@ class FollowerService extends \cmsgears\core\common\services\Service {
 
         return Follower::findByParentType( $parentType, Follower::TYPE_WISHLIST )->count();
     }
-    
+
     public static function getFollowerStatus( $parentType, $userId, $type = Follower::TYPE_FOLLOW ) {
-        
+
         return Follower::findByParentTypeUserId( $parentType, $userId, $type )->one();
     }
-    
+
     public static function getFollowingIdList( $userId, $parentType ) {
-        
+
         return self::findList( 'parentId', CmnTables::TABLE_FOLLOWER, [ 'conditions' => [ 'userId' => $userId, 'type' => Follower::TYPE_FOLLOW, 'active' => CoreGlobal::STATUS_ACTIVE, 'parentType' => $parentType ] ] );
     }
-    
+
     public static function getStatusCounts( $parentId, $type = Follower::TYPE_FOLLOW ) {
 
         $followerTable  = CmnTables::TABLE_FOLLOWER;

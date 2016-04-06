@@ -9,6 +9,8 @@ use yii\behaviors\TimestampBehavior;
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
+use cmsgears\community\common\models\base\CmnTables;
+
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
 /**
@@ -16,13 +18,13 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @property int $id
  * @property int $createdBy
- * @property int $modifiedBy 
+ * @property int $modifiedBy
  * @property string $sessionId
  * @property integer $status
  * @property date $createdAt
  * @property date $modifiedAt
  */
-class Chat extends \cmsgears\core\common\models\entities\CmgEntity {
+class Chat extends \cmsgears\core\common\models\base\CmgEntity {
 
 	// Instance Methods --------------------------------------------
 

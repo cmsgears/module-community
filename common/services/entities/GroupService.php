@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\community\common\services;
+namespace cmsgears\community\common\services\entities;
 
 // Yii Imports
 use \Yii;
@@ -8,19 +8,19 @@ use yii\data\Sort;
 // CMG Imports
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\entities\CmgFile;
-use cmsgears\core\common\models\entities\ModelCategory;
-use cmsgears\cms\common\models\entities\ModelContent;
+use cmsgears\core\common\models\resources\CmgFile;
+use cmsgears\core\common\models\mappers\ModelCategory;
+use cmsgears\cms\common\models\mappers\ModelContent;
 use cmsgears\community\common\models\entities\Group;
 
-use cmsgears\core\admin\services\FileService;
-use cmsgears\community\common\services\GroupMemberService;
-use cmsgears\community\common\services\GroupMessageService;
+use cmsgears\core\admin\services\resources\FileService;
+use cmsgears\community\common\services\mappers\GroupMemberService;
+use cmsgears\community\common\services\mappers\GroupMessageService;
 
 /**
  * The class GroupService is base class to perform database activities for Group Entity.
  */
-class GroupService extends \cmsgears\core\common\services\Service {
+class GroupService extends \cmsgears\core\common\services\base\Service {
 
 	// Static Methods ----------------------------------------------
 
@@ -30,9 +30,9 @@ class GroupService extends \cmsgears\core\common\services\Service {
 
 		return Group::findById( $id );
 	}
-	
+
 	public static function getPaginationDetailsByType( $type ) {
-		
+
 		return self::getPagination( [ 'conditions' => [ 'type' => $type ] ] );
 	}
 
@@ -91,11 +91,11 @@ class GroupService extends \cmsgears\core\common\services\Service {
 	// Create -----------
 
 	public static function create( $group, $content, $avatar = null, $banner = null ) {
-		
+
 		// Save Avatar
 		if( isset( $avatar ) ) {
 
-			FileService::saveImage( $avatar, [ 'model' => $group, 'attribute' => 'avatarId' ] ); 
+			FileService::saveImage( $avatar, [ 'model' => $group, 'attribute' => 'avatarId' ] );
 		}
 
 		// Create Group
@@ -109,7 +109,7 @@ class GroupService extends \cmsgears\core\common\services\Service {
 
 			FileService::saveImage( $banner, [ 'model' => $content, 'attribute' => 'bannerId' ] );
 		}
-		
+
 		GroupMemberService::addMember( $group->id, $group->createdBy, false, true );
 
 		// Create Content
@@ -182,29 +182,29 @@ class GroupService extends \cmsgears\core\common\services\Service {
 
 		$existingGroup		= self::findById( $group->id );
 		$existingContent	= null;
-		
+
 		if( isset( $content ) ) {
-				
+
 			$existingContent	= ModelContent::findById( $content->id );
-		}	 
-		
+		}
+
 		$existingMessages	= null;
-		
-		// Delete Members		
+
+		// Delete Members
 		GroupMemberService::deleteByGroupId( $group->id );
-		
-		// Delete Messages		
+
+		// Delete Messages
 		GroupMessageService::deleteByGroupId( $group->id );
-		
+
 		// Delete Group
 		$existingGroup->delete();
-		
+
 		// Delete Content
-		
+
 		if( isset( $content ) ) {
-				
+
 			$existingContent->delete();
-		}	
+		}
 
 		return true;
 	}

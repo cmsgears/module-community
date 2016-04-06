@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\community\frontend\controllers\apix; 
+namespace cmsgears\community\frontend\controllers\apix;
 
 // Yii Imports
 use \Yii;
@@ -11,8 +11,8 @@ use cmsgears\community\common\config\CmnGlobal;
 
 use cmsgears\community\common\models\entities\Follower;
 
-use cmsgears\community\common\services\GroupService; 
-use cmsgears\community\common\services\FollowerService;
+use cmsgears\community\common\services\entities\GroupService;
+use cmsgears\community\common\services\entities\FollowerService;
 
 use cmsgears\core\common\filters\UserExistFilter;
 
@@ -73,7 +73,7 @@ class GroupController extends \cmsgears\core\frontend\controllers\BaseController
 	}
 
 	public function actionFollow( $slug ) {
-		
+
 		$user 		= Yii::$app->user->getIdentity();
 		$group		= GroupService::findBySlug( $slug );
 

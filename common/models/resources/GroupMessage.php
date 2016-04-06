@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\community\common\models\entities;
+namespace cmsgears\community\common\models\resources;
 
 // Yii Imports
 use \Yii;
@@ -10,7 +10,7 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\entities\CmgEntity;
+use cmsgears\community\common\models\base\CmnTables;
 
 /**
  * GroupMember Entity
@@ -23,7 +23,7 @@ use cmsgears\core\common\models\entities\CmgEntity;
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  */
-class GroupMessage extends CmgEntity {
+class GroupMessage extends \cmsgears\core\common\models\base\CmgEntity {
 
 	const VISIBILITY_PUBLIC		= 0;	// Visible to All
 	const VISIBILITY_PRIVATE	= 1;	// Visible to logged in users
@@ -49,11 +49,11 @@ class GroupMessage extends CmgEntity {
 
 	public function getVisibilityStr() {
 
-		return self::$visibilityMap[ $this->visibility ];	
+		return self::$visibilityMap[ $this->visibility ];
 	}
 
 	public function setVisibility( $visibility ) {
-		
+
 		$this->message_visibility = $visibility;
 	}
 
@@ -115,13 +115,13 @@ class GroupMessage extends CmgEntity {
 	}
 
 	// GroupMessage ----------------------
-	
-	// Read ---- 
-	
+
+	// Read ----
+
 	// Update ----
-	
+
 	// Delete ----
-	
+
 	/**
 	 * Delete all entries having given group id.
 	 */

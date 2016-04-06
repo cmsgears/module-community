@@ -9,13 +9,13 @@ use cmsgears\core\common\config\CoreGlobal;
 
 use cmsgears\community\common\models\entities\Follower;
 
-use cmsgears\community\common\services\FollowerService;
+use cmsgears\community\common\services\entities\FollowerService;
 
 use cmsgears\core\common\utilities\AjaxUtil;
 
 /**
  * UpdateLike can be used to add like for a model.
- * 
+ *
  * The controller must provide modelService variable using approprite service class.
  */
 class UpdateLike extends \cmsgears\core\frontend\actions\common\ModelAction {
