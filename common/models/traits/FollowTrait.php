@@ -6,7 +6,7 @@ use \Yii;
 use \yii\db\Query;
 
 // CMG Imports
-use cmsgears\community\common\models\entities\CmnTables;
+use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\entities\Follower;
 
 trait FollowTrait {
@@ -20,7 +20,7 @@ trait FollowTrait {
 	}
 
 	public function getFollowers() {
-        
+
         return $this->hasMany( Follower::className(), [ 'parentId' => 'id' ] );
 	}
 
