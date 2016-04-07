@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\community\common\models\entities\base;
+namespace cmsgears\community\common\models\base;
 
 class CmnTables {
 
