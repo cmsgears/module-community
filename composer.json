@@ -1,14 +1,12 @@
 {
 	"name": "cmsgears/module-community",
 	"description": "The Community module having features including friends, message, groups, group members, group messages.",
-	"homepage": "http://www.cmsgears.com", 
+	"homepage": "http://www.cmsgears.com",
 	"type": "package",
-	"keywords": [ "yii", "yii2", "cmsgears", "module", "community" ],
+	"keywords": [ "yii2", "cmsgears", "module", "listing" ],
 	"license": "http://www.cmsgears.com/license",
 	"support": {
-		"forum": "http://forum.cmsgears.com/",
-		"issues": "https://www.amazingdesk.com/cmsgears/issues/",
-		"blog": "http://cmsgears.tutorials24x7.com/"
+		"resources": "http://www.cmsgears.com"
 	},
 	"autoload": {
 		"psr-4": {
@@ -17,6 +15,7 @@
 	},
     "require": {
         "php": ">=5.4.0",
-        "cmsgears/module-core": "*"
+        "cmsgears/module-core": "*",
+        "cmsgears/module-cms": "*"
     }
 }
