@@ -1,19 +1,36 @@
 <?php
-namespace cmsgears\community\common\models\traits;
+namespace cmsgears\community\common\models\traits\mappers;
 
 // Yii Imports
 use \Yii;
 use \yii\db\Query;
 
 // CMG Imports
+use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\models\base\CmnTables;
-use cmsgears\community\common\models\entities\Follower;
+use cmsgears\community\common\models\mappers\Follower;
 
 trait FollowTrait {
 
 	private $followCounts;
+
 	private $userFollows;
+
 	private $userFollowCounts;
+
+	// Instance methods --------------------------------------------
+
+	// Yii interfaces ------------------------
+
+	// Yii classes ---------------------------
+
+	// CMG interfaces ------------------------
+
+	// CMG classes ---------------------------
+
+	// Validators ----------------------------
+
+	// FollowTrait ---------------------------
 
 	public function getModelFollowers() {
 
@@ -24,7 +41,7 @@ trait FollowTrait {
         return $this->hasMany( Follower::className(), [ 'parentId' => 'id' ] );
 	}
 
-	// Model Followers ---------------------------------
+	// Model Followers
 
 	public function generateFollowCounts() {
 
@@ -78,7 +95,7 @@ trait FollowTrait {
 		return $this->followCounts[ Follower::TYPE_WISHLIST ];
 	}
 
-	// User Follow Tests -------------------------------
+	// User Follow Tests
 
 	public function generateUserFollows() {
 
@@ -135,6 +152,8 @@ trait FollowTrait {
 		return $this->userFollows[ Follower::TYPE_WISHLIST ];
 	}
 
+	// Active/Inactive
+
 	public static function getStatusCounts( $type = ListingFollower::TYPE_FOLLOW ) {
 
 		$returnArr		= [ 'all' => 0, CoreGlobal::STATUS_ACTIVE => 0, CoreGlobal::STATUS_INACTIVE => 0 ];
@@ -162,6 +181,22 @@ trait FollowTrait {
 
 		return $returnArr;
 	}
-}
 
-?>
+	// Static Methods ----------------------------------------------
+
+	// Yii classes ---------------------------
+
+	// CMG classes ---------------------------
+
+	// FollowTrait ---------------------------
+
+	// Read - Query -----------
+
+	// Read - Find ------------
+
+	// Create -----------------
+
+	// Update -----------------
+
+	// Delete -----------------
+}

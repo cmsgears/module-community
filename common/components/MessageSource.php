@@ -3,14 +3,22 @@ namespace cmsgears\community\common\components;
 
 // Yii Imports
 use \Yii;
-use yii\base\Component;
 
 // CMG Imports
+use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-class MessageSource extends Component {
+class MessageSource extends \yii\base\Component {
 
 	// Variables ---------------------------------------------------
+
+	// Global -----------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
 
 	private $messageDb = [
 		// Generic Fields
@@ -20,18 +28,18 @@ class MessageSource extends Component {
 		CmnGlobal::FIELD_CONSUMED => 'Consumed'
 	];
 
-	/**
-	 * Initialise the Cms Message DB Component.
-	 */
-    public function init() {
+	// Constructor and Initialisation ------------------------------
 
-        parent::init();
-    }
+	// Instance methods --------------------------------------------
+
+	// Yii parent classes --------------------
+
+	// CMG parent classes --------------------
+
+	// MessageSource -------------------------
 
 	public function getMessage( $messageKey, $params = [], $language = null ) {
 
 		return $this->messageDb[ $messageKey ];
 	}
 }
-
-?>

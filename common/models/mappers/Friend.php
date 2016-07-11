@@ -10,21 +10,27 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
+use cmsgears\core\common\models\interfaces\IOwner;
+use cmsgears\core\common\models\base\CoreTables;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\community\common\models\base\CmnTables;
-use cmsgears\community\common\models\entities\Chat;
+
+use cmsgears\core\common\models\traits\resources\DataTrait;
 
 /**
- * ChatMember Entity
+ * Friend Entity
  *
  * @property integer $id
- * @property integer $chatId
  * @property integer $userId
+ * @property integer $friendId
+ * @property integer $status
+ * @property string $type
  * @property datetime $createdAt
  * @property datetime $modifiedAt
- * @property datetime $syncedAt
+ * @property string $content
+ * @property string $data
  */
-class ChatMember extends \cmsgears\core\common\models\base\Entity {
+class Friend extends \cmsgears\core\common\models\base\Entity implements IOwner {
 
 	// Variables ---------------------------------------------------
 
@@ -46,6 +52,8 @@ class ChatMember extends \cmsgears\core\common\models\base\Entity {
 
 	// Traits ------------------------------------------------------
 
+	use DataTrait;
+
 	// Constructor and Initialisation ------------------------------
 
 	// Instance methods --------------------------------------------
@@ -62,7 +70,6 @@ class ChatMember extends \cmsgears\core\common\models\base\Entity {
     public function behaviors() {
 
         return [
-
             'timestampBehavior' => [
                 'class' => TimestampBehavior::className(),
 				'createdAtAttribute' => 'createdAt',
@@ -80,9 +87,12 @@ class ChatMember extends \cmsgears\core\common\models\base\Entity {
 	public function rules() {
 
         return [
-        	[ [ 'chatId', 'userId' ], 'required' ],
-            [ [ 'id' ], 'safe' ],
-            [ [ 'createdAt', 'modifiedAt', 'syncedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+            [ [ 'userId', 'friendId' ], 'required' ],
+            [ [ 'id', 'content', 'data' ], 'safe' ],
+            [ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+            [ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+            [ [ 'userId', 'friendId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
 
@@ -92,8 +102,11 @@ class ChatMember extends \cmsgears\core\common\models\base\Entity {
 	public function attributeLabels() {
 
 		return [
-			'chatId' => Yii::$app->cmgCmnMessage->getMessage( CmnGlobal::FIELD_CHAT ),
-			'userId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_USER )
+			'userId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_USER ),
+			'friendId' => Yii::$app->cmnMessage->getMessage( CmnGlobal::FIELD_FRIEND ),
+			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
+			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
+			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
 		];
 	}
 
@@ -103,16 +116,32 @@ class ChatMember extends \cmsgears\core\common\models\base\Entity {
 
 	// Validators ----------------------------
 
-	// ChatMember ----------------------------
+	// Friend --------------------------------
 
-	public function getChat() {
-
-		return $this->hasOne( Chat::className(), [ 'id' => 'chatId' ] );
-	}
-
+	/**
+	 * @return User
+	 */
 	public function getUser() {
 
 		return $this->hasOne( User::className(), [ 'id' => 'userId' ] );
+	}
+
+	/**
+	 * @return User
+	 */
+	public function getFriend() {
+
+		$userTable = CoreTables::TABLE_USER;
+
+		return $this->hasOne( User::className(), [ 'id' => 'friendId' ] )->from( "$userTable as friend" );
+	}
+
+	/**
+	 * @return boolean - whether given user created this entry
+	 */
+	public function isOwner( $user = null, $strict = false ) {
+
+		return $this->userId	= $user->id;
 	}
 
 	// Static Methods ----------------------------------------------
@@ -126,36 +155,14 @@ class ChatMember extends \cmsgears\core\common\models\base\Entity {
      */
 	public static function tableName() {
 
-		return CmnTables::TABLE_CHAT_MEMBER;
+		return CmnTables::TABLE_FRIEND;
 	}
 
 	// CMG parent classes --------------------
 
-	// ChatMember ----------------------------
+	// Friend --------------------------------
 
 	// Read - Query -----------
-
-	public static function queryWithAll( $config = [] ) {
-
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'chat', 'user' ];
-		$config[ 'relations' ]	= $relations;
-
-		return parent::queryWithAll( $config );
-	}
-
-	public static function queryWithChat( $config = [] ) {
-
-		$config[ 'relations' ]	= [ 'chat' ];
-
-		return parent::queryWithAll( $config );
-	}
-
-	public static function queryWithUser( $config = [] ) {
-
-		$config[ 'relations' ]	= [ 'user' ];
-
-		return parent::queryWithAll( $config );
-	}
 
 	// Read - Find ------------
 
@@ -165,19 +172,13 @@ class ChatMember extends \cmsgears\core\common\models\base\Entity {
 
 	// Delete -----------------
 
-	/**
-	 * Delete all entries having given chat id.
-	 */
-	public static function deleteByChatId( $chatId ) {
-
-		self::deleteAll( 'chatId=:id', [ ':id' => $chatId ] );
-	}
-
-	/**
-	 * Delete all entries having given user id.
-	 */
 	public static function deleteByUserId( $userId ) {
 
 		self::deleteAll( 'userId=:id', [ ':id' => $userId ] );
+	}
+
+	public static function deleteByFriendId( $friendId ) {
+
+		self::deleteAll( 'friendId=:id', [ ':id' => $friendId ] );
 	}
 }

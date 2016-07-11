@@ -10,9 +10,12 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
+use cmsgears\core\common\models\interfaces\IApproval;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\core\common\models\entities\Role;
 use cmsgears\community\common\models\base\CmnTables;
+
+use cmsgears\core\common\models\traits\interfaces\ApprovalTrait;
 
 /**
  * GroupMember Entity
@@ -26,41 +29,39 @@ use cmsgears\community\common\models\base\CmnTables;
  * @property datetime $modifiedAt
  * @property datetime $syncedAt
  */
-class GroupMember extends \cmsgears\core\common\models\base\CmgEntity {
+class GroupMember extends \cmsgears\core\common\models\base\Entity implements IApproval {
 
-	const STATUS_NEW		= 0;
-	const STATUS_ACTIVE		= 1;
-	const STATUS_BLOCKED	= 2;
+	// Variables ---------------------------------------------------
 
-	public static $statusMap = [
-		self::STATUS_NEW => "New",
-		self::STATUS_ACTIVE => "Active",
-		self::STATUS_BLOCKED => "Blocked"
-	];
+	// Globals -------------------------------
 
-	// Instance Methods --------------------------------------------
+	// Constants --------------
 
-	public function getGroup() {
+	// Public -----------------
 
-		return $this->hasOne( Group::className(), [ 'id' => 'groupId' ] );
-	}
+	// Protected --------------
 
-	public function getUser() {
+	// Variables -----------------------------
 
-		return $this->hasOne( User::className(), [ 'id' => 'userId' ] );
-	}
+	// Public -----------------
 
-	public function getRole() {
+	// Protected --------------
 
-		return $this->hasOne( Role::className(), [ 'id' => 'roleId' ] );
-	}
+	// Private ----------------
 
-	public function getStatusStr() {
+	// Traits ------------------------------------------------------
 
-		return self::$statusMap[ $this->status ];
-	}
+	use ApprovalTrait;
 
-	// yii\base\Component ----------------
+	// Constructor and Initialisation ------------------------------
+
+	// Instance methods --------------------------------------------
+
+	// Yii interfaces ------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
 
     /**
      * @inheritdoc
@@ -78,7 +79,7 @@ class GroupMember extends \cmsgears\core\common\models\base\CmgEntity {
         ];
     }
 
-	// yii\base\Model --------------------
+	// yii\base\Model ---------
 
     /**
      * @inheritdoc
@@ -98,16 +99,41 @@ class GroupMember extends \cmsgears\core\common\models\base\CmgEntity {
 	public function attributeLabels() {
 
 		return [
-			'groupId' => Yii::$app->cmgCmnMessage->getMessage( CmnGlobal::FIELD_GROUP ),
-			'userId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_USER ),
-			'roleId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_ROLE ),
-			'status' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_STATUS )
+			'groupId' => Yii::$app->cmnMessage->getMessage( CmnGlobal::FIELD_GROUP ),
+			'userId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_USER ),
+			'roleId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ROLE ),
+			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS )
 		];
+	}
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// Validators ----------------------------
+
+	// GroupMember ---------------------------
+
+	public function getGroup() {
+
+		return $this->hasOne( Group::className(), [ 'id' => 'groupId' ] );
+	}
+
+	public function getUser() {
+
+		return $this->hasOne( User::className(), [ 'id' => 'userId' ] );
+	}
+
+	public function getRole() {
+
+		return $this->hasOne( Role::className(), [ 'id' => 'roleId' ] );
 	}
 
 	// Static Methods ----------------------------------------------
 
-	// yii\db\ActiveRecord ---------------
+	// Yii parent classes --------------------
+
+	// yii\db\ActiveRecord ----
 
     /**
      * @inheritdoc
@@ -117,21 +143,47 @@ class GroupMember extends \cmsgears\core\common\models\base\CmgEntity {
 		return CmnTables::TABLE_GROUP_MEMBER;
 	}
 
-	// GroupMember -----------------------
+	// CMG parent classes --------------------
 
-	// Read ----
+	// GroupMember ---------------------------
 
-	public static function findWithAll() {
+	// Read - Query -----------
 
-		return self::find()->joinWith( 'user' )->joinWith( 'group' );
+	public static function queryWithAll( $config = [] ) {
+
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'group', 'user', 'role' ];
+		$config[ 'relations' ]	= $relations;
+
+		return parent::queryWithAll( $config );
 	}
+
+	public static function queryWithGroup( $config = [] ) {
+
+		$config[ 'relations' ]	= [ 'group' ];
+
+		return parent::queryWithAll( $config );
+	}
+
+	public static function queryWithMember( $config = [] ) {
+
+		$config[ 'relations' ]	= [ 'user', 'role' ];
+
+		return parent::queryWithAll( $config );
+	}
+
+
+	// Read - Find ------------
 
 	public static function findByUserId( $id ) {
 
 		return self::find()->where( [ 'userId' => $id ] )->one();
 	}
 
-	// Delete ----
+	// Create -----------------
+
+	// Update -----------------
+
+	// Delete -----------------
 
 	/**
 	 * Delete all entries having given group id.
@@ -149,5 +201,3 @@ class GroupMember extends \cmsgears\core\common\models\base\CmgEntity {
 		self::deleteAll( 'userId=:id', [ ':id' => $userId ] );
 	}
 }
-
-?>
