@@ -164,6 +164,14 @@ class Friend extends \cmsgears\core\common\models\base\Entity implements IOwner 
 
 	// Read - Query -----------
 
+	public static function queryWithHasOne( $config = [] ) {
+
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'user', 'friend' ];
+		$config[ 'relations' ]	= $relations;
+
+		return parent::queryWithAll( $config );
+	}
+
 	// Read - Find ------------
 
 	// Create -----------------

@@ -3,6 +3,9 @@ namespace cmsgears\community\common\models\entities;
 
 // Yii Imports
 use \Yii;
+use yii\db\Expression;
+use yii\helpers\ArrayHelper;
+use yii\behaviors\TimestampBehavior;
 use yii\behaviors\SluggableBehavior;
 
 // CMG Imports
@@ -22,6 +25,7 @@ use cmsgears\core\common\models\traits\SlugTypeTrait;
 use cmsgears\core\common\models\traits\interfaces\ApprovalTrait;
 use cmsgears\core\common\models\traits\interfaces\VisibilityTrait;
 use cmsgears\core\common\models\traits\resources\DataTrait;
+use cmsgears\core\common\models\traits\resources\VisualTrait;
 use cmsgears\core\common\models\traits\mappers\CategoryTrait;
 use cmsgears\core\common\models\traits\mappers\TagTrait;
 use cmsgears\cms\common\models\traits\resources\ContentTrait;
@@ -33,6 +37,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @property int $id
  * @property int $avatarId
+ * @property int $ownerId
  * @property int $createdBy
  * @property int $modifiedBy
  * @property string $name
@@ -63,6 +68,9 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 
 	// Public -----------------
 
+	public $mParentType		= CmnGlobal::TYPE_GROUP;
+	public $categoryType	= CmnGlobal::TYPE_GROUP;
+
 	// Protected --------------
 
 	// Private ----------------
@@ -78,6 +86,7 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 	use SlugTypeTrait;
 	use TagTrait;
 	use VisibilityTrait;
+	use VisualTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -95,15 +104,20 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
     public function behaviors() {
 
         return [
-			'authorBehavior' => [
-				'class' => AuthorBehavior::className()
-			],
+            'authorBehavior' => [
+                'class' => AuthorBehavior::className()
+            ],
+            'timestampBehavior' => [
+                'class' => TimestampBehavior::className(),
+				'createdAtAttribute' => 'createdAt',
+ 				'updatedAtAttribute' => 'modifiedAt',
+ 				'value' => new Expression('NOW()')
+            ],
             'sluggableBehavior' => [
                 'class' => SluggableBehavior::className(),
                 'attribute' => 'name',
                 'slugAttribute' => 'slug',
-                'ensureUnique' => true,
-                'uniqueValidator' => [ 'targetAttribute' => 'type' ]
+                'ensureUnique' => true
             ]
         ];
     }
@@ -122,7 +136,6 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
             [ 'slug', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
             [ 'description', 'string', 'min' => 0, 'max' => Yii::$app->core->extraLargeText ],
             [ [ 'name', 'type' ], 'unique', 'targetAttribute' => [ 'name', 'type' ] ],
-            [ [ 'slug', 'type' ], 'unique', 'targetAttribute' => [ 'slug', 'type' ] ],
 			[ [ 'status', 'visibility' ], 'number', 'integerOnly' => true ],
             [ [ 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
@@ -138,6 +151,9 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 			'avatarId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_AVATAR ),
 			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
 			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
+			'slug' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SLUG ),
+			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
+			'icon' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ICON ),
 			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
 			'visibility' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_VISIBILITY )
 		];
@@ -145,23 +161,44 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 
 	// CMG interfaces ------------------------
 
+	// IOwner
+
+	public function isOwner( $user = null, $strict = false ) {
+
+		if( !isset( $user ) && !$strict ) {
+
+			$user	= Yii::$app->user->getIdentity();
+		}
+
+		if( isset( $user ) ) {
+
+			if( isset( $this->ownerId ) ) {
+
+				return $this->ownerId == $user->id;
+			}
+			else {
+
+				return $this->createdBy == $user->id;
+			}
+		}
+
+		return false;
+	}
+
 	// CMG parent classes --------------------
 
 	// Validators ----------------------------
 
 	// Group ---------------------------------
 
+	public function getOwner() {
+
+		return $this->hasOne( User::className(), [ 'id' => 'ownerId' ] );
+	}
+
 	public function getMembers() {
 
 		return $this->hasMany( GroupMember::className(), [ 'groupId' => 'id' ] );
-	}
-
-	/**
-	 * @return boolean - whether given user is group owner
-	 */
-	public function isOwner( $user = null, $strict = false ) {
-
-		return $this->createdBy	= $user->id;
 	}
 
 	// Static Methods ----------------------------------------------
@@ -184,9 +221,9 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 
 	// Read - Query -----------
 
-	public static function queryWithAll( $config = [] ) {
+	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'modelContent', 'members' ];
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'modelContent', 'avatar', 'owner', 'creator', 'modifier' ];
 		$config[ 'relations' ]	= $relations;
 
 		return parent::queryWithAll( $config );
@@ -194,7 +231,21 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 
 	public static function queryWithContent( $config = [] ) {
 
-		$config[ 'relations' ]	= [ 'modelContent' ];
+		$config[ 'relations' ]	= [ 'avatar', 'modelContent' ];
+
+		return parent::queryWithAll( $config );
+	}
+
+	public static function queryWithOwner( $config = [] ) {
+
+		$config[ 'relations' ]	= [ 'avatar', 'owner' ];
+
+		return parent::queryWithAll( $config );
+	}
+
+	public static function queryWithMembers( $config = [] ) {
+
+		$config[ 'relations' ]	= [ 'avatar', 'members' ];
 
 		return parent::queryWithAll( $config );
 	}

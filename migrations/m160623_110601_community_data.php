@@ -26,7 +26,7 @@ class m160623_110601_community_data extends \yii\db\Migration {
 		$this->prefix	= 'cmg_';
 
 		$this->site		= Site::findBySlug( CoreGlobal::SITE_MAIN );
-		$this->master	= User::findByUsername( 'demomaster' );
+		$this->master	= User::findByUsername( Yii::$app->migration->getSiteMaster() );
 
 		Yii::$app->core->setSite( $this->site );
 	}
@@ -97,7 +97,7 @@ class m160623_110601_community_data extends \yii\db\Migration {
 		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'homeUrl', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
 
 		$roles = [
-			[ $this->master->id, $this->master->id, 'Group Super Admin', 'group-super-admin', '/', CmnGlobal::TYPE_COMMUNITY, null, 'The role Super Admin is limited to manage groups from website. Admin has full rights to create, read, update or delete Group and to manage Group Settings. Group Admin can also manage Group Members and change their roles.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Group master', 'group-master', '/', CmnGlobal::TYPE_COMMUNITY, null, 'The role master is limited to manage groups from website. Admin has full rights to create, read, update or delete Group and to manage Group Settings. Group Admin can also manage Group Members and change their roles.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 			[ $this->master->id, $this->master->id, 'Group Admin', 'group-admin', '/', CmnGlobal::TYPE_COMMUNITY, null, 'The role Admin is limited to manage groups from website. Admin has full rights to update Group Profile. Group Admin can also manage Group Members, change their roles with less privileges than Admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 			[ $this->master->id, $this->master->id, 'Group Moderator', 'group-moderator', '/', CmnGlobal::TYPE_COMMUNITY, null, 'The role Moderator is limited to manage groups from website. Moderators can update or delete Group Messages and change Group Status Message.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 			[ $this->master->id, $this->master->id, 'Group Member', 'group-member', '/', CmnGlobal::TYPE_COMMUNITY, null, 'The role Member is limited to site users from website. Members can post on group, invite friends to join groups, share group on facebook wall, tweet about group on twitter.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
@@ -105,10 +105,10 @@ class m160623_110601_community_data extends \yii\db\Migration {
 
 		$this->batchInsert( $this->prefix . 'core_role', $columns, $roles );
 
-		$gsaRole			= Role::findBySlugType( 'group-super-admin', CmnGlobal::TYPE_COMMUNITY );
-		$gaRole				= Role::findBySlugType( 'group-admin', CmnGlobal::TYPE_COMMUNITY );
-		$gmodRole			= Role::findBySlugType( 'group-moderator', CmnGlobal::TYPE_COMMUNITY );
-		$gmemRole			= Role::findBySlugType( 'group-member', CmnGlobal::TYPE_COMMUNITY );
+		$gmRole			= Role::findBySlugType( 'group-master', CmnGlobal::TYPE_COMMUNITY );
+		$gaRole			= Role::findBySlugType( 'group-admin', CmnGlobal::TYPE_COMMUNITY );
+		$gmodRole		= Role::findBySlugType( 'group-moderator', CmnGlobal::TYPE_COMMUNITY );
+		$gmemRole		= Role::findBySlugType( 'group-member', CmnGlobal::TYPE_COMMUNITY );
 
 		// Permissions
 
@@ -173,7 +173,7 @@ class m160623_110601_community_data extends \yii\db\Migration {
 		$columns = [ 'roleId', 'permissionId' ];
 
 		$mappings = [
-			[ $gsaRole->id, $gMasterPerm->id ],
+			[ $gmRole->id, $gMasterPerm->id ],
 			[ $gaRole->id, $gAdminPerm->id ],
 			[ $gmodRole->id, $gModeratorPerm->id ],
 			[ $gmemRole->id, $gMemberPerm->id ]
@@ -247,5 +247,3 @@ class m160623_110601_community_data extends \yii\db\Migration {
         echo "m160623_110601_community_data will be deleted with m160621_014408_core.\n";
     }
 }
-
-?>

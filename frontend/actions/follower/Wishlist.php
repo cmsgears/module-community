@@ -52,4 +52,16 @@ class UpdateWishlist extends \cmsgears\core\frontend\actions\common\ModelAction 
 	}
 }
 
+	public function actionWishlist( $slug ) {
+
+		$user 		= Yii::$app->user->getIdentity();
+		$group		= $this->modelService->getBySlug( $slug );
+
+		$follower	= FollowerService::createOrUpdate( $user->id, $group->id, Follower::TYPE_WISHLIST );
+
+		$data		= [ 'active' => $follower->active, 'count' => $group->getLikesCount() ];
+
+		return AjaxUtil::generateSuccess( Yii::$app->coreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ), $data );
+	}
+
 ?>

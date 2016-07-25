@@ -92,8 +92,8 @@ class ChatMember extends \cmsgears\core\common\models\base\Entity {
 	public function attributeLabels() {
 
 		return [
-			'chatId' => Yii::$app->cmgCmnMessage->getMessage( CmnGlobal::FIELD_CHAT ),
-			'userId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_USER )
+			'chatId' => Yii::$app->cmnMessage->getMessage( CmnGlobal::FIELD_CHAT ),
+			'userId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_USER )
 		];
 	}
 
@@ -135,7 +135,7 @@ class ChatMember extends \cmsgears\core\common\models\base\Entity {
 
 	// Read - Query -----------
 
-	public static function queryWithAll( $config = [] ) {
+	public static function queryWithHasOne( $config = [] ) {
 
 		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'chat', 'user' ];
 		$config[ 'relations' ]	= $relations;

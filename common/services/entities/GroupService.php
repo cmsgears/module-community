@@ -6,51 +6,104 @@ use \Yii;
 use yii\data\Sort;
 
 // CMG Imports
+use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\resources\CmgFile;
+use cmsgears\core\common\models\resources\File;
 use cmsgears\core\common\models\mappers\ModelCategory;
-use cmsgears\cms\common\models\mappers\ModelContent;
+use cmsgears\cms\common\models\resources\ModelContent;
+use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\entities\Group;
 
-use cmsgears\core\admin\services\resources\FileService;
-use cmsgears\community\common\services\mappers\GroupMemberService;
-use cmsgears\community\common\services\mappers\GroupMessageService;
+use cmsgears\core\common\services\interfaces\resources\IFileService;
+use cmsgears\community\common\services\interfaces\entities\IGroupService;
+use cmsgears\community\common\services\interfaces\resources\IGroupMessageService;
+use cmsgears\community\common\services\interfaces\mappers\IGroupMemberService;
 
-/**
- * The class GroupService is base class to perform database activities for Group Entity.
- */
-class GroupService extends \cmsgears\core\common\services\base\Service {
+use cmsgears\core\common\services\traits\NameTypeTrait;
+use cmsgears\core\common\services\traits\SlugTypeTrait;
 
-	// Static Methods ----------------------------------------------
+class GroupService extends \cmsgears\core\common\services\base\EntityService implements IGroupService {
 
-	// Read ----------------
+	// Variables ---------------------------------------------------
 
-	public static function findById( $id ) {
+	// Globals -------------------------------
 
-		return Group::findById( $id );
-	}
+	// Constants --------------
 
-	public static function getPaginationDetailsByType( $type ) {
+	// Public -----------------
 
-		return self::getPagination( [ 'conditions' => [ 'type' => $type ] ] );
-	}
+	public static $modelClass	= '\cmsgears\community\common\models\entities\Group';
 
-	// Data Provider ----
+	public static $modelTable	= CmnTables::TABLE_GROUP;
 
-	/**
-	 * @param array $config to generate query
-	 * @return ActiveDataProvider
-	 */
-	public static function getPagination( $conditions= [] ) {
+	public static $parentType	= CmnGlobal::TYPE_GROUP;
 
-		  $sort = new Sort([
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	protected $fileService;
+	protected $groupMessageService;
+	protected $groupMemberService;
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
+
+	use NameTypeTrait;
+	use SlugTypeTrait;
+
+	// Constructor and Initialisation ------------------------------
+
+    public function __construct( IFileService $fileService, IGroupMessageService $groupMessageService, IGroupMemberService $groupMemberService, $config = [] ) {
+
+		$this->fileService			= $fileService;
+		$this->groupMessageService 	= $groupMessageService;
+		$this->groupMemberService 	= $groupMemberService;
+
+        parent::__construct( $config );
+    }
+
+	// Instance methods --------------------------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// GroupService --------------------------
+
+	// Data Provider ------
+
+	public function getPage( $config = [] ) {
+
+	    $sort = new Sort([
 	        'attributes' => [
 	            'name' => [
 	                'asc' => [ 'name' => SORT_ASC ],
 	                'desc' => ['name' => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'name',
+	                'label' => 'name'
+	            ],
+	            'slug' => [
+	                'asc' => [ 'slug' => SORT_ASC ],
+	                'desc' => ['slug' => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'slug'
+	            ],
+	            'owner' => [
+	                'asc' => [ 'createdBy' => SORT_ASC ],
+	                'desc' => ['createdBy' => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'owner'
 	            ],
 	            'cdate' => [
 	                'asc' => [ 'createdAt' => SORT_ASC ],
@@ -59,8 +112,8 @@ class GroupService extends \cmsgears\core\common\services\base\Service {
 	                'label' => 'cdate',
 	            ],
 	            'udate' => [
-	                'asc' => [ 'updatedAt' => SORT_ASC ],
-	                'desc' => ['updatedAt' => SORT_DESC ],
+	                'asc' => [ 'modifiedAt' => SORT_ASC ],
+	                'desc' => ['modifiedAt' => SORT_DESC ],
 	                'default' => SORT_DESC,
 	                'label' => 'udate',
 	            ]
@@ -70,144 +123,95 @@ class GroupService extends \cmsgears\core\common\services\base\Service {
 	        ]
 	    ]);
 
-		if( !isset( $conditions[ 'query' ] ) ) {
-
-			$conditions[ 'query' ] = Group::findWithContent();
-		}
-
 		if( !isset( $conditions[ 'sort' ] ) ) {
 
 			$conditions[ 'sort' ] = $sort;
 		}
 
-		if( !isset( $conditions[ 'search-col' ] ) ) {
-
-			$conditions[ 'search-col' ] = 'name';
-		}
-
-		return self::getDataProvider( new Group(), $conditions );
+		return parent::findPage( $config );
 	}
 
-	// Create -----------
+	public function getPageByType( $type ) {
 
-	public static function create( $group, $content, $avatar = null, $banner = null ) {
-
-		// Save Avatar
-		if( isset( $avatar ) ) {
-
-			FileService::saveImage( $avatar, [ 'model' => $group, 'attribute' => 'avatarId' ] );
-		}
-
-		// Create Group
-		$group->save();
-
-		$content->parentId		= $group->id;
-		$content->parentType	= CmnGlobal::TYPE_GROUP;
-
-		// Save Banner
-		if( isset( $banner ) ) {
-
-			FileService::saveImage( $banner, [ 'model' => $content, 'attribute' => 'bannerId' ] );
-		}
-
-		GroupMemberService::addMember( $group->id, $group->createdBy, false, true );
-
-		// Create Content
-		$content->save();
-
-		return $group;
+		return $this->getPage( [ 'conditions' => [ 'type' => $type ] ] );
 	}
 
-	// Update -----------
+	// Read ---------------
 
-	public static function update( $group, $content, $avatar = null, $banner = null ) {
+    // Read - Models ---
 
-		$groupToUpdate		= self::findById( $group->id );
-		$contentToUpdate	= ModelContent::findById( $content->id );
+    // Read - Lists ----
 
-		$groupToUpdate->copyForUpdateFrom( $group, [ 'avatarId', 'name', 'visibility', 'status' ] );
+    // Read - Maps -----
 
-		$contentToUpdate->copyForUpdateFrom( $content, [ 'bannerId', 'templateId', 'summary', 'content', 'seoName', 'seoDescription', 'seoKeywords', 'seoRobot' ] );
+	// Read - Others ---
 
-		// Save Avatar
-		if( isset( $banner ) ) {
+	// Create -------------
 
-			FileService::saveImage( $avatar, [ 'model' => $groupToUpdate, 'attribute' => 'avatarId' ] );
-		}
+	public function create( $model, $config = [] ) {
 
-		// Save Banner
-		if( isset( $banner ) ) {
+		$avatar = isset( $config[ 'avatar' ] ) ? $config[ 'avatar' ] : null;
 
-			FileService::saveImage( $banner, [ 'model' => $contentToUpdate, 'attribute' => 'bannerId' ] );
-		}
+		$this->fileService->saveFiles( $model, [ 'avatarId' => $avatar ] );
 
-		$groupToUpdate->update();
-
-		$contentToUpdate->update();
-
-		return $groupToUpdate;
+		return parent::create( $model, $config );
 	}
 
-	public static function bindCategories( $binder, $type ) {
+	// Update -------------
 
-		$groupId		= $binder->binderId;
-		$categories		= $binder->bindedData;
+	public function update( $model, $config = [] ) {
 
-		// Clear all existing mappings
-		ModelCategory::deleteByParentIdType( $groupId, $type );
+		$avatar = isset( $config[ 'avatar' ] ) ? $config[ 'avatar' ] : null;
+		$admin 	= isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
 
-		if( isset( $categories ) && count( $categories ) > 0 ) {
+		$this->fileService->saveFiles( $model, [ 'avatarId' => $avatar ] );
 
-			foreach ( $categories as $key => $value ) {
+		if( $admin ) {
 
-				if( isset( $value ) && $value > 0 ) {
-
-					$toSave		= new ModelCategory();
-
-					$toSave->parentId	= $groupId;
-					$toSave->parentType	= CmnGlobal::TYPE_GROUP;
-					$toSave->categoryId	= $value;
-
-					$toSave->save();
-				}
-			}
+			return parent::update( $model, [
+				'attributes' => [ 'avatarId', 'name', 'visibility', 'status' ]
+			]);
 		}
 
-		return true;
+		return parent::update( $model, [
+			'attributes' => [ 'avatarId', 'name' ]
+		]);
 	}
 
-	// Delete -----------
+	// Delete -------------
 
-	public static function delete( $group, $content = null) {
-
-		$existingGroup		= self::findById( $group->id );
-		$existingContent	= null;
-
-		if( isset( $content ) ) {
-
-			$existingContent	= ModelContent::findById( $content->id );
-		}
-
-		$existingMessages	= null;
+	public function delete( $model, $config = [] ) {
 
 		// Delete Members
-		GroupMemberService::deleteByGroupId( $group->id );
+		$this->groupMemberService->deleteByGroupId( $group->id );
 
 		// Delete Messages
-		GroupMessageService::deleteByGroupId( $group->id );
+		$this->groupMessageService->deleteByGroupId( $group->id );
 
-		// Delete Group
-		$existingGroup->delete();
-
-		// Delete Content
-
-		if( isset( $content ) ) {
-
-			$existingContent->delete();
-		}
-
-		return true;
+		return parent::delete( $model, $config );
 	}
-}
 
-?>
+	// Static Methods ----------------------------------------------
+
+	// CMG parent classes --------------------
+
+	// GroupService --------------------------
+
+	// Data Provider ------
+
+	// Read ---------------
+
+    // Read - Models ---
+
+    // Read - Lists ----
+
+    // Read - Maps -----
+
+	// Read - Others ---
+
+	// Create -------------
+
+	// Update -------------
+
+	// Delete -------------
+}

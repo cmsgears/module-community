@@ -11,6 +11,8 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
 use cmsgears\core\common\models\interfaces\IVisibility; // Public - All, Protected - Logged In Users, Private - Group Members
+use cmsgears\core\common\models\base\CoreTables;
+use cmsgears\core\common\models\entities\User;
 use cmsgears\community\common\models\base\CmnTables;
 
 use cmsgears\core\common\models\traits\interfaces\VisibilityTrait;
@@ -114,14 +116,14 @@ class GroupMessage extends \cmsgears\core\common\models\base\Entity implements I
 
 	// GroupMessage --------------------------
 
+	public function getSender() {
+
+		return $this->hasOne( User::className(), [ 'id' => 'senderId' ] )->from( CoreTables::TABLE_USER . ' sender' );
+	}
+
 	public function getGroup() {
 
 		return $this->hasOne( Group::className(), [ 'id' => 'groupId' ] )->from( CmnTables::TABLE_GROUP . ' group' );
-	}
-
-	public function getMember() {
-
-		return $this->hasOne( GroupMember::className(), [ 'id' => 'memberId' ] )->from( CmnTables::TABLE_GROUP_MEMBER . ' member' );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -144,10 +146,17 @@ class GroupMessage extends \cmsgears\core\common\models\base\Entity implements I
 
 	// Read - Query -----------
 
-	public static function queryWithAll( $config = [] ) {
+	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'group', 'member', 'member.user' ];
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'sender', 'group' ];
 		$config[ 'relations' ]	= $relations;
+
+		return parent::queryWithAll( $config );
+	}
+
+	public static function queryWithSender( $config = [] ) {
+
+		$config[ 'relations' ]	= [ 'sender' ];
 
 		return parent::queryWithAll( $config );
 	}
@@ -155,13 +164,6 @@ class GroupMessage extends \cmsgears\core\common\models\base\Entity implements I
 	public static function queryWithGroup( $config = [] ) {
 
 		$config[ 'relations' ]	= [ 'group' ];
-
-		return parent::queryWithAll( $config );
-	}
-
-	public static function queryWithMember( $config = [] ) {
-
-		$config[ 'relations' ]	= [ 'member', 'member.user' ];
 
 		return parent::queryWithAll( $config );
 	}

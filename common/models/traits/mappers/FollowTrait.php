@@ -7,6 +7,7 @@ use \yii\db\Query;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
+
 use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\mappers\Follower;
 
@@ -52,7 +53,7 @@ trait FollowTrait {
 
     	$query->select( [ 'type', 'count(id) as total' ] )
 				->from( $followerTable )
-				->where( [ 'parentId' => $this->id, 'parentType' => $this->parentType, 'active' => true ] )
+				->where( [ 'parentId' => $this->id, 'parentType' => $this->mParentType, 'active' => true ] )
 				->groupBy( 'type' );
 
 		$counts 	= $query->all();
@@ -109,7 +110,7 @@ trait FollowTrait {
 
 	    	$query->select( [ 'type', 'active' ] )
 					->from( $followerTable )
-					->where( [ 'parentId' => $this->id, 'parentType' => $this->parentType, 'userId' => $user->id ] );
+					->where( [ 'parentId' => $this->id, 'parentType' => $this->mParentType, 'modelId' => $user->id ] );
 
 			$follows = $query->all();
 
@@ -163,7 +164,7 @@ trait FollowTrait {
 
     	$query->select( [ 'active', 'count(id) as total' ] )
 				->from( $followerTable )
-				->where( [ 'parentId' => $this->id, 'parentType' => $this->parentType, 'type' => $type ] )
+				->where( [ 'parentId' => $this->id, 'parentType' => $this->mParentType, 'type' => $type ] )
 				->groupBy( 'active' );
 
 		$counts 	= $query->all();

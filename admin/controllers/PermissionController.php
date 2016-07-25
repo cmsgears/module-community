@@ -1,15 +1,17 @@
 <?php
-namespace cmsgears\community\admin\controllers\group;
+namespace cmsgears\community\admin\controllers;
 
 // Yii Imports
 use \Yii;
 use yii\helpers\Url;
 
 // CMG Imports
+
+// CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryController {
+class PermissionController extends \cmsgears\core\admin\controllers\base\PermissionController {
 
 	// Variables ---------------------------------------------------
 
@@ -27,14 +29,13 @@ class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryCo
 
         parent::init();
 
-		$this->crudPermission 	= CmnGlobal::PERM_GROUP;
-		$this->type				= CmnGlobal::TYPE_GROUP;
-		$this->templateType		= CmnGlobal::TYPE_GROUP;
+		$this->crudPermission 	= CmnGlobal::PERM_COMMUNITY;
+		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'permission' ];
 
-		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'group-category' ];
+		$this->type			= CmnGlobal::TYPE_COMMUNITY;
 
-		$this->returnUrl		= Url::previous( 'categories' );
-		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/category/all' ], true );
+		$this->returnUrl	= Url::previous( 'permissions' );
+		$this->returnUrl	= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/permission/all' ], true );
 	}
 
 	// Instance methods --------------------------------------------
@@ -51,11 +52,11 @@ class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryCo
 
 	// CMG parent classes --------------------
 
-	// CategoryController --------------------
+	// PermissionController ------------------
 
 	public function actionAll() {
 
-		Url::remember( [ 'group/category/all' ], 'categories' );
+		Url::remember( [ 'permission/all' ], 'permissions' );
 
 		return parent::actionAll();
 	}

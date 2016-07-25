@@ -21,8 +21,8 @@ use cmsgears\core\common\models\traits\interfaces\ApprovalTrait;
  * GroupMember Entity
  *
  * @property integer $id
- * @property integer $userId
  * @property integer $groupId
+ * @property integer $userId
  * @property integer $roleId
  * @property integer $status
  * @property datetime $createdAt
@@ -149,7 +149,7 @@ class GroupMember extends \cmsgears\core\common\models\base\Entity implements IA
 
 	// Read - Query -----------
 
-	public static function queryWithAll( $config = [] ) {
+	public static function queryWithHasOne( $config = [] ) {
 
 		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'group', 'user', 'role' ];
 		$config[ 'relations' ]	= $relations;
@@ -164,7 +164,7 @@ class GroupMember extends \cmsgears\core\common\models\base\Entity implements IA
 		return parent::queryWithAll( $config );
 	}
 
-	public static function queryWithMember( $config = [] ) {
+	public static function queryWithUser( $config = [] ) {
 
 		$config[ 'relations' ]	= [ 'user', 'role' ];
 
@@ -176,7 +176,7 @@ class GroupMember extends \cmsgears\core\common\models\base\Entity implements IA
 
 	public static function findByUserId( $id ) {
 
-		return self::find()->where( [ 'userId' => $id ] )->one();
+		return self::find()->where( [ 'userId' => $id ] )->all();
 	}
 
 	// Create -----------------

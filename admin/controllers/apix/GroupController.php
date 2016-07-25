@@ -3,69 +3,88 @@ namespace cmsgears\community\admin\controllers\apix;
 
 // Yii Imports
 use \Yii;
-use yii\web\Controller;
 use yii\filters\VerbFilter;
-use yii\web\NotFoundHttpException;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\forms\Binder;
-
-use cmsgears\community\admin\services\GroupService;
-
 use cmsgears\core\common\utilities\AjaxUtil;
 
-class GroupController extends Controller {
+class GroupController extends \cmsgears\core\admin\controllers\base\Controller {
+
+	// Variables ---------------------------------------------------
+
+	// Globals ----------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
 
 	// Constructor and Initialisation ------------------------------
 
- 	public function __construct( $id, $module, $config = [] ) {
+ 	public function init() {
 
-        parent::__construct( $id, $module, $config );
+		parent::init();
+
+		$this->crudPermission	= CmnGlobal::PERM_GROUP;
+		$this->modelService		= Yii::$app->factory->get( 'groupService' );
 	}
 
-	// Instance Methods --------------------------------------------
+	// Instance methods --------------------------------------------
 
-	// yii\base\Component
+	// Yii interfaces ------------------------
 
-    public function behaviors() {
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	public function behaviors() {
 
         return [
             'rbac' => [
-                'class' => Yii::$app->cmgCore->getRbacFilterClass(),
+                'class' => Yii::$app->core->getRbacFilterClass(),
                 'actions' => [
-	                'bindCategories'  => [ 'permission' => CmnGlobal::PERM_GROUP ]
+	                'updateAvatar' => [ 'permission' => $this->crudPermission ],
+	                'assignCategory' => [ 'permission' => $this->crudPermission ],
+	                'removeCategory' => [ 'permission' => $this->crudPermission ],
+	                'assignTags' => [ 'permission' => $this->crudPermission ],
+	                'removeTag' => [ 'permission' => $this->crudPermission ]
                 ]
             ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-	                'bindCategories'  => ['get']
+                    'autoSearch' => [ 'post' ],
+                    'updateAvatar' => [ 'post' ],
+                    'assignCategory' => [ 'post' ],
+                    'removeCategory' => [ 'post' ],
+	                'assignTags' => [ 'post' ],
+	                'removeTag' => [ 'post' ]
                 ]
             ]
         ];
     }
 
-	// UserController
+	// yii\base\Controller ----
 
-	public function actionBindCategories() {
+    public function actions() {
 
-		$binder = new Binder();
+        return [
+        	'auto-search' => [ 'class' => 'cmsgears\core\common\actions\content\AutoSearch' ],
+            'update-avatar' => [ 'class' => 'cmsgears\core\common\actions\content\UpdateAvatar' ],
+            'assign-category' => [ 'class' => 'cmsgears\core\common\actions\category\AssignCategory' ],
+            'remove-category' => [ 'class' => 'cmsgears\core\common\actions\category\RemoveCategory' ],
+            'assign-tags' => [ 'class' => 'cmsgears\core\common\actions\tag\AssignTags' ],
+            'remove-tag' => [ 'class' => 'cmsgears\core\common\actions\tag\RemoveTag' ]
+		];
+    }
 
-		if( $binder->load( Yii::$app->request->post(), 'Binder' ) ) {
+	// CMG interfaces ------------------------
 
-			if( GroupService::bindCategories( $binder ) ) {
+	// CMG parent classes --------------------
 
-				// Trigger Ajax Success
-				return AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ) );
-			}
-		}
-
-		// Trigger Ajax Failure
-        return AjaxUtil::generateFailure( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_REQUEST ) );
-	}
+	// GroupController -----------------------
 }
-
-?>

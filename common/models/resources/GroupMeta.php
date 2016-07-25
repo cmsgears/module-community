@@ -11,7 +11,7 @@ use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\entities\Group;
 
 /**
- * GroupAttribute Entity
+ * GroupMeta Entity
  *
  * @property integer $id
  * @property integer $modelId
@@ -21,7 +21,7 @@ use cmsgears\community\common\models\entities\Group;
  * @property string $valueType
  * @property string $value
  */
-class GroupAttribute extends \cmsgears\core\common\models\base\ModelAttribute {
+class GroupMeta extends \cmsgears\core\common\models\base\ModelMeta {
 
 	// Variables ---------------------------------------------------
 
@@ -61,7 +61,7 @@ class GroupAttribute extends \cmsgears\core\common\models\base\ModelAttribute {
 
 	// Validators ----------------------------
 
-	// GroupAttribute ------------------------
+	// GroupMeta -----------------------------
 
 	public function getParent() {
 
@@ -79,12 +79,12 @@ class GroupAttribute extends \cmsgears\core\common\models\base\ModelAttribute {
      */
 	public static function tableName() {
 
-		return CmnTables::TABLE_GROUP_ATTRIBUTE;
+		return CmnTables::TABLE_GROUP_META;
 	}
 
 	// CMG parent classes --------------------
 
-	// GroupAttribute ------------------------
+	// GroupMeta -----------------------------
 
 	// Read - Query -----------
 

@@ -41,7 +41,7 @@ class m160623_110554_community extends \yii\db\Migration {
 
 		// Group
 		$this->upGroup();
-		$this->upGroupAttribute();
+		$this->upGroupMeta();
 		$this->upGroupMember();
 
 		// Post
@@ -119,6 +119,7 @@ class m160623_110554_community extends \yii\db\Migration {
         $this->createTable( $this->prefix . 'cmn_group', [
 			'id' => $this->bigPrimaryKey( 20 ),
 			'avatarId' => $this->bigInteger( 20 ),
+			'ownerId' => $this->bigInteger( 20 ),
 			'createdBy' => $this->bigInteger( 20 )->notNull(),
 			'modifiedBy' => $this->bigInteger( 20 ),
 			'name' => $this->string( CoreGlobal::TEXT_LARGE )->notNull(),
@@ -136,24 +137,25 @@ class m160623_110554_community extends \yii\db\Migration {
 
         // Index for columns avatar, creator and modifier
 		$this->createIndex( 'idx_' . $this->prefix . 'group_avatar', $this->prefix . 'cmn_group', 'avatarId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'group_owner', $this->prefix . 'cmn_group', 'ownerId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'group_creator', $this->prefix . 'cmn_group', 'createdBy' );
 		$this->createIndex( 'idx_' . $this->prefix . 'group_modifier', $this->prefix . 'cmn_group', 'modifiedBy' );
 	}
 
-	private function upGroupAttribute() {
+	private function upGroupMeta() {
 
-        $this->createTable( $this->prefix . 'cmn_group_attribute', [
+        $this->createTable( $this->prefix . 'cmn_group_meta', [
 			'id' => $this->bigPrimaryKey( 20 ),
 			'modelId' => $this->bigInteger( 20 )->notNull(),
 			'name' => $this->string( CoreGlobal::TEXT_MEDIUM )->notNull(),
 			'label' => $this->string( CoreGlobal::TEXT_LARGE )->notNull(),
-			'type' => $this->string( CoreGlobal::TEXT_MEDIUM )->notNull()->defaultValue( 'default' ),
+			'type' => $this->string( CoreGlobal::TEXT_MEDIUM ),
 			'valueType' => $this->string( CoreGlobal::TEXT_MEDIUM )->notNull()->defaultValue( 'text' ),
 			'value' => $this->text()
         ], $this->options );
 
         // Index for columns site, parent, creator and modifier
-		$this->createIndex( 'idx_' . $this->prefix . 'group_attribute_parent', $this->prefix . 'cmn_group_attribute', 'modelId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'group_meta_parent', $this->prefix . 'cmn_group_meta', 'modelId' );
 	}
 
 	private function upGroupMember() {
@@ -268,11 +270,12 @@ class m160623_110554_community extends \yii\db\Migration {
 
 		// Group
 		$this->addForeignKey( 'fk_' . $this->prefix . 'group_avatar', $this->prefix . 'cmn_group', 'avatarId', $this->prefix . 'core_file', 'id', 'SET NULL' );
+        $this->addForeignKey( 'fk_' . $this->prefix . 'group_owner', $this->prefix . 'cmn_group', 'ownerId', $this->prefix . 'core_user', 'id', 'RESTRICT' );
         $this->addForeignKey( 'fk_' . $this->prefix . 'group_creator', $this->prefix . 'cmn_group', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'group_modifier', $this->prefix . 'cmn_group', 'modifiedBy', $this->prefix . 'core_user', 'id', 'SET NULL' );
 
-		// Group Attribute
-        $this->addForeignKey( 'fk_' . $this->prefix . 'group_attribute_parent', $this->prefix . 'cmn_group_attribute', 'modelId', $this->prefix . 'cmn_group', 'id', 'CASCADE' );
+		// Group Meta
+        $this->addForeignKey( 'fk_' . $this->prefix . 'group_meta_parent', $this->prefix . 'cmn_group_meta', 'modelId', $this->prefix . 'cmn_group', 'id', 'CASCADE' );
 
 		// Group Member
         $this->addForeignKey( 'fk_' . $this->prefix . 'group_member_group', $this->prefix . 'cmn_group_member', 'groupId', $this->prefix . 'cmn_group', 'id', 'CASCADE' );
@@ -313,7 +316,7 @@ class m160623_110554_community extends \yii\db\Migration {
 
 		// Group
         $this->dropTable( $this->prefix . 'cmn_group' );
-		$this->dropTable( $this->prefix . 'cmn_group_attribute' );
+		$this->dropTable( $this->prefix . 'cmn_group_meta' );
 		$this->dropTable( $this->prefix . 'cmn_group_member' );
 
 		// Post
@@ -343,11 +346,12 @@ class m160623_110554_community extends \yii\db\Migration {
 
 		// Group
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'group_avatar', $this->prefix . 'cmn_group' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'group_owner', $this->prefix . 'cmn_group' );
         $this->dropForeignKey( 'fk_' . $this->prefix . 'group_creator', $this->prefix . 'cmn_group' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'group_modifier', $this->prefix . 'cmn_group' );
 
-		// Group Attribute
-        $this->dropForeignKey( 'fk_' . $this->prefix . 'group_attribute_parent', $this->prefix . 'cmn_group_attribute' );
+		// Group Meta
+        $this->dropForeignKey( 'fk_' . $this->prefix . 'group_meta_parent', $this->prefix . 'cmn_group_meta' );
 
 		// Group Member
         $this->dropForeignKey( 'fk_' . $this->prefix . 'group_member_group', $this->prefix . 'cmn_group_member' );
@@ -372,5 +376,3 @@ class m160623_110554_community extends \yii\db\Migration {
         $this->dropForeignKey( 'fk_' . $this->prefix . 'follower_user', $this->prefix . 'cmn_follower' );
 	}
 }
-
-?>

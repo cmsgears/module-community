@@ -6,38 +6,94 @@ use \Yii;
 use yii\data\Sort;
 
 // CMG Imports
-use cmsgears\community\common\models\entities\resources\GroupMessage;
+use cmsgears\core\common\config\CoreGlobal;
 
-class GroupMessageService extends \cmsgears\core\common\services\base\Service {
+use cmsgears\community\common\models\base\CmnTables;
+use cmsgears\community\common\models\resources\GroupMessage;
 
-	// Static Methods ----------------------------------------------
+use cmsgears\community\common\services\interfaces\resources\IGroupMessageService;
 
-	// Read ------------------
+class GroupMessageService extends \cmsgears\core\common\services\base\EntityService implements IGroupMessageService {
 
-	public static function findById( $id ) {
+	// Variables ---------------------------------------------------
 
-		return GroupMessage::findById( $id );
-	}
+	// Globals -------------------------------
 
-	// Data Provider ----
+	// Constants --------------
 
-	/**
-	 * @param array $config to generate query
-	 * @return ActiveDataProvider
-	 */
-	public static function getPagination( $conditions= [] ) {
+	// Public -----------------
 
-		  $sort = new Sort([
+	public static $modelClass	= '\cmsgears\community\common\models\resources\GroupMessage';
+
+	public static $modelTable	= CmnTables::TABLE_GROUP_MESSAGE;
+
+	public static $parentType	= null;
+
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
+
+	// Constructor and Initialisation ------------------------------
+
+	// Instance methods --------------------------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// GroupMessageService -------------------
+
+	// Data Provider ------
+
+	public function getPage( $config = [] ) {
+
+	    $sort = new Sort([
 	        'attributes' => [
-	            'createdAt' => [
+	            'group' => [
+	                'asc' => [ 'groupId' => SORT_ASC ],
+	                'desc' => ['groupId' => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'Group'
+	            ],
+	            'sender' => [
+	                'asc' => [ 'senderId' => SORT_ASC ],
+	                'desc' => ['senderId' => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'Sender'
+	            ],
+	            'type' => [
+	                'asc' => [ 'type' => SORT_ASC ],
+	                'desc' => ['type' => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'Type'
+	            ],
+	            'cdate' => [
 	                'asc' => [ 'createdAt' => SORT_ASC ],
 	                'desc' => ['createdAt' => SORT_DESC ],
-	                'default' => SORT_ASC,
-	                'label' => 'createdAt',
+	                'default' => SORT_DESC,
+	                'label' => 'Created At',
 	            ],
+	            'udate' => [
+	                'asc' => [ 'modifiedAt' => SORT_ASC ],
+	                'desc' => ['modifiedAt' => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'Update At',
+	            ]
 	        ],
 	        'defaultOrder' => [
-	        	'createdAt' => SORT_DESC
+	        	'cdate' => SORT_DESC
 	        ]
 	    ]);
 
@@ -46,27 +102,63 @@ class GroupMessageService extends \cmsgears\core\common\services\base\Service {
 			$conditions[ 'sort' ] = $sort;
 		}
 
-		if( !isset( $conditions[ 'search-col' ] ) ) {
-
-			$conditions[ 'search-col' ] = 'name';
-		}
-
-		return self::getDataProvider( new GroupMessage(), $conditions );
+		return parent::findPage( $config );
 	}
 
-	// Delete ----------------
+	public function getPageByGroupId( $groupId ) {
 
-	public static function delete( $message ) {
-
-		$message->delete();
-
-		return true;
+		return $this->getPage( [ 'conditions' => [ 'groupId' => $groupId ] ] );
 	}
 
-	public static function deleteByGroupId( $groupId ) {
+	// Read ---------------
+
+    // Read - Models ---
+
+    // Read - Lists ----
+
+    // Read - Maps -----
+
+	// Read - Others ---
+
+	// Create -------------
+
+	// Update -------------
+
+	public function update( $model, $config = [] ) {
+
+		return parent::update( $model, [
+			'attributes' => [ 'content', 'data' ]
+		]);
+	}
+
+	// Delete -------------
+
+	public function deleteByGroupId( $groupId ) {
 
 		GroupMessage::deleteByGroupId( $groupId );
 	}
-}
 
-?>
+	// Static Methods ----------------------------------------------
+
+	// CMG parent classes --------------------
+
+	// GroupMessageService -------------------
+
+	// Data Provider ------
+
+	// Read ---------------
+
+    // Read - Models ---
+
+    // Read - Lists ----
+
+    // Read - Maps -----
+
+	// Read - Others ---
+
+	// Create -------------
+
+	// Update -------------
+
+	// Delete -------------
+}

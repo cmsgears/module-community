@@ -7,13 +7,15 @@ class CmnGlobal {
 
 	const TYPE_GROUP				= 'group';
 
+	const TYPE_CHAT					= 'chat';
+
 	// Roles -----------------------------------------------------------
 
 	// Role/Permission Type
 	const TYPE_COMMUNITY			= 'community';
 
 	// Default roles
-	const ROLE_GROUP_SUPER_ADMIN	= 'group-super-admin';
+	const ROLE_GROUP_MASTER			= 'group-master';
 	const ROLE_GROUP_ADMIN			= 'group-admin';
 	const ROLE_GROUP_MODERATOR		= 'group-moderator';
 	const ROLE_GROUP_MEMBER			= 'group-member';
@@ -21,6 +23,7 @@ class CmnGlobal {
 	// Permissions -----------------------------------------------------
 
 	// Base permissions
+	const PERM_COMMUNITY			= 'community';
 	const PERM_CHAT					= 'community-chat';
 	const PERM_GROUP				= 'community-group';
 
@@ -30,5 +33,4 @@ class CmnGlobal {
 	const FIELD_FRIEND				= 'friendField';
 	const FIELD_GROUP				= 'groupField';
 	const FIELD_CHAT				= 'chatField';
-	const FIELD_CONSUMED			= 'consumedField';
 }

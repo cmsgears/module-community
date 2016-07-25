@@ -20,7 +20,7 @@ class CmnTables {
 	const TABLE_CHAT_MESSAGE		= 'cmg_cmn_chat_message';
 
 	// Groups
-	const TABLE_GROUP_ATTRIBUTE		= 'cmg_cmn_group_attribute';
+	const TABLE_GROUP_META			= 'cmg_cmn_group_meta';
 	const TABLE_GROUP_MESSAGE		= 'cmg_cmn_group_message';
 
 	// Mappers & Traits -----

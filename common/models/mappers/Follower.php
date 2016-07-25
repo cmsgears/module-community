@@ -36,9 +36,9 @@ class Follower extends \cmsgears\core\common\models\base\Mapper {
 	// Constants --------------
 
 	// Pre-Defined Type
-	const TYPE_LIKE		=  0; // User Likes
-	const TYPE_FOLLOW	= 10; // User Followers
-	const TYPE_WISHLIST	= 20; // User who wish to have this model - specially if model is doing sales
+	const TYPE_LIKE		= 1000; // User Likes
+	const TYPE_FOLLOW	= 2000; // User Followers
+	const TYPE_WISHLIST	= 3000; // User who wish to have this model - specially if model is doing sales
 
 	// Public -----------------
 
@@ -97,9 +97,9 @@ class Follower extends \cmsgears\core\common\models\base\Mapper {
         ];
 
 		// trim if required
-		if( Yii::$app->cmgCore->trimFieldValue ) {
+		if( Yii::$app->core->trimFieldValue ) {
 
-			$trim[] = [ [ 'parentType', 'type' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
+			$trim[] = [ [ 'parentType' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
 
 			return ArrayHelper::merge( $trim, $rules );
 		}
@@ -154,6 +154,14 @@ class Follower extends \cmsgears\core\common\models\base\Mapper {
 
 	// Read - Query -----------
 
+	public static function queryWithHasOne( $config = [] ) {
+
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'user' ];
+		$config[ 'relations' ]	= $relations;
+
+		return parent::queryWithAll( $config );
+	}
+
 	public static function queryByParentType( $parentType, $type ) {
 
         return self::find()->where( 'parentType =:pType AND type=:type', [ ':pType' => $parentType, ':type' => $type ] );
@@ -170,6 +178,11 @@ class Follower extends \cmsgears\core\common\models\base\Mapper {
 	}
 
 	// Read - Find ------------
+
+	public static function getByParentModelId( $parentId, $parentType, $modelId, $type ) {
+
+		return self::queryByParentModelId( $parentId, $parentType, $modelId, $type )->one();
+	}
 
 	// Create -----------------
 

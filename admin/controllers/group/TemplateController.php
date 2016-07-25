@@ -9,7 +9,7 @@ use yii\helpers\Url;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryController {
+class TemplateController extends \cmsgears\core\admin\controllers\base\TemplateController {
 
 	// Variables ---------------------------------------------------
 
@@ -27,14 +27,13 @@ class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryCo
 
         parent::init();
 
+		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'group-template' ];
+
 		$this->crudPermission 	= CmnGlobal::PERM_GROUP;
 		$this->type				= CmnGlobal::TYPE_GROUP;
-		$this->templateType		= CmnGlobal::TYPE_GROUP;
 
-		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'group-category' ];
-
-		$this->returnUrl		= Url::previous( 'categories' );
-		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/category/all' ], true );
+		$this->returnUrl		= Url::previous( 'templates' );
+		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/template/all' ], true );
 	}
 
 	// Instance methods --------------------------------------------
@@ -51,11 +50,11 @@ class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryCo
 
 	// CMG parent classes --------------------
 
-	// CategoryController --------------------
+	// TemplateController --------------------
 
 	public function actionAll() {
 
-		Url::remember( [ 'group/category/all' ], 'categories' );
+		Url::remember( [ 'group/template/all' ], 'templates' );
 
 		return parent::actionAll();
 	}

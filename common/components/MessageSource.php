@@ -18,15 +18,14 @@ class MessageSource extends \yii\base\Component {
 
 	// Protected --------------
 
-	// Private ----------------
-
-	private $messageDb = [
+	protected $messageDb = [
 		// Generic Fields
 		CmnGlobal::FIELD_FRIEND => 'Friend',
 		CmnGlobal::FIELD_GROUP => 'Group',
-		CmnGlobal::FIELD_CHAT => 'Chat',
-		CmnGlobal::FIELD_CONSUMED => 'Consumed'
+		CmnGlobal::FIELD_CHAT => 'Chat'
 	];
+
+	// Private ----------------
 
 	// Constructor and Initialisation ------------------------------
 

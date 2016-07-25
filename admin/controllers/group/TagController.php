@@ -9,7 +9,7 @@ use yii\helpers\Url;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryController {
+class TagController extends \cmsgears\cms\admin\controllers\base\TagController {
 
 	// Variables ---------------------------------------------------
 
@@ -31,10 +31,8 @@ class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryCo
 		$this->type				= CmnGlobal::TYPE_GROUP;
 		$this->templateType		= CmnGlobal::TYPE_GROUP;
 
-		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'group-category' ];
-
-		$this->returnUrl		= Url::previous( 'categories' );
-		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/category/all' ], true );
+		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'group-tag' ];
+		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/tag/all' ], true );
 	}
 
 	// Instance methods --------------------------------------------
@@ -51,11 +49,11 @@ class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryCo
 
 	// CMG parent classes --------------------
 
-	// CategoryController --------------------
+	// TagController -------------------------
 
 	public function actionAll() {
 
-		Url::remember( [ 'group/category/all' ], 'categories' );
+		Url::remember( [ 'group/tag/all' ], 'tags' );
 
 		return parent::actionAll();
 	}

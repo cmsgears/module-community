@@ -6,42 +6,152 @@ use \Yii;
 use yii\data\Sort;
 
 // CMG Imports
+use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\services\entities\RoleService;
+use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\mappers\GroupMember;
-use cmsgears\community\common\services\resources\GroupMessageService;
 
-class GroupMemberService extends \cmsgears\core\common\services\base\Service {
+use cmsgears\community\common\services\interfaces\mappers\IGroupMemberService;
 
-	// Static Methods ----------------------------------------------
+use cmsgears\core\common\services\traits\ApprovalTrait;
 
-	// Read ------------------
+use cmsgears\core\common\utilities\DateUtil;
 
-	public static function findById( $id ) {
+class GroupMemberService extends \cmsgears\core\common\services\base\EntityService implements IGroupMemberService {
 
-		return GroupMember::findById( $id );
+	// Variables ---------------------------------------------------
+
+	// Globals -------------------------------
+
+	// Constants --------------
+
+	// Public -----------------
+
+	public static $modelClass	= '\cmsgears\community\common\models\mappers\GroupMember';
+
+	public static $modelTable	= CmnTables::TABLE_GROUP_MEMBER;
+
+	public static $parentType	= null;
+
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
+
+	use ApprovalTrait;
+
+	// Constructor and Initialisation ------------------------------
+
+	// Instance methods --------------------------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// GroupMemberService --------------------
+
+	// Data Provider ------
+
+	public function getPage( $config = [] ) {
+
+	    $sort = new Sort([
+	        'attributes' => [
+	            'group' => [
+	                'asc' => [ 'groupId' => SORT_ASC ],
+	                'desc' => ['groupId' => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'Group'
+	            ],
+	            'user' => [
+	                'asc' => [ 'userId' => SORT_ASC ],
+	                'desc' => ['userId' => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'User'
+	            ],
+	            'role' => [
+	                'asc' => [ 'roleId' => SORT_ASC ],
+	                'desc' => ['roleId' => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'Role'
+	            ],
+	            'cdate' => [
+	                'asc' => [ 'createdAt' => SORT_ASC ],
+	                'desc' => ['createdAt' => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'Created At',
+	            ],
+	            'udate' => [
+	                'asc' => [ 'modifiedAt' => SORT_ASC ],
+	                'desc' => ['modifiedAt' => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'Update At',
+	            ],
+	            'sdate' => [
+	                'asc' => [ 'syncedAt' => SORT_ASC ],
+	                'desc' => ['syncedAt' => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'Synced At',
+	            ]
+	        ],
+	        'defaultOrder' => [
+	        	'cdate' => SORT_DESC
+	        ]
+	    ]);
+
+		if( !isset( $conditions[ 'sort' ] ) ) {
+
+			$conditions[ 'sort' ] = $sort;
+		}
+
+		return parent::findPage( $config );
 	}
 
-	public function findByUserId( $id ) {
+	public function getPageByGroupId( $groupId ) {
+
+		return $this->getPage( [ 'conditions' => [ 'groupId' => $groupId ] ] );
+	}
+
+	// Read ---------------
+
+    // Read - Models ---
+
+   	public function getByUserId( $id ) {
 
 		return GroupMember::findByUserId( $id );
 	}
 
-	// create ----------
+    // Read - Lists ----
 
-	public static function addMember( $groupId, $userId, $join = false, $admin = false ) {
+    // Read - Maps -----
+
+	// Read - Others ---
+
+	// Create -------------
+
+	public function addMember( $groupId, $userId, $join = false, $admin = false ) {
 
 		$model			= new GroupMember();
 		$role			= null;
 
 		if( $admin ) {
 
-			$role		= RoleService::findBySlug( CmnGlobal::ROLE_GROUP_SUPER_ADMIN );
+			$role		= RoleService::findBySlugType( CmnGlobal::ROLE_GROUP_MASTER, CmnGlobal::TYPE_COMMUNITY );
 		}
 		else {
 
-			$role		= RoleService::findBySlug( CmnGlobal::ROLE_GROUP_MEMBER );
+			$role		= RoleService::findBySlugType( CmnGlobal::ROLE_GROUP_MEMBER, CmnGlobal::TYPE_COMMUNITY );
 		}
 
 		$model->groupId	= $groupId;
@@ -49,6 +159,7 @@ class GroupMemberService extends \cmsgears\core\common\services\base\Service {
 		$model->roleId	= $role->id;
 
 		if( !$join ) {
+
 			$model->status	= GroupMember::STATUS_ACTIVE;
 		}
 
@@ -57,80 +168,54 @@ class GroupMemberService extends \cmsgears\core\common\services\base\Service {
 		return $model;
 	}
 
-	// Data Provider ----
+	// Update -------------
 
-	/**
-	 * @param array $config to generate query
-	 * @return ActiveDataProvider
-	 */
-	public static function getPagination( $conditions= [] ) {
+	public function update( $model, $config = [] ) {
 
-		  $sort = new Sort([
-	        'attributes' => [
-	            'createdAt' => [
-	                'asc' => [ 'createdAt' => SORT_ASC ],
-	                'desc' => ['createdAt' => SORT_DESC ],
-	                'default' => SORT_ASC,
-	                'label' => 'createdAt',
-	            ],
-	        ],
-	        'defaultOrder' => [
-	        	'createdAt' => SORT_DESC
-	        ]
-	    ]);
+		$admin = isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
 
-		if( !isset( $conditions[ 'query' ] ) ) {
+		$model->syncedAt = DateUtil::getDateTime();
 
-			$conditions[ 'query' ] = GroupMember::findWithAll();
+		if( $admin ) {
+
+			return parent::update( $model, [
+				'attributes' => [ 'status', 'syncedAt' ]
+			]);
 		}
 
-		if( !isset( $conditions[ 'sort' ] ) ) {
-
-			$conditions[ 'sort' ] = $sort;
-		}
-
-		if( !isset( $conditions[ 'search-col' ] ) ) {
-
-			$conditions[ 'search-col' ] = 'name';
-		}
-
-		return self::getDataProvider( new GroupMember(), $conditions );
+		return parent::update( $model, [
+			'attributes' => [ 'syncedAt' ]
+		]);
 	}
 
-	// Update ---------------
+	// Delete -------------
 
-	public static function changeStatus( $memberId, $status ) {
-
-		$model			= self::findById( $memberId );
-		$model->status	= $status;
-		$model->update();
-
-		return $model;
-	}
-
-	public static function update( $model ) {
-
-		$model->update();
-
-		return $model;
-	}
-
-	// Delete ----------------
-
-	public static function delete( $member ) {
-
-		GroupMessageService::deleteByGroupId( $member->groupId );
-
-		$member->delete();
-
-		return true;
-
-	}
-
-	public static function deleteByGroupId( $groupId ) {
+	public function deleteByGroupId( $groupId ) {
 
 		GroupMember::deleteByGroupId( $groupId );
 	}
-}
 
-?>
+	// Static Methods ----------------------------------------------
+
+	// CMG parent classes --------------------
+
+	// GroupMemberService --------------------
+
+	// Data Provider ------
+
+	// Read ---------------
+
+    // Read - Models ---
+
+    // Read - Lists ----
+
+    // Read - Maps -----
+
+	// Read - Others ---
+
+	// Create -------------
+
+	// Update -------------
+
+	// Delete -------------
+}

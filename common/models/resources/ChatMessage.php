@@ -10,6 +10,8 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
+use cmsgears\core\common\models\base\CoreTables;
+use cmsgears\core\common\models\entities\User;
 use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\entities\Chat;
 
@@ -115,17 +117,11 @@ class ChatMessage extends \cmsgears\core\common\models\base\Entity {
 
 	// ChatMessage ---------------------------
 
-	/**
-	 * @return User
-	 */
 	public function getSender() {
 
 		return $this->hasOne( User::className(), [ 'id' => 'senderId' ] );
 	}
 
-	/**
-	 * @return User
-	 */
 	public function getRecipient() {
 
 		return $this->hasOne( User::className(), [ 'id' => 'recipientId' ] );
@@ -134,11 +130,6 @@ class ChatMessage extends \cmsgears\core\common\models\base\Entity {
 	public function getChat() {
 
 		return $this->hasOne( Chat::className(), [ 'id' => 'chatId' ] );
-	}
-
-	public function getMessage() {
-
-		return $this->hasOne( Message::className(), [ 'id' => 'messageId' ] );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -161,9 +152,9 @@ class ChatMessage extends \cmsgears\core\common\models\base\Entity {
 
 	// Read - Query -----------
 
-	public static function queryWithAll( $config = [] ) {
+	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'sender', 'recipient', 'group' ];
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'sender', 'recipient', 'chat' ];
 		$config[ 'relations' ]	= $relations;
 
 		return parent::queryWithAll( $config );

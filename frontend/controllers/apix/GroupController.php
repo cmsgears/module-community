@@ -9,105 +9,118 @@ use yii\filters\VerbFilter;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\community\common\models\entities\Follower;
-
-use cmsgears\community\common\services\entities\GroupService;
-use cmsgears\community\common\services\entities\FollowerService;
-
-use cmsgears\core\common\filters\UserExistFilter;
-
 use cmsgears\core\common\utilities\AjaxUtil;
 
-// TODO: Use ownership filter
+class GroupController extends \cmsgears\core\admin\controllers\base\Controller {
 
-class GroupController extends \cmsgears\core\frontend\controllers\BaseController {
+	// Variables ---------------------------------------------------
+
+	// Globals ----------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	protected $metaService;
+
+	// Private ----------------
 
 	// Constructor and Initialisation ------------------------------
 
- 	public function __construct( $id, $module, $config = [] ) {
+ 	public function init() {
 
-        parent::__construct( $id, $module, $config );
+		parent::init();
+
+		$this->crudPermission	= CoreGlobal::PERM_USER;
+		$this->modelService		= Yii::$app->factory->get( 'groupService' );
+		$this->metaService		= Yii::$app->factory->get( 'groupMetaService' );
 	}
 
-	// Instance Methods ------------------
+	// Instance methods --------------------------------------------
 
-	// yii\base\Component ----------------
+	// Yii interfaces ------------------------
 
-    public function behaviors() {
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	public function behaviors() {
 
         return [
             'rbac' => [
-                'class' => Yii::$app->cmgCore->getRbacFilterClass(),
+                'class' => Yii::$app->core->getRbacFilterClass(),
                 'actions' => [
-	                'delete' => [ 'permission' => CoreGlobal::PERM_USER ]
+	                'updateAvatar' => [ 'permission' => $this->crudPermission, 'filters' => [ 'owner' ] ],
+	                'updateBanner' => [ 'permission' => $this->crudPermission, 'filters' => [ 'owner' ] ],
+	                'assignCategory' => [ 'permission' => $this->crudPermission, 'filters' => [ 'owner' ] ],
+	                'removeCategory' => [ 'permission' => $this->crudPermission, 'filters' => [ 'owner' ] ],
+	                'assignTags' => [ 'permission' => $this->crudPermission, 'filters' => [ 'owner' ] ],
+	                'removeTag' => [ 'permission' => $this->crudPermission, 'filters' => [ 'owner' ] ],
+	                'addMeta' => [ 'permission' => $this->crudPermission, 'filters' => [ 'owner' ] ],
+	                'updateMeta' => [ 'permission' => $this->crudPermission, 'filters' => [ 'owner' ] ],
+	                'deleteMeta' => [ 'permission' => $this->crudPermission, 'filters' => [ 'owner' ] ],
+	                'delete' => [ 'permission' => $this->crudPermission, 'filters' => [ 'owner' ] ],
                 ]
-            ],
-            'userExists' => [
-            	'class' => UserExistFilter::className(),
-            	'actions' => [
-            		'like', 'follow', 'wishlist'
-            	]
             ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-	                'like' => [ 'post' ],
+                    'autoSearch' => [ 'post' ],
+                    'updateAvatar' => [ 'post' ],
+                    'updateBanner' => [ 'post' ],
+                    'assignCategory' => [ 'post' ],
+                    'removeCategory' => [ 'post' ],
+	                'assignTags' => [ 'post' ],
+	                'removeTag' => [ 'post' ],
+	                'addMeta' => [ 'post' ],
+	                'updateMeta' => [ 'post' ],
+	                'deleteMeta' => [ 'post' ],
 	                'follow' => [ 'post' ],
+	                'like' => [ 'post' ],
 	                'wishlist' => [ 'post' ],
-                    'delete' => [ 'post' ]
+	                'delete' => [ 'post' ]
                 ]
             ]
         ];
     }
 
-	public function actionLike( $slug ) {
+	// yii\base\Controller ----
 
-		$user 		= Yii::$app->user->getIdentity();
-		$group		= GroupService::findBySlug( $slug );
+    public function actions() {
 
-		$follower	= FollowerService::createOrUpdate( $user->id, $group->id, Follower::TYPE_LIKE );
+        return [
+        	'auto-search' => [ 'class' => 'cmsgears\core\common\actions\content\AutoSearch' ],
+            'update-avatar' => [ 'class' => 'cmsgears\core\common\actions\content\UpdateAvatar' ],
+            'update-banner' => [ 'class' => 'cmsgears\core\common\actions\content\UpdateContentBanner' ],
+            'assign-category' => [ 'class' => 'cmsgears\core\common\actions\category\AssignCategory' ],
+            'remove-category' => [ 'class' => 'cmsgears\core\common\actions\category\RemoveCategory' ],
+            'assign-tags' => [ 'class' => 'cmsgears\core\common\actions\tag\AssignTags' ],
+            'remove-tag' => [ 'class' => 'cmsgears\core\common\actions\tag\RemoveTag' ],
+            'add-meta' => [ 'class' => 'cmsgears\core\common\actions\attribute\CreateMeta' ],
+            'update-meta' => [ 'class' => 'cmsgears\core\common\actions\attribute\UpdateMeta' ],
+            'delete-meta' => [ 'class' => 'cmsgears\core\common\actions\attribute\DeleteMeta' ],
+            'follow' => [ 'class' => 'cmsgears\community\frontend\actions\follower\Follow' ],
+            'like' => [ 'class' => 'cmsgears\community\frontend\actions\follower\Like' ],
+            'wishlist' => [ 'class' => 'cmsgears\community\frontend\actions\follower\Wishlist' ]
+		];
+    }
 
-		$data		= [ 'active' => $follower->active, 'count' => $group->getLikesCount() ];
+	// CMG interfaces ------------------------
 
-		return AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ), $data );
-	}
+	// CMG parent classes --------------------
 
-	public function actionFollow( $slug ) {
-
-		$user 		= Yii::$app->user->getIdentity();
-		$group		= GroupService::findBySlug( $slug );
-
-		$follower	= FollowerService::createOrUpdate( $user->id, $group->id, Follower::TYPE_FOLLOW );
-
-		$data		= [ 'active' => $follower->active, 'count' => $group->getLikesCount() ];
-
-		return AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ), $data );
-	}
-
-	public function actionWishlist( $slug ) {
-
-		$user 		= Yii::$app->user->getIdentity();
-		$group		= GroupService::findBySlug( $slug );
-
-		$follower	= FollowerService::createOrUpdate( $user->id, $group->id, Follower::TYPE_WISHLIST );
-
-		$data		= [ 'active' => $follower->active, 'count' => $group->getLikesCount() ];
-
-		return AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ), $data );
-	}
+	// GroupController -----------------------
 
 	public function actionDelete( $id ) {
 
-		$model	= GroupService::findById( $id );
+		$model	= $this->modelService->getById( $id );
 
 		if( GroupService::delete( $model, $model->content ) ) {
 
-			return AjaxUtil::generateSuccess( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ) );
+			return AjaxUtil::generateSuccess( Yii::$app->coreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ) );
 		}
 
 		// Trigger Ajax Not Found
-        return AjaxUtil::generateFailure( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+        return AjaxUtil::generateFailure( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 }
-
-?>

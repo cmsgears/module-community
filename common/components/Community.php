@@ -72,41 +72,55 @@ class Community extends \yii\base\Component {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		//$factory->set( 'cmsgears\cms\common\services\interfaces\resources\ICategoryService', 'cmsgears\cms\common\services\resources\CategoryService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\resources\IChatMessageService', 'cmsgears\community\common\services\resources\ChatMessageService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\resources\IGroupMetaService', 'cmsgears\community\common\services\resources\GroupMetaService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\resources\IGroupMessageService', 'cmsgears\community\common\services\resources\GroupMessageService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\resources\IPostService', 'cmsgears\community\common\services\resources\PostService' );
 	}
 
 	public function registerMapperServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		//$factory->set( 'cmsgears\cms\common\services\interfaces\mappers\IModelBlockService', 'cmsgears\cms\common\services\mappers\ModelBlockService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\mappers\IChatMemberService', 'cmsgears\community\common\services\mappers\ChatMemberService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\mappers\IFollowerService', 'cmsgears\community\common\services\mappers\FollowerService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\mappers\IFriendService', 'cmsgears\community\common\services\mappers\FriendService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\mappers\IGroupMemberService', 'cmsgears\community\common\services\mappers\GroupMemberService' );
 	}
 
 	public function registerEntityServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		//$factory->set( 'cmsgears\cms\common\services\interfaces\entities\IElementService', 'cmsgears\cms\common\services\entities\ElementService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\entities\IChatService', 'cmsgears\community\common\services\entities\ChatService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\entities\IGroupService', 'cmsgears\community\common\services\entities\GroupService' );
 	}
 
 	public function initResourceServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		//$factory->set( 'categoryService', 'cmsgears\cms\common\services\resources\CategoryService' );
+		$factory->set( 'chatMessageService', 'cmsgears\community\common\services\resources\ChatMessageService' );
+		$factory->set( 'groupMetaService', 'cmsgears\community\common\services\resources\GroupMetaService' );
+		$factory->set( 'groupMessageService', 'cmsgears\community\common\services\resources\GroupMessageService' );
+		$factory->set( 'cmnPostService', 'cmsgears\community\common\services\resources\PostService' );
 	}
 
 	public function initMapperServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		//$factory->set( 'modelBlockService', 'cmsgears\cms\common\services\mappers\ModelBlockService' );
+		$factory->set( 'chatMemberService', 'cmsgears\community\common\services\mappers\ChatMemberService' );
+		$factory->set( 'followerService', 'cmsgears\community\common\services\mappers\FollowerService' );
+		$factory->set( 'friendService', 'cmsgears\community\common\services\mappers\FriendService' );
+		$factory->set( 'groupMemberService', 'cmsgears\community\common\services\mappers\GroupMemberService' );
 	}
 
 	public function initEntityServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		//$factory->set( 'elementService', 'cmsgears\cms\common\services\entities\ElementService' );
+		$factory->set( 'chatService', 'cmsgears\community\common\services\entities\ChatService' );
+		$factory->set( 'groupService', 'cmsgears\community\common\services\entities\GroupService' );
 	}
 }
