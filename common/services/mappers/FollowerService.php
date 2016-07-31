@@ -4,6 +4,7 @@ namespace cmsgears\community\common\services\mappers;
 // Yii Imports
 use \Yii;
 use yii\data\Sort;
+use yii\db\Query;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -74,34 +75,34 @@ class FollowerService extends \cmsgears\core\common\services\base\EntityService 
 
 		$user	= Yii::$app->user->identity;
 
-		return Follower::findByParentTypeUserId( $parentType, $user->id, Follower::TYPE_FOLLOW )->andWhere( [ 'active' => CoreGlobal::STATUS_ACTIVE ] )->count();
+		return Follower::queryByParentTypeModelId( $parentType, $user->id, Follower::TYPE_FOLLOW )->andWhere( [ 'active' => CoreGlobal::STATUS_ACTIVE ] )->count();
 	}
 
 	public function getUserWishlistCount( $parentType ) {
 
 		$user	= Yii::$app->user->identity;
 
-		return Follower::findByParentTypeUserId( $parentType, $user->id, Follower::TYPE_WISHLIST )->count();
+		return Follower::queryByParentTypeModelId( $parentType, $user->id, Follower::TYPE_WISHLIST )->count();
 	}
 
     public function getModelLikeCount( $parentType ) {
 
-        return Follower::findByParentType( $parentType, Follower::TYPE_LIKE )->count();
+        return Follower::queryByParentType( $parentType, Follower::TYPE_LIKE )->count();
     }
 
     public function getModelFollowCount( $parentType ) {
 
-        return Follower::findByParentType( $parentType, Follower::TYPE_FOLLOW )->andWhere( [ 'active' => CoreGlobal::STATUS_ACTIVE ] )->count();
+        return Follower::queryByParentType( $parentType, Follower::TYPE_FOLLOW )->andWhere( [ 'active' => CoreGlobal::STATUS_ACTIVE ] )->count();
     }
 
     public function getModelWishlistCount( $parentType ) {
 
-        return Follower::findByParentType( $parentType, Follower::TYPE_WISHLIST )->count();
+        return Follower::queryByParentType( $parentType, Follower::TYPE_WISHLIST )->count();
     }
 
     public function getFollowerStatus( $parentType, $userId, $type = Follower::TYPE_FOLLOW ) {
 
-        return Follower::findByParentTypeUserId( $parentType, $userId, $type )->one();
+        return Follower::queryByParentTypeModelId( $parentType, $userId, $type )->one();
     }
 
     public function getFollowingIdList( $userId, $parentType ) {
