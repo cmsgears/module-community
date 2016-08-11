@@ -105,9 +105,9 @@ class FollowerService extends \cmsgears\core\common\services\base\EntityService 
         return Follower::queryByParentTypeModelId( $parentType, $userId, $type )->one();
     }
 
-    public function getFollowingIdList( $userId, $parentType ) {
+    public function getFollowingIdList( $parentType ) {
 
-        return self::findList( 'parentId', CmnTables::TABLE_FOLLOWER, [ 'conditions' => [ 'userId' => $userId, 'type' => Follower::TYPE_FOLLOW, 'active' => CoreGlobal::STATUS_ACTIVE, 'parentType' => $parentType ] ] );
+        return self::findList( [  'column' => 'parentId', 'conditions' => [ 'type' => Follower::TYPE_FOLLOW, 'active' => CoreGlobal::STATUS_ACTIVE, 'parentType' => $parentType ] ] );
     }
 
     public function getStatusCounts( $parentId, $type = Follower::TYPE_FOLLOW ) {
