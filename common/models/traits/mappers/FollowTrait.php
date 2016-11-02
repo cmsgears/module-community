@@ -46,7 +46,7 @@ trait FollowTrait {
 
 	public function generateFollowCounts() {
 
-		$returnArr		= [ Follower::TYPE_LIKE => 0, Follower::TYPE_FOLLOW => 0, Follower::TYPE_WISHLIST => 0 ];
+		$returnArr		= [ Follower::TYPE_LIKE => 0, Follower::TYPE_FOLLOW => 0, Follower::TYPE_WISHLIST => 0, Follower::TYPE_DISLIKE => 0 ];
 
 		$followerTable	= CmnTables::TABLE_FOLLOWER;
 		$query			= new Query();
@@ -66,6 +66,23 @@ trait FollowTrait {
 		return $returnArr;
 	}
 
+	public function getActiveLike( $parentType ) {
+
+		return $this->getActiveFlag( Follower::TYPE_LIKE, $parentType );
+	}
+
+	public function getActiveDislike( $parentType ) {
+
+		return $this->getActiveFlag( Follower::TYPE_DISLIKE, $parentType );
+	}
+
+	public function getActiveFlag( $type, $parentType ) {
+
+		$result	= Follower::find()->where( [ 'parentId' => $this->id, 'parentType' => $parentType, 'active' => true, 'type' => $type  ] )->one();
+
+		return count( $result );
+	}
+
 	public function getLikesCount() {
 
 		if( !isset( $this->followCounts ) ) {
@@ -74,6 +91,16 @@ trait FollowTrait {
 		}
 
 		return $this->followCounts[ Follower::TYPE_LIKE ];
+	}
+
+	public function getDislikesCount() {
+
+		if( !isset( $this->followCounts ) ) {
+
+			$this->followCounts	= $this->generateFollowCounts();
+		}
+
+		return $this->followCounts[ Follower::TYPE_DISLIKE ];
 	}
 
 	public function getFollowersCount() {

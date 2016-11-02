@@ -12,11 +12,11 @@ use cmsgears\community\common\models\mappers\Follower;
 use cmsgears\core\common\utilities\AjaxUtil;
 
 /**
- * Like action allow users to like/dislike model in action.
+ * Dislike action allow users to Dislike/disDislike model in action.
  *
  * The controller must provide appropriate model service having model class, model table and parent type defined for the base model.
  */
-class Like extends \cmsgears\core\common\actions\base\ModelAction {
+class Dislike extends \cmsgears\core\common\actions\base\ModelAction {
 
 	// Variables ---------------------------------------------------
 
@@ -52,7 +52,7 @@ class Like extends \cmsgears\core\common\actions\base\ModelAction {
 
 	// CMG parent classes --------------------
 
-	// Like ----------------------------------
+	// Dislike ----------------------------------
 
 	public function run() {
 
@@ -64,7 +64,7 @@ class Like extends \cmsgears\core\common\actions\base\ModelAction {
 			$model		= $this->model;
 			$parentType	= $this->modelService->getParentType();
 
-			$follower	= $followerService->updateByParams( [ 'modelId' => $user->id, 'parentId' => $model->id, 'parentType' => $parentType, 'type' => Follower::TYPE_LIKE ] );
+			$follower	= $followerService->updateByParams( [ 'modelId' => $user->id, 'parentId' => $model->id, 'parentType' => $parentType, 'type' => Follower::TYPE_DISLIKE ] );
 
 			$data		= [
 							'activeLike' => $model->getActiveLike( $parentType ),

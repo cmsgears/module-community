@@ -183,6 +183,26 @@ class FollowerService extends \cmsgears\core\common\services\base\EntityService 
 
 		if( isset( $follower ) ) {
 
+			if( $type == Follower::TYPE_LIKE ) {
+
+				$modelDislike	= Follower::getByParentModelId( $parentId, $parentType, $userId, Follower::TYPE_DISLIKE );
+
+				if( isset( $modelDislike ) && $modelDislike->active ) {
+
+					$this->toggleStatus( $modelDislike );
+				}
+			}
+
+			if(  $type == Follower::TYPE_DISLIKE ) {
+
+				$modelLike	= Follower::getByParentModelId( $parentId, $parentType, $userId, Follower::TYPE_LIKE );
+
+				if( isset( $modelLike ) && $modelLike->active ) {
+
+					$this->toggleStatus( $modelLike );
+				}
+			}
+
 			return $this->toggleStatus( $follower );
 		}
 

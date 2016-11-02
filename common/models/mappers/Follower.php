@@ -37,6 +37,7 @@ class Follower extends \cmsgears\core\common\models\base\Mapper {
 
 	// Pre-Defined Type
 	const TYPE_LIKE		= 1000; // User Likes
+	const TYPE_DISLIKE	= 1001; // User or Model Dislikes
 	const TYPE_FOLLOW	= 2000; // User Followers
 	const TYPE_WISHLIST	= 3000; // User who wish to have this model - specially if model is doing sales
 
