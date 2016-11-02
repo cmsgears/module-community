@@ -29,6 +29,8 @@ interface IFollowerService extends \cmsgears\core\common\services\interfaces\bas
 
     public function getFollowingIdList( $parentType );
 
+	public function getByConfig( $config = [], $first = true );
+
     public function getStatusCounts( $parentId, $type = Follower::TYPE_FOLLOW );
 
     // Read - Models ---
