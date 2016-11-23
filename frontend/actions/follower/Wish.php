@@ -34,7 +34,7 @@ class Wish extends \cmsgears\core\common\actions\base\ModelAction {
 
 	// Protected --------------
 
-	protected $typed 	= true;
+	public $typed 	= true;
 
 	// Private ----------------
 
