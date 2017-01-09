@@ -87,10 +87,13 @@ class Friend extends \cmsgears\core\common\models\base\Entity implements IOwner 
 	public function rules() {
 
         return [
+        	// Required, Safe
             [ [ 'userId', 'friendId' ], 'required' ],
             [ [ 'id', 'content', 'data' ], 'safe' ],
-            [ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+            // Text Limit
             [ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+            // Other
+            [ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
             [ [ 'userId', 'friendId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];

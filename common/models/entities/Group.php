@@ -131,12 +131,16 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 	public function rules() {
 
         return [
+        	// Required, Safe
             [ [ 'name', 'type' ], 'required' ],
             [ [ 'id', 'content', 'data' ], 'safe' ],
-            [ [ 'name', 'type', 'icon' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-            [ 'slug', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
-            [ 'description', 'string', 'min' => 0, 'max' => Yii::$app->core->extraLargeText ],
+            // Unique
             [ [ 'name', 'type' ], 'unique', 'targetAttribute' => [ 'name', 'type' ] ],
+            // Text Limit
+            [ [ 'type', 'icon' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+            [ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+            [ 'slug', 'description', 'string', 'min' => 0, 'max' => Yii::$app->core->xxLargeText ],
+            // Other
 			[ [ 'status', 'visibility' ], 'number', 'integerOnly' => true ],
             [ [ 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]

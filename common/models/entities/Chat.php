@@ -90,8 +90,12 @@ class Chat extends \cmsgears\core\common\models\base\Entity {
 	public function rules() {
 
         return [
+        	// Required, Safe
             [ [ 'sessionId' ], 'required' ],
 			[ [ 'id', 'content', 'data' ], 'safe' ],
+            // Text Limit
+            [ 'sessionId', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
+            // Other
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]

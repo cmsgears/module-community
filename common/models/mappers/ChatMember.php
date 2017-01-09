@@ -80,8 +80,10 @@ class ChatMember extends \cmsgears\core\common\models\base\Entity {
 	public function rules() {
 
         return [
+        	// Required, Safe
         	[ [ 'chatId', 'userId' ], 'required' ],
             [ [ 'id' ], 'safe' ],
+            // Other
             [ [ 'createdAt', 'modifiedAt', 'syncedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
