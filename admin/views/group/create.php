@@ -1,59 +1,74 @@
 <?php
+// Yii Imports
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
-use yii\helpers\ArrayHelper;
 
 // CMG Imports
 use cmsgears\core\common\widgets\Editor;
 use cmsgears\files\widgets\AvatarUploader;
-use cmsgears\files\widgets\FileUploader;
+use cmsgears\files\widgets\ImageUploader;
+use cmsgears\files\widgets\VideoUploader;
 
 $coreProperties = $this->context->getCoreProperties();
-$this->title 	= $coreProperties->getSiteTitle() . ' | Add Group';
+$this->title 	= 'Add Group | ' . $coreProperties->getSiteTitle();
 
-// Sidebar
-$this->params['sidebar-parent'] = 'sidebar-group';
-$this->params['sidebar-child'] 	= 'group';
-
-Editor::widget( [ 'selector' => '.content-editor' ] );
+Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true ] );
 ?>
-<section class="wrap-content container clearfix">
-	<div class="cud-box">
-		<h2>Add Group</h2>
-		<?php $form = ActiveForm::begin( ['id' => 'frm-group-create', 'options' => ['class' => 'frm-split form-with-editor' ] ] );?>
+<div class="box box-cud">
+	<div class="box-wrap-header">
+		<div class="header">Add Group</div>
+	</div>
+	<div class="box-wrap-content frm-split-40-60">
+		<?php $form = ActiveForm::begin( [ 'id' => 'frm-group' ] ); ?>
 
     	<?= $form->field( $model, 'name' ) ?>
-    	<?= $form->field( $content, 'templateId' )->dropDownList( ArrayHelper::merge( [ '0' => 'Choose Template' ], $templateMap ) ) ?>
-    	<?= $form->field( $model, 'status' )->dropDownList( $statusMap ) ?>
-    	<?= $form->field( $model, 'visibility' )->dropDownList( $visibilityMap ) ?>
+    	<?= $form->field( $content, 'templateId' )->dropDownList( $templatesMap ) ?>
+		<?= $form->field( $model, 'status' )->dropDownList( $statusMap ) ?>
+		<?= $form->field( $model, 'visibility' )->dropDownList( $visibilityMap ) ?>
 
-    	<h4>Group Summary</h4>
-    	<?= $form->field( $content, 'summary' )->textarea( [ 'class' => 'content-editor' ] ) ?>
+		<div class="box-content clearfix">
+			<div class="header">Group Summary</div>
+			<?= $form->field( $content, 'summary' )->textarea( [ 'class' => 'content-editor' ] )->label( false ) ?>
+		</div>
 
-    	<h4>Group Content</h4>
-    	<?= $form->field( $content, 'content' )->textarea( [ 'class' => 'content-editor' ] ) ?>
+		<div class="box-content clearfix">
+			<div class="header">Group Content</div>
+			<?= $form->field( $content, 'content' )->textarea( [ 'class' => 'content-editor' ] )->label( false ) ?>
+		</div>
 
-    	<h4>Group Avatar</h4>
-		<?=AvatarUploader::widget( [ 'options' => [ 'id' => 'avatar-group', 'class' => 'file-uploader' ], 'model' => $avatar, 'modelClass' => 'Avatar',  'directory' => 'avatar', 'btnChooserIcon' => 'icon-action icon-action-edit' ] );?>
+		<div class="box-content clearfix">
+			<div class="header">Group Avatar</div>
+			<?= AvatarUploader::widget( [ 'options' => [ 'id' => 'model-avatar', 'class' => 'file-uploader' ], 'model' => $avatar ]); ?>
+		</div>
 
-    	<h4>Group Banner</h4>
-		<?=FileUploader::widget( [ 'options' => [ 'id' => 'banner-group', 'class' => 'file-uploader' ], 'model' => $banner, 'modelClass' => 'Banner', 'directory' => 'banner', 'btnChooserIcon' => 'icon-action icon-action-edit' ] );?>
+		<div class="box-content clearfix">
+			<div class="header">Group Banner</div>
+			<?= ImageUploader::widget([
+					'options' => [ 'id' => 'model-banner', 'class' => 'file-uploader' ],
+					'model' => $banner, 'modelClass' => 'Banner', 'directory' => 'banner'
+			]); ?>
+		</div>
 
-		<h4>Group SEO</h4>
-    	<?= $form->field( $content, 'seoName' ) ?>
-    	<?= $form->field( $content, 'seoDescription' )->textarea() ?>
-    	<?= $form->field( $content, 'seoKeywords' )->textarea() ?>
-		<?= $form->field( $content, 'seoRobot' ) ?>
+		<div class="box-content clearfix">
+			<div class="header">Group Video</div>
+			<?= VideoUploader::widget( [ 'options' => [ 'id' => 'model-video', 'class' => 'file-uploader' ], 'model' => $video ]); ?>
+		</div>
 
-		<h4>Assign Categories</h4>
-		<?php foreach ( $categories as $category ) { ?>
-			<span class="box-half"><input type="checkbox" name="Binder[bindedData][]" value="<?=$category['id']?>" /><?=$category['name']?></span>
-		<?php } ?>
-		<div class="box-filler"></div>
+		<div class="box-content clearfix">
+			<div class="header">Group SEO</div>
+	    	<?= $form->field( $content, 'seoName' ) ?>
+	    	<?= $form->field( $content, 'seoDescription' )->textarea() ?>
+	    	<?= $form->field( $content, 'seoKeywords' )->textarea() ?>
+			<?= $form->field( $content, 'seoRobot' ) ?>
+		</div>
 
-		<?=Html::a( "Cancel", [ '/cmgcmn/group/all' ], ['class' => 'btn' ] );?>
-		<input type="submit" value="Create" />
+		<div class="filler-height"></div>
+
+		<div class="align align-center">
+			<?=Html::a( 'Cancel',  [ 'all' ], [ 'class' => 'btn btn-medium' ] );?>
+			<input class="element-medium" type="submit" value="Create" />
+		</div>
 
 		<?php ActiveForm::end(); ?>
 	</div>
-</section>
+</div>

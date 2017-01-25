@@ -9,6 +9,11 @@ use yii\behaviors\TimestampBehavior;
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
+use cmsgears\community\common\models\base\CmnTables;
+
+use cmsgears\core\common\models\traits\CreateModifyTrait;
+use cmsgears\core\common\models\traits\resources\DataTrait;
+
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
 /**
@@ -16,17 +21,48 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @property int $id
  * @property int $createdBy
- * @property int $modifiedBy 
+ * @property int $modifiedBy
  * @property string $sessionId
  * @property integer $status
  * @property date $createdAt
  * @property date $modifiedAt
+ * @property string $content
+ * @property string $data
  */
-class Chat extends \cmsgears\core\common\models\entities\CmgEntity {
+class Chat extends \cmsgears\core\common\models\base\Entity {
 
-	// Instance Methods --------------------------------------------
+	// Variables ---------------------------------------------------
 
-	// yii\base\Component ----------------
+	// Globals -------------------------------
+
+	// Constants --------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
+
+	use CreateModifyTrait;
+	use DataTrait;
+
+	// Constructor and Initialisation ------------------------------
+
+	// Instance methods --------------------------------------------
+
+	// Yii interfaces ------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
 
     /**
      * @inheritdoc
@@ -34,7 +70,6 @@ class Chat extends \cmsgears\core\common\models\entities\CmgEntity {
     public function behaviors() {
 
         return [
-
 			'authorBehavior' => [
 				'class' => AuthorBehavior::className()
 			],
@@ -47,7 +82,7 @@ class Chat extends \cmsgears\core\common\models\entities\CmgEntity {
         ];
     }
 
-	// yii\base\Model --------------------
+	// yii\base\Model ---------
 
     /**
      * @inheritdoc
@@ -55,8 +90,13 @@ class Chat extends \cmsgears\core\common\models\entities\CmgEntity {
 	public function rules() {
 
         return [
+        	// Required, Safe
             [ [ 'sessionId' ], 'required' ],
-			[ [ 'id', 'status' ], 'safe' ],
+			[ [ 'id', 'content', 'data' ], 'safe' ],
+            // Text Limit
+            [ 'sessionId', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
+            // Other
+			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
@@ -68,14 +108,26 @@ class Chat extends \cmsgears\core\common\models\entities\CmgEntity {
 	public function attributeLabels() {
 
 		return [
-			'sessionId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_SESSION ),
-			'status' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_STATUS )
+			'sessionId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SESSION ),
+			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
+			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
+			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
 		];
 	}
 
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// Validators ----------------------------
+
+	// Chat ----------------------------------
+
 	// Static Methods ----------------------------------------------
 
-	// yii\db\ActiveRecord ---------------
+	// Yii parent classes --------------------
+
+	// yii\db\ActiveRecord ----
 
     /**
      * @inheritdoc
@@ -85,8 +137,25 @@ class Chat extends \cmsgears\core\common\models\entities\CmgEntity {
 		return CmnTables::TABLE_CHAT;
 	}
 
-	// Chat ------------------------------
+	// CMG parent classes --------------------
 
+	// Chat ----------------------------------
+
+	// Read - Query -----------
+
+	public static function queryWithHasOne( $config = [] ) {
+
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator', 'modifier' ];
+		$config[ 'relations' ]	= $relations;
+
+		return parent::queryWithAll( $config );
+	}
+
+	// Read - Find ------------
+
+	// Create -----------------
+
+	// Update -----------------
+
+	// Delete -----------------
 }
-
-?>

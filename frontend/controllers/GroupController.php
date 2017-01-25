@@ -3,29 +3,30 @@ namespace cmsgears\community\frontend\controllers;
 
 // Yii Imports
 use Yii;
-use yii\filters\VerbFilter; 
+use yii\filters\VerbFilter;
 
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal; 
-use cmsgears\core\frontend\config\WebGlobalCore;  
-use cmsgears\community\common\config\CmnGlobal;	
-use cmsgears\community\admin\services\GroupService; 
-use cmsgears\core\common\models\entities\CmgFile;
-use cmsgears\core\common\models\entities\Category; 
+use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\core\frontend\config\WebGlobalCore;
+use cmsgears\community\common\config\CmnGlobal;
 
 use cmsgears\core\common\models\forms\Binder;
-use cmsgears\cms\common\models\entities\ModelContent;
-use cmsgears\community\common\models\entities\Group; 
-use cmsgears\community\common\models\entities\GroupMember; 
-use cmsgears\core\admin\services\CategoryService;
-use cmsgears\core\admin\services\TemplateService;
+use cmsgears\core\common\models\resources\CmgFile;
+use cmsgears\core\common\models\resources\Category;
+use cmsgears\cms\common\models\mappers\ModelContent;
+use cmsgears\community\common\models\entities\Group;
+use cmsgears\community\common\models\mappers\GroupMember;
+
+use cmsgears\core\admin\services\resources\CategoryService;
+use cmsgears\core\admin\services\entities\TemplateService;
+use cmsgears\community\admin\services\entities\GroupService;
 
 class GroupController extends \cmsgears\core\common\controllers\BaseController {
 
 	// Constructor and Initialisation ------------------------------
 
  	public function __construct( $id, $module, $config = [] ) {
- 		
+
 		$this->layout	= WebGlobalCore::LAYOUT_PRIVATE;
 
         parent::__construct( $id, $module, $config );
@@ -58,13 +59,13 @@ class GroupController extends \cmsgears\core\common\controllers\BaseController {
 	// GroupController
 
     public function actionIndex() {
-    	
+
 		$dataProvider			= GroupService::getPaginationDetailsByType( CoreGlobal::TYPE_CORE );
-		$user					= Yii::$app->user->getIdentity(); 
-		$statusActive			= Group::STATUS_ACTIVE;	
+		$user					= Yii::$app->user->getIdentity();
+		$statusActive			= Group::STATUS_ACTIVE;
 		$memberStatusNew		= GroupMember::STATUS_NEW;
 		$memberStatusActive		= GroupMember::STATUS_ACTIVE;
-		$memberStatusBlocked	= GroupMember::STATUS_BLOCKED; 	
+		$memberStatusBlocked	= GroupMember::STATUS_BLOCKED;
 
 	    return $this->render( WebGlobalCore::PAGE_INDEX, [
 	         'dataProvider' => $dataProvider,
@@ -75,7 +76,7 @@ class GroupController extends \cmsgears\core\common\controllers\BaseController {
 			 'memberStatusBlocked' => $memberStatusBlocked,
 	    ]);
     }
-	
+
 	public function actionCreate() {
 
 		$model			= new Group();
@@ -169,11 +170,11 @@ class GroupController extends \cmsgears\core\common\controllers\BaseController {
 		    	'templateMap' => $templateMap
 	    	]);
 		}
-		
+
 		// Model not found
 		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
-  
+
 }
 
 ?>

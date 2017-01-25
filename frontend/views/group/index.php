@@ -30,7 +30,7 @@ if( !isset( $sortOrder ) ) {
 // Quick Links 
 $quickLinkItems = [
 
-	[ 'label' => 'Create New Group', 'url' => ['group/create'], 'options' => [ 'class' => 'btn-create-group' ] ]
+	[ 'label' => 'Create Group', 'url' => ['group/create'], 'options' => [ 'class' => 'btn-create-group' ] ]
 ]; 
 
 include_once"delete.php";

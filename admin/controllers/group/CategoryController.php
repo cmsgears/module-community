@@ -4,78 +4,59 @@ namespace cmsgears\community\admin\controllers\group;
 // Yii Imports
 use \Yii;
 use yii\helpers\Url;
-use yii\filters\VerbFilter;
-use yii\web\NotFoundHttpException;
-use yii\db\IntegrityException;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\entities\Category;
+class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryController {
 
-use cmsgears\core\admin\services\CategoryService;
+	// Variables ---------------------------------------------------
 
-class CategoryController extends \cmsgears\core\admin\controllers\BaseCategoryController {
+	// Globals ----------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
 
 	// Constructor and Initialisation ------------------------------
 
- 	public function __construct( $id, $module, $config = [] ) {
+ 	public function init() {
 
-        parent::__construct( $id, $module, $config );
+        parent::init();
+
+		$this->crudPermission 	= CmnGlobal::PERM_GROUP;
+		$this->type				= CmnGlobal::TYPE_GROUP;
+		$this->templateType		= CmnGlobal::TYPE_GROUP;
+
+		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'group-category' ];
+
+		$this->returnUrl		= Url::previous( 'categories' );
+		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/category/all' ], true );
 	}
 
-	// Instance Methods ------------------
+	// Instance methods --------------------------------------------
 
-	// yii\base\Component ----------------
+	// Yii interfaces ------------------------
 
-    public function behaviors() {
+	// Yii parent classes --------------------
 
-        return [
-            'rbac' => [
-                'class' => Yii::$app->cmgCore->getRbacFilterClass(),
-                'actions' => [
-	                'all'  => [ 'permission' => CmnGlobal::PERM_GROUP ],
-	                'create'  => [ 'permission' => CmnGlobal::PERM_GROUP ],
-	                'update'  => [ 'permission' => CmnGlobal::PERM_GROUP ],
-	                'delete'  => [ 'permission' => CmnGlobal::PERM_GROUP ]
-                ]
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-	                'all'  => ['get'],
-	                'create'  => ['get', 'post'],
-	                'update'  => ['get', 'post'],
-	                'delete'  => ['get', 'post']
-                ]
-            ]
-        ];
-    }
+	// yii\base\Component -----
+
+	// yii\base\Controller ----
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
 
 	// CategoryController --------------------
 
-	public function actionAll( $type = null ) {
-		
+	public function actionAll() {
+
 		Url::remember( [ 'group/category/all' ], 'categories' );
 
-		return parent::actionAll( [ 'parent' => 'sidebar-group', 'child' => 'category' ], CmnGlobal::TYPE_GROUP, false );
-	}
-	
-	public function actionCreate() {
-
-		return parent::actionCreate( Url::previous( 'categories' ), [ 'parent' => 'sidebar-group', 'child' => 'category' ], CmnGlobal::TYPE_GROUP, false );
-	}
-	 
-	public function actionUpdate( $id ) {
-
-		return parent::actionUpdate( $id, Url::previous( 'categories' ), [ 'parent' => 'sidebar-group', 'child' => 'category' ], CmnGlobal::TYPE_GROUP, false );
-	}
-	
-	public function actionDelete( $id ) {
-
-		return parent::actionDelete( $id, Url::previous( 'categories' ), [ 'parent' => 'sidebar-group', 'child' => 'category' ], CmnGlobal::TYPE_GROUP, false );
+		return parent::actionAll();
 	}
 }
-
-?>

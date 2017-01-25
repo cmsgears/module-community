@@ -5,7 +5,7 @@ use yii\helpers\Url;
 use yii\widgets\LinkPager;
 use cmsgears\widgets\nav\BasicNav; 
 use cmsgears\core\common\utilities\CodeGenUtil;
-use cmsgears\core\common\utilities\DateUtil;
+use cmsgears\core\common\utilities\DateUtil; 
 
 $coreProperties = $this->context->getCoreProperties();
 $this->title 	= $coreProperties->getSiteTitle() . ' | All Members';
@@ -40,6 +40,9 @@ include_once"activate.php";
 include_once"template-activate-row.php";
 include_once"template-deactivate-row.php";
 include_once"template-block-row.php";
+include_once"template-update-role.php";
+include_once"template-add-member.php";
+include_once"delete.php"; 
 ?>
 <div class="quick-links left">
 	<?php	
@@ -59,36 +62,10 @@ include_once"template-block-row.php";
 		<span sort-order='-status' class="icon-sort <?php if( strcmp( $sortOrder, '-status') == 0 ) echo 'icon-down-active'; else echo 'fa fa-arrow-down';?>"></span>
 	</span>
 	<div class="grid-content">
-	<?php if( count( $models ) == 0 ) { ?>		
-		<div class="grid-rows account hidden" id="grid-primary">
-			<div class="grid-rows-header clearfix">				
-				<div class="col12x2">
-					<h6 class="title">Avatar</h6>
-				</div>  
-				<div class="col12x2">
-					<h6 class="title">Name</h6>
-				</div>  
-				<div class="col12x2">
-					<h6 class="title">Status</h6>
-				</div> 
-				<div class="col12x2">
-					<h6 class="title">Group SEO</h6>
-				</div> 
-				<div class="col12x2">
-					<h6 class="title">Created on</h6>
-				</div> 
-				<div class="col12x2">
-					<h6 class="title">Updated on</h6>
-				</div> 
-				<div class="col12x2">
-					<h6 class="title">Actions</h6>
-				</div> 
-			</div>
-		</div>	
-		<div class="block-data hidden block-data-primary"></div>		
+	<?php if( count( $models ) == 0 ) { ?>  		
 	<?php } else { ?>
 		<div class="grid-rows account"> 
-			<div class="block-data">
+			<div class="block-data" id="block-members">
 			<?php
 				$slugBase	= $siteUrl;
 				
@@ -103,10 +80,33 @@ include_once"template-block-row.php";
 						<div class="grid-row-data clearfix">
 							<div class="col12x4 clearfix">
 								<span class="label-header col1"><?=$memberUser->username?></span>
-								<span class="data-account-name col1"><?= CodeGenUtil::getImageThumbTag( $user->avatar, [ 'class' => 'avatar', 'image' => 'avatar' ] ) ?></span> 
+								<span class="data-account-name col1"> 
+									<?php
+									
+										if( isset( $memberUser->avatar ) ) {
+									  
+											echo CodeGenUtil::getImageThumbTag( $user->avatar, [ 'class' => 'avatar', 'image' => 'avatar' ] );
+										}
+										else {
+											
+											echo '<img src='. Yii::getAlias('@images').'/avatar.png'.'>';
+										}?>  
+								</span> 
 							</div> 
 							<?php if( $member->group->createdBy == $user->id ) { ?>
-									 
+								<div class="col12x4 clearfix">
+									<span class="label-header col1">Role</span>
+									<span class="col12x8" id="role-name-<?=$id?>">
+										<?=$member->role->name?>
+									</span>	
+									<div class="col12x8 wrap-role-list hidden"> 
+										<select class="bm-select hidden" name="GroupMember[roleId]">	
+											<?= CodeGenUtil::generateSelectOptionsIdName( $roleList, "{$member->roleId}" ); ?>
+										</select>
+										<span class="hidden">role-name-<?=$id?></span>	
+										<span class="hidden"> <?= Url::toRoute( [ '/cmgcmn/apix/group/member/update-role?id='.$id ] ) ?> </span>									
+									</div>	 				 
+								</div>	 
 								<div class="col12x4 clearfix"> 
 									<div class="col1 wrap-action-icons">
 										<?php if( $member->status == $statusNew ) { ?>
@@ -127,7 +127,15 @@ include_once"template-block-row.php";
 											<span class="hidden"><?= Url::toRoute( [ '/cmgcmn/apix/group/member/deactivate?id='.$id ] ) ?></span>	
 											<span class="hidden"><?= 'grid-row-'.$id ?></span>									
 										<?php } } ?>
-									</div>	
+										<span><a data="role-name-<?=$id?>" class="fa fa-edit btn-update-role align-left" title="Update Role"></a></span>
+										<?php if( $member->userId != $user->id ) { ?>
+										<span>
+											<a class="fa fa-remove btn-delete-member align-left" title="Delete Member"></a>
+											<span class="hidden">grid-row-<?=$id?></span>
+											<span class="hidden"> <?= Url::toRoute( [ '/cmgcmn/apix/group/member/delete?id='.$id ] ) ?></span>
+										</span>	
+										<?php } ?>
+									</div>									
 								</div>
 							<?php } ?>			
 						</div>
@@ -142,3 +150,11 @@ include_once"template-block-row.php";
 		<?= LinkPager::widget( [ 'pagination' => $pagination ] ); ?>
 	</div>
 </section> 
+
+<!--- Update Role Form -------------------------------- -->
+
+<div id="frm-update-member-role" class="frm-split-40-60 data-form request-ajax hidden" cmt-controller="member" cmt-action="role-update" action="" method="post">
+	<input type="hidden" name="GroupMember[roleId]" id="member_role_id">
+	<input type="hidden" name="row_id" id="member_row_id">
+	<a class="btn cmt-submit" cmt-request="frm-update-member-role"></a>
+<div class="max-area-cover spinner"><div class="valign-center fa fa-3x fa-refresh fa-spin"></div></div>

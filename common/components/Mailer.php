@@ -5,17 +5,51 @@ namespace cmsgears\community\common\components;
 use \Yii;
 
 /**
- * The mail component used for sending possible mails by the CMSGears core module. It must be initialised 
- * for app using the name cmgCoreMailer. It's used by various controllers to trigger mails.  
+ * The mail component used for sending possible mails by the CMSGears core module. It must be initialised
+ * for app using the name cmgCoreMailer. It's used by various controllers to trigger mails.
  */
 class Mailer extends \cmsgears\core\common\base\Mailer {
 
-	const MAIL_ACCOUNT_CREATE	= "account-create";	
-	const MAIL_GROUP_INVITE		= "group-invite";		
-	 
+	// Variables ---------------------------------------------------
+
+	// Globals -------------------------------
+
+	// Constants --------------
+
+	const MAIL_ACCOUNT_CREATE	= "account-create";
+	const MAIL_GROUP_INVITE		= "group-invite";
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
     public $htmlLayout 			= '@cmsgears/module-community/common/mails/layouts/html';
     public $textLayout 			= '@cmsgears/module-community/common/mails/layouts/text';
     public $viewPath 			= '@cmsgears/module-community/common/mails/views';
+
+	// Protected --------------
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
+
+	// Constructor and Initialisation ------------------------------
+
+	// Instance methods --------------------------------------------
+
+	// Yii interfaces ------------------------
+
+	// Yii parent classes --------------------
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// Mailer --------------------------------
 
 	/**
 	 * The method sends mail for accounts created by group admin.
@@ -32,8 +66,8 @@ class Mailer extends \cmsgears\core\common\base\Mailer {
             ->setSubject( "Registration | " . $this->coreProperties->getSiteName() )
             //->setTextBody( "heroor" )
             ->send();
-	}	
-	
+	}
+
 	/**
 	 * The method sends mail for accounts created by group admin.
 	 */
@@ -49,7 +83,5 @@ class Mailer extends \cmsgears\core\common\base\Mailer {
             ->setSubject( "Registration | " . $this->coreProperties->getSiteName() )
             //->setTextBody( "heroor" )
             ->send();
-	}	
+	}
 }
-
-?>
