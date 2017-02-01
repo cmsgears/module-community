@@ -43,6 +43,7 @@ class m160623_111612_community_index extends \yii\db\Migration {
 
 		// Follower
 		$this->createIndex( 'idx_' . $this->prefix . 'cmn_follower_type_p', $this->prefix . 'cmn_follower', 'parentType' );
+		$this->createIndex( 'idx_' . $this->prefix . 'cmn_follower_pipta', $this->prefix . 'cmn_follower', [ 'parentId', 'parentType', 'active' ] );
 	}
 
 	private function upDependent() {
@@ -51,6 +52,7 @@ class m160623_111612_community_index extends \yii\db\Migration {
 		$this->createIndex( 'idx_' . $this->prefix . 'group_meta_name', $this->prefix . 'cmn_group_meta', 'name' );
 		$this->createIndex( 'idx_' . $this->prefix . 'group_meta_type', $this->prefix . 'cmn_group_meta', 'type' );
 		$this->createIndex( 'idx_' . $this->prefix . 'group_meta_type_v', $this->prefix . 'cmn_group_meta', 'valueType' );
+		$this->createIndex( 'idx_' . $this->prefix . 'group_meta_mit', $this->prefix . 'cmn_group_meta', [ 'modelId', 'type' ] );
 	}
 
 	public function down() {
@@ -82,6 +84,7 @@ class m160623_111612_community_index extends \yii\db\Migration {
 
 		// Follower
 		$this->dropIndex( 'idx_' . $this->prefix . 'cmn_follower_type_p', $this->prefix . 'cmn_follower' );
+		$this->dropIndex( 'idx_' . $this->prefix . 'cmn_follower_pipta', $this->prefix . 'cmn_follower' );
 	}
 
 	private function downDependent() {
@@ -90,5 +93,6 @@ class m160623_111612_community_index extends \yii\db\Migration {
 		$this->dropIndex( 'idx_' . $this->prefix . 'group_meta_name', $this->prefix . 'cmn_group_meta' );
 		$this->dropIndex( 'idx_' . $this->prefix . 'group_meta_type', $this->prefix . 'cmn_group_meta' );
 		$this->dropIndex( 'idx_' . $this->prefix . 'group_meta_type_v', $this->prefix . 'cmn_group_meta' );
+		$this->dropIndex( 'idx_' . $this->prefix . 'group_meta_mit', $this->prefix . 'cmn_group_meta' );
 	}
 }
