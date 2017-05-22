@@ -1,13 +1,7 @@
 <?php
 namespace cmsgears\community\common\services\mappers;
 
-// Yii Imports
-use \Yii;
-use yii\data\Sort;
-
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
-
 use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\mappers\Friend;
 
@@ -103,4 +97,5 @@ class FriendService extends \cmsgears\core\common\services\base\EntityService im
 	// Update -------------
 
 	// Delete -------------
+
 }

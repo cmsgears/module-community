@@ -1,13 +1,7 @@
 <?php
 namespace cmsgears\community\common\services\resources;
 
-// Yii Imports
-use \Yii;
-use yii\data\Sort;
-
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
-
 use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\resources\ChatMessage;
 
@@ -103,4 +97,5 @@ class ChatMessageService extends \cmsgears\core\common\services\base\EntityServi
 	// Update -------------
 
 	// Delete -------------
+
 }

@@ -2,12 +2,9 @@
 namespace cmsgears\community\common\services\resources;
 
 // Yii Imports
-use \Yii;
 use yii\data\Sort;
 
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
-
 use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\resources\GroupMessage;
 
@@ -161,4 +158,5 @@ class GroupMessageService extends \cmsgears\core\common\services\base\EntityServ
 	// Update -------------
 
 	// Delete -------------
+
 }

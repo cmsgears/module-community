@@ -3,7 +3,6 @@ namespace cmsgears\community\common\services\mappers;
 
 // Yii Imports
 use \Yii;
-use yii\data\Sort;
 use yii\db\Query;
 
 // CMG Imports
@@ -262,4 +261,5 @@ class FollowerService extends \cmsgears\core\common\services\base\EntityService 
 	// Update -------------
 
 	// Delete -------------
+
 }

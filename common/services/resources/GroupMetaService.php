@@ -1,11 +1,8 @@
 <?php
 namespace cmsgears\community\common\services\resources;
 
-// Yii Imports
-use \Yii;
-
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
+
 
 use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\resources\GroupMeta;
@@ -95,4 +92,5 @@ class GroupMetaService extends \cmsgears\core\common\services\base\MetaService i
 	// Update -------------
 
 	// Delete -------------
+
 }
