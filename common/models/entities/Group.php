@@ -139,7 +139,7 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
             // Text Limit
             [ [ 'type', 'icon' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
             [ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
-            [ 'slug', 'description', 'string', 'min' => 0, 'max' => Yii::$app->core->xxLargeText ],
+            [ [ 'slug', 'description' ], 'string', 'min' => 0, 'max' => Yii::$app->core->xxLargeText ],
             // Other
 			[ [ 'status', 'visibility' ], 'number', 'integerOnly' => true ],
             [ [ 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
@@ -262,4 +262,5 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 	// Update -----------------
 
 	// Delete -----------------
+
 }

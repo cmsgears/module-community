@@ -83,39 +83,41 @@ class GroupService extends \cmsgears\core\common\services\base\EntityService imp
 
 	// Data Provider ------
 
-	public function getPage( $config = [] ) {
+    public function getPage( $config = [] ) {
+
+    	$modelTable = static::$modelTable;
 
 	    $sort = new Sort([
 	        'attributes' => [
 	            'name' => [
-	                'asc' => [ 'name' => SORT_ASC ],
-	                'desc' => ['name' => SORT_DESC ],
+	                'asc' => [ "$modelTable.name" => SORT_ASC ],
+	            	'desc' => [ "$modelTable.name" => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'name'
+	                'label' => 'Name'
 	            ],
 	            'slug' => [
-	                'asc' => [ 'slug' => SORT_ASC ],
-	                'desc' => ['slug' => SORT_DESC ],
+            		'asc' => [ "$modelTable.slug" => SORT_ASC ],
+            		'desc' => [ "$modelTable.slug" => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'slug'
+	                'label' => 'Slug'
 	            ],
 	            'owner' => [
 	                'asc' => [ 'createdBy' => SORT_ASC ],
 	                'desc' => ['createdBy' => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'owner'
+	                'label' => 'Owner'
 	            ],
 	            'cdate' => [
 	                'asc' => [ 'createdAt' => SORT_ASC ],
 	                'desc' => ['createdAt' => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'cdate',
+	                'label' => 'Created At',
 	            ],
 	            'udate' => [
 	                'asc' => [ 'modifiedAt' => SORT_ASC ],
 	                'desc' => ['modifiedAt' => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'udate',
+	                'label' => 'Updated At',
 	            ]
 	        ],
 	        'defaultOrder' => [
@@ -123,9 +125,9 @@ class GroupService extends \cmsgears\core\common\services\base\EntityService imp
 	        ]
 	    ]);
 
-		if( !isset( $conditions[ 'sort' ] ) ) {
+	    if( !isset( $config[ 'sort' ] ) ) {
 
-			$conditions[ 'sort' ] = $sort;
+	    	$config[ 'sort' ] = $sort;
 		}
 
 		return parent::findPage( $config );
@@ -214,4 +216,5 @@ class GroupService extends \cmsgears\core\common\services\base\EntityService imp
 	// Update -------------
 
 	// Delete -------------
+
 }

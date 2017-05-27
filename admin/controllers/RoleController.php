@@ -30,12 +30,13 @@ class RoleController extends \cmsgears\core\admin\controllers\base\RoleControlle
         parent::init();
 
 		$this->crudPermission 	= CmnGlobal::PERM_COMMUNITY;
+
 		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'role' ];
 
-		$this->type			= CmnGlobal::TYPE_COMMUNITY;
+		$this->type				= CmnGlobal::TYPE_COMMUNITY;
 
-		$this->returnUrl	= Url::previous( 'roles' );
-		$this->returnUrl	= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/role/all' ], true );
+		$this->returnUrl		= Url::previous( 'roles' );
+		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/role/all' ], true );
 	}
 
 	// Instance methods --------------------------------------------

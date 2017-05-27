@@ -28,6 +28,7 @@ class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryCo
         parent::init();
 
 		$this->crudPermission 	= CmnGlobal::PERM_GROUP;
+
 		$this->type				= CmnGlobal::TYPE_GROUP;
 		$this->templateType		= CmnGlobal::TYPE_GROUP;
 

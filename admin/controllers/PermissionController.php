@@ -30,12 +30,13 @@ class PermissionController extends \cmsgears\core\admin\controllers\base\Permiss
         parent::init();
 
 		$this->crudPermission 	= CmnGlobal::PERM_COMMUNITY;
+
 		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'permission' ];
 
-		$this->type			= CmnGlobal::TYPE_COMMUNITY;
+		$this->type				= CmnGlobal::TYPE_COMMUNITY;
 
-		$this->returnUrl	= Url::previous( 'permissions' );
-		$this->returnUrl	= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/permission/all' ], true );
+		$this->returnUrl		= Url::previous( 'permissions' );
+		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/permission/all' ], true );
 	}
 
 	// Instance methods --------------------------------------------

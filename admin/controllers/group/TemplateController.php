@@ -30,6 +30,7 @@ class TemplateController extends \cmsgears\core\admin\controllers\base\TemplateC
 		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'group-template' ];
 
 		$this->crudPermission 	= CmnGlobal::PERM_GROUP;
+
 		$this->type				= CmnGlobal::TYPE_GROUP;
 
 		$this->returnUrl		= Url::previous( 'templates' );

@@ -11,38 +11,58 @@ use cmsgears\community\common\config\CmnGlobal;
 
 class MessageController extends BaseMessageController {
 
+	// Variables ---------------------------------------------------
+
+	// Globals ----------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
+
 	// Constructor and Initialisation ------------------------------
 
- 	public function __construct( $id, $module, $config = [] ) {
+	public function init() {
 
-        parent::__construct( $id, $module, $config );
+		parent::init();
 	}
 
-	// Instance Methods --------------------------------------------
+	// Instance methods --------------------------------------------
 
-	// yii\base\Component
+	// Yii interfaces ------------------------
 
-    public function behaviors() {
+	// Yii parent classes --------------------
 
-        return [
-            'rbac' => [
-                'class' => Yii::$app->cmgCore->getRbacFilterClass(),
-                'actions' => [
-	                'all' => [ 'permission' => CmnGlobal::PERM_GROUP ],
-	                'delete' => [ 'permission' => CmnGlobal::PERM_GROUP ]
-                ]
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-	                'all'    => ['get'],
-	                'delete' => ['get', 'post']
-                ]
-            ]
-        ];
-    }
+	// yii\base\Component -----
 
-	// MemberController
+	public function behaviors() {
+
+		return [
+			'rbac' => [
+				'class' => Yii::$app->cmgCore->getRbacFilterClass(),
+				'actions' => [
+					'all' => [ 'permission' => CmnGlobal::PERM_GROUP ],
+					'delete' => [ 'permission' => CmnGlobal::PERM_GROUP ]
+				]
+			],
+			'verbs' => [
+				'class' => VerbFilter::className(),
+				'actions' => [
+					'all'    => [ 'get' ],
+					'delete' => [ 'get', 'post' ]
+				]
+			]
+		];
+	}
+
+	// yii\base\Controller ----
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// MessageController----------------------
 
 	public function actionAll( $id ) {
 
@@ -54,5 +74,3 @@ class MessageController extends BaseMessageController {
 		return parent::actionDelete( $gid, $id, [ 'parent' => 'sidebar-group', 'child' => 'group' ] );
 	}
 }
-
-?>

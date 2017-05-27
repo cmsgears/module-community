@@ -37,13 +37,16 @@ class GroupController extends \cmsgears\core\admin\controllers\base\CrudControll
         parent::init();
 
 		$this->crudPermission 		= CmnGlobal::PERM_GROUP;
+
 		$this->modelService			= Yii::$app->factory->get( 'groupService' );
+
 		$this->templateService		= Yii::$app->factory->get( 'templateService' );
 		$this->modelContentService	= Yii::$app->factory->get( 'modelContentService' );
+
 		$this->sidebar 				= [ 'parent' => 'sidebar-community', 'child' => 'group' ];
 
-		$this->returnUrl		= Url::previous( 'groups' );
-		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/all' ], true );
+		$this->returnUrl			= Url::previous( 'groups' );
+		$this->returnUrl			= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/all' ], true );
 	}
 
 	// Instance methods --------------------------------------------
@@ -78,7 +81,9 @@ class GroupController extends \cmsgears\core\admin\controllers\base\CrudControll
 		$modelClass			= $this->modelService->getModelClass();
 		$model				= new $modelClass;
 		$model->type		= CoreGlobal::TYPE_SITE;
+
 		$content			= new ModelContent();
+
 		$avatar	 			= File::loadFile( null, 'Avatar' );
 		$banner	 			= File::loadFile( null, 'Banner' );
 		$video	 			= File::loadFile( null, 'Video' );
