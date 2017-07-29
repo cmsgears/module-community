@@ -29,14 +29,26 @@ class PermissionController extends \cmsgears\core\admin\controllers\base\Permiss
 
         parent::init();
 
+		// Permissions
 		$this->crudPermission 	= CmnGlobal::PERM_COMMUNITY;
 
+		// Sidebar
 		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'permission' ];
 
 		$this->type				= CmnGlobal::TYPE_COMMUNITY;
 
+		// Return Url
 		$this->returnUrl		= Url::previous( 'permissions' );
 		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/permission/all' ], true );
+		
+		// Breadcrumbs
+		$this->breadcrumbs		= [
+			'all' => [ [ 'label' => 'Permission' ] ],
+			'create' => [ [ 'label' => 'Permission', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
+			'update' => [ [ 'label' => 'Permission', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Permission', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ],
+			'items' => [ [ 'label' => 'Permission', 'url' => $this->returnUrl ], [ 'label' => 'Items' ] ]
+		];
 	}
 
 	// Instance methods --------------------------------------------
@@ -57,7 +69,7 @@ class PermissionController extends \cmsgears\core\admin\controllers\base\Permiss
 
 	public function actionAll() {
 
-		Url::remember( [ 'permission/all' ], 'permissions' );
+		Url::remember( Yii::$app->request->getUrl(), 'permissions' );
 
 		return parent::actionAll();
 	}

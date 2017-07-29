@@ -192,6 +192,27 @@ class GroupService extends \cmsgears\core\common\services\base\EntityService imp
 
 		return parent::delete( $model, $config );
 	}
+	
+	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
+
+		switch( $column ) {
+
+			case 'model': {
+
+				switch( $action ) {
+
+					case 'delete': {
+
+						$this->delete( $model );
+
+						break;
+					}
+				}
+
+				break;
+			}
+		}
+	}
 
 	// Static Methods ----------------------------------------------
 

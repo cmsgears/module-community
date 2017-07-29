@@ -2,13 +2,10 @@
 namespace cmsgears\community\admin\controllers;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\helpers\Url;
 
 // CMG Imports
-
-// CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
 class RoleController extends \cmsgears\core\admin\controllers\base\RoleController {
@@ -29,14 +26,26 @@ class RoleController extends \cmsgears\core\admin\controllers\base\RoleControlle
 
         parent::init();
 
+		// Permission
 		$this->crudPermission 	= CmnGlobal::PERM_COMMUNITY;
 
+		// Sidebar
 		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'role' ];
 
 		$this->type				= CmnGlobal::TYPE_COMMUNITY;
 
+		// Return Url
 		$this->returnUrl		= Url::previous( 'roles' );
 		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/role/all' ], true );
+		
+		// Breadcrumbs
+		$this->breadcrumbs		= [
+			'all' => [ [ 'label' => 'Role' ] ],
+			'create' => [ [ 'label' => 'Role', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
+			'update' => [ [ 'label' => 'Role', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Role', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ],
+			'items' => [ [ 'label' => 'Role', 'url' => $this->returnUrl ], [ 'label' => 'Items' ] ]
+		];
 	}
 
 	// Instance methods --------------------------------------------
@@ -57,8 +66,9 @@ class RoleController extends \cmsgears\core\admin\controllers\base\RoleControlle
 
 	public function actionAll() {
 
-		Url::remember( [ 'role/all' ], 'roles' );
+		Url::remember( Yii::$app->request->getUrl(), 'roles' );
 
 		return parent::actionAll();
 	}
+	
 }

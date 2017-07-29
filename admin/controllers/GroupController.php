@@ -10,6 +10,7 @@ use yii\web\NotFoundHttpException;
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
+use cmsgears\cms\common\config\CmsGlobal;
 
 use cmsgears\core\common\models\resources\File;
 use cmsgears\cms\common\models\resources\ModelContent;
@@ -36,17 +37,29 @@ class GroupController extends \cmsgears\core\admin\controllers\base\CrudControll
 
         parent::init();
 
+		// Permissions
 		$this->crudPermission 		= CmnGlobal::PERM_GROUP;
 
+		// Services
 		$this->modelService			= Yii::$app->factory->get( 'groupService' );
-
 		$this->templateService		= Yii::$app->factory->get( 'templateService' );
 		$this->modelContentService	= Yii::$app->factory->get( 'modelContentService' );
 
+		// Sidebar
 		$this->sidebar 				= [ 'parent' => 'sidebar-community', 'child' => 'group' ];
 
+		// Return Url
 		$this->returnUrl			= Url::previous( 'groups' );
 		$this->returnUrl			= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/all' ], true );
+		
+		// Breadcrumbs
+		$this->breadcrumbs		= [
+			'all' => [ [ 'label' => 'Group' ] ],
+			'create' => [ [ 'label' => 'Group', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
+			'update' => [ [ 'label' => 'Group', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Group', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ],
+			'items' => [ [ 'label' => 'Group', 'url' => $this->returnUrl ], [ 'label' => 'Items' ] ]
+		];
 	}
 
 	// Instance methods --------------------------------------------
@@ -67,7 +80,7 @@ class GroupController extends \cmsgears\core\admin\controllers\base\CrudControll
 
 	public function actionAll() {
 
-		Url::remember( [ 'group/all' ], 'groups' );
+		Url::remember( Yii::$app->request->getUrl(), 'groups' );
 
 		$dataProvider = $this->modelService->getPage();
 
@@ -95,7 +108,7 @@ class GroupController extends \cmsgears\core\admin\controllers\base\CrudControll
 
 			$this->modelContentService->create( $content, [ 'parent' => $model, 'parentType' => CmnGlobal::TYPE_GROUP, 'publish' => true, 'banner' => $banner, 'video' => $video ] );
 
-			return $this->redirect( $this->returnUrl );
+			return $this->redirect( "update?id=$model->id" );
 		}
 
 		$visibilityMap	= Group::$visibilityMap;
@@ -134,7 +147,7 @@ class GroupController extends \cmsgears\core\admin\controllers\base\CrudControll
 
 				$this->modelContentService->update( $content, [ 'publish' => true, 'banner' => $banner, 'video' => $video ] );
 
-				return $this->redirect( $this->returnUrl );
+				return $this->redirect( "update?id=$model->id" );
 			}
 
 			$visibilityMap	= Group::$visibilityMap;
@@ -176,8 +189,8 @@ class GroupController extends \cmsgears\core\admin\controllers\base\CrudControll
 				return $this->redirect( $this->returnUrl );
 			}
 
-			$visibilityMap	= Post::$visibilityMap;
-			$statusMap		= Post::$statusMap;
+			$visibilityMap	= Group::$visibilityMap;
+			$statusMap		= Group::$statusMap;
 			$templatesMap	= $this->templateService->getIdNameMapByType( CmsGlobal::TYPE_POST, [ 'default' => true ] );
 
 	    	return $this->render( 'delete', [

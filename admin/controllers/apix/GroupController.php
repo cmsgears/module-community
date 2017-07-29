@@ -28,8 +28,11 @@ class GroupController extends \cmsgears\core\admin\controllers\base\Controller {
  	public function init() {
 
 		parent::init();
-
+		
+		// Permissions
 		$this->crudPermission	= CmnGlobal::PERM_GROUP;
+
+		// Services
 		$this->modelService		= Yii::$app->factory->get( 'groupService' );
 	}
 
@@ -51,7 +54,9 @@ class GroupController extends \cmsgears\core\admin\controllers\base\Controller {
 	                'assignCategory' => [ 'permission' => $this->crudPermission ],
 	                'removeCategory' => [ 'permission' => $this->crudPermission ],
 	                'assignTags' => [ 'permission' => $this->crudPermission ],
-	                'removeTag' => [ 'permission' => $this->crudPermission ]
+	                'removeTag' => [ 'permission' => $this->crudPermission ],
+					'bulk' => [ 'permission' => $this->crudPermission ],
+					'delete' => [ 'permission' => $this->crudPermission ]
                 ]
             ],
             'verbs' => [
@@ -62,7 +67,9 @@ class GroupController extends \cmsgears\core\admin\controllers\base\Controller {
                     'assignCategory' => [ 'post' ],
                     'removeCategory' => [ 'post' ],
 	                'assignTags' => [ 'post' ],
-	                'removeTag' => [ 'post' ]
+	                'removeTag' => [ 'post' ],
+					'bulk' => [ 'post' ],
+					'delete' => [ 'post' ]
                 ]
             ]
         ];
@@ -78,7 +85,9 @@ class GroupController extends \cmsgears\core\admin\controllers\base\Controller {
             'assign-category' => [ 'class' => 'cmsgears\core\common\actions\category\AssignCategory' ],
             'remove-category' => [ 'class' => 'cmsgears\core\common\actions\category\RemoveCategory' ],
             'assign-tags' => [ 'class' => 'cmsgears\core\common\actions\tag\AssignTags' ],
-            'remove-tag' => [ 'class' => 'cmsgears\core\common\actions\tag\RemoveTag' ]
+            'remove-tag' => [ 'class' => 'cmsgears\core\common\actions\tag\RemoveTag' ],
+			'bulk' => [ 'class' => 'cmsgears\core\common\actions\grid\Bulk' ],
+			'delete' => [ 'class' => 'cmsgears\core\common\actions\grid\Delete' ]
 		];
     }
 
