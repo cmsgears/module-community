@@ -1,87 +1,59 @@
 <?php
-namespace cmsgears\community\common\components;
+namespace cmsgears\cms\common\components;
 
 // Yii Imports
 use \Yii;
 
+// CMG Imports
+use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\cms\common\config\CmsGlobal;
+
 /**
- * The mail component used for sending possible mails by the CMSGears core module. It must be initialised
- * for app using the name cmgCoreMailer. It's used by various controllers to trigger mails.
+ * The mail component for CMSGears cms module. It must be initialised for app using the name cmgCmsMailer.
  */
 class Mailer extends \cmsgears\core\common\base\Mailer {
 
-	// Variables ---------------------------------------------------
+	// Global -----------------
 
-	// Globals -------------------------------
-
-	// Constants --------------
-
-	const MAIL_ACCOUNT_CREATE	= "account-create";
-	const MAIL_GROUP_INVITE		= "group-invite";
+	//const MAIL_CONTACT			= "contact";
 
 	// Public -----------------
 
-	// Protected --------------
-
-	// Variables -----------------------------
-
-	// Public -----------------
-
-    public $htmlLayout 			= '@cmsgears/module-community/common/mails/layouts/html';
-    public $textLayout 			= '@cmsgears/module-community/common/mails/layouts/text';
-    public $viewPath 			= '@cmsgears/module-community/common/mails/views';
+	public $htmlLayout		= '@cmsgears/module-cms/common/mails/layouts/html';
+	public $textLayout		= '@cmsgears/module-cms/common/mails/layouts/text';
+	public $viewPath		= '@cmsgears/module-cms/common/mails/views';
 
 	// Protected --------------
 
 	// Private ----------------
 
-	// Traits ------------------------------------------------------
-
 	// Constructor and Initialisation ------------------------------
 
 	// Instance methods --------------------------------------------
 
-	// Yii interfaces ------------------------
-
 	// Yii parent classes --------------------
-
-	// CMG interfaces ------------------------
 
 	// CMG parent classes --------------------
 
 	// Mailer --------------------------------
 
-	/**
-	 * The method sends mail for accounts created by group admin.
-	 */
-	public function sendCreateUserMail( $user ) {
+	/*
+	public function sendContactMail( $contactForm ) {
 
-		$fromEmail 	= $this->mailProperties->getSenderEmail();
-		$fromName 	= $this->mailProperties->getSenderName();
+		$mailProperties	= $this->mailProperties;
+		$adminEmail		= $mailProperties->getSenderEmail();
+		$adminName		= $mailProperties->getSenderName();
 
-		// Send Mail
-        $this->getMailer()->compose( self::MAIL_ACCOUNT_CREATE, [ 'coreProperties' => $this->coreProperties, 'user' => $user ] )
-            ->setTo( $user->email )
-            ->setFrom( [ $fromEmail => $fromName ] )
-            ->setSubject( "Registration | " . $this->coreProperties->getSiteName() )
-            //->setTextBody( "heroor" )
-            ->send();
+		$fromEmail		= $mailProperties->getContactEmail();
+		$fromName		= $mailProperties->getContactName();
+
+		// User Mail
+		$this->getMailer()->compose( self::MAIL_CONTACT, [ 'coreProperties' => $this->coreProperties, FormsGlobal::FORM_CONTACT => $contactForm ] )
+			->setTo( $contactForm->email )
+			->setFrom( [ $fromEmail => $fromName ] )
+			->setSubject( $contactForm->subject )
+			//->setTextBody( $contact->contact_message )
+			->send();
 	}
-
-	/**
-	 * The method sends mail for accounts created by group admin.
-	 */
-	public function sendInvitationMail( $user ) {
-
-		$fromEmail 	= $this->mailProperties->getSenderEmail();
-		$fromName 	= $this->mailProperties->getSenderName();
-
-		// Send Mail
-        $this->getMailer()->compose( self::MAIL_GROUP_INVITE, [ 'coreProperties' => $this->coreProperties, 'user' => $user ] )
-            ->setTo( $user->email )
-            ->setFrom( [ $fromEmail => $fromName ] )
-            ->setSubject( "Registration | " . $this->coreProperties->getSiteName() )
-            //->setTextBody( "heroor" )
-            ->send();
-	}
+	*/
 }

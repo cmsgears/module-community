@@ -1,21 +1,20 @@
 {
-	"name": "cmsgears/module-community",
-	"description": "The Community module having features including friends, message, groups, group members, group messages.",
-	"homepage": "http://www.cmsgears.com",
+	"name": "cmsgears/module-cms",
+	"description": "The CMS module required for CMSGears based projects. It got core cms functionality related to page, menu, post, sidebar and widgets.",
+	"homepage": "http://www.cmsgears.org", 
 	"type": "package",
-	"keywords": [ "yii2", "cmsgears", "module", "listing" ],
-	"license": "http://www.cmsgears.com/license",
+	"keywords": [ "yii", "yii2", "cmsgears", "module", "cms" ],
+	"license": "GPLv3",
 	"support": {
-		"resources": "http://www.cmsgears.com"
+        "resources": "http://www.cmsgears.org"
 	},
 	"autoload": {
 		"psr-4": {
-			"cmsgears\\community\\": ""
+			"cmsgears\\cms\\": ""
 		}
 	},
     "require": {
         "php": ">=5.4.0",
-        "cmsgears/module-core": "*",
-        "cmsgears/module-cms": "*"
+        "cmsgears/module-core": "*"
     }
 }
