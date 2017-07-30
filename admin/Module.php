@@ -1,55 +1,23 @@
 <?php
-namespace cmsgears\cms\admin;
+namespace cmsgears\community\admin;
 
 // Yii Imports
 use \Yii;
 
-// CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
-use cmsgears\cms\common\config\CmsGlobal;
+class Module extends \yii\base\Module {
 
-class Module extends \cmsgears\core\common\base\Module {
+    public $controllerNamespace = 'cmsgears\community\admin\controllers';
 
-	// Variables ---------------------------------------------------
+    public function init() {
 
-	// Globals ----------------
+        parent::init();
 
-	// Public -----------------
-
-	public $controllerNamespace = 'cmsgears\cms\admin\controllers';
-
-	public $config				= [ CmsGlobal::CONFIG_BLOG ];
-
-	// Protected --------------
-
-	// Private ----------------
-
-	// Traits ------------------------------------------------------
-
-	// Constructor and Initialisation ------------------------------
-
-	public function init() {
-
-		parent::init();
-
-		$this->setViewPath( '@cmsgears/module-cms/admin/views' );
-	}
-
-	// Instance methods --------------------------------------------
-
-	// Yii interfaces ------------------------
-
-	// Yii parent classes --------------------
-
-	// CMG interfaces ------------------------
-
-	// CMG parent classes --------------------
-
-	// Module --------------------------------
+        $this->setViewPath( '@cmsgears/module-community/admin/views' );
+    }
 
 	public function getSidebarHtml() {
 
-		$path	= Yii::getAlias( '@cmsgears' ) . '/module-cms/admin/views/sidebar.php';
+		$path	= Yii::getAlias( "@cmsgears" ) . "/module-community/admin/views/sidebar.php";
 
 		return $path;
 	}

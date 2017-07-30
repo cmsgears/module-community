@@ -1,14 +1,16 @@
 <?php
-namespace cmsgears\cms\common\components;
+namespace cmsgears\community\common\components;
 
 // Yii Imports
 use \Yii;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
-use cmsgears\cms\common\config\CmsGlobal;
+use cmsgears\community\common\config\CmnGlobal;
 
 class MessageSource extends \yii\base\Component {
+
+	// Variables ---------------------------------------------------
 
 	// Global -----------------
 
@@ -18,22 +20,9 @@ class MessageSource extends \yii\base\Component {
 
 	protected $messageDb = [
 		// Generic Fields
-		CmsGlobal::FIELD_ELEMENT => 'Element',
-		CmsGlobal::FIELD_BLOCK => 'Block',
-		CmsGlobal::FIELD_PAGE => 'Page',
-		CmsGlobal::FIELD_MENU => 'Menu',
-		CmsGlobal::FIELD_WIDGET => 'Widget',
-		CmsGlobal::FIELD_SIDEBAR => 'Sidebar',
-		CmsGlobal::FIELD_URL_RELATIVE => 'Relative URL',
-		CmsGlobal::FIELD_KEYWORDS => 'Keywords',
-		// SEO
-		CmsGlobal::FIELD_SEO_NAME => 'SEO Name',
-		CmsGlobal::FIELD_SEO_DESCRIPTION => 'SEO Description',
-		CmsGlobal::FIELD_SEO_KEYWORDS => 'SEO Keywords',
-		CmsGlobal::FIELD_SEO_ROBOT => 'SEO Robot',
-		// Block Fields
-		CmsGlobal::FIELD_BACKGROUND => 'Background',
-		CmsGlobal::FIELD_TEXTURE => 'Texture'
+		CmnGlobal::FIELD_FRIEND => 'Friend',
+		CmnGlobal::FIELD_GROUP => 'Group',
+		CmnGlobal::FIELD_CHAT => 'Chat'
 	];
 
 	// Private ----------------
