@@ -3,7 +3,6 @@ namespace cmsgears\community\common\services\resources;
 
 // CMG Imports
 use cmsgears\community\common\models\base\CmnTables;
-use cmsgears\community\common\models\resources\ChatMessage;
 
 use cmsgears\community\common\services\interfaces\resources\IChatMessageService;
 

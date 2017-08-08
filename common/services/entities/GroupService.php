@@ -2,18 +2,12 @@
 namespace cmsgears\community\common\services\entities;
 
 // Yii Imports
-use \Yii;
 use yii\data\Sort;
 
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\resources\File;
-use cmsgears\core\common\models\mappers\ModelCategory;
-use cmsgears\cms\common\models\resources\ModelContent;
 use cmsgears\community\common\models\base\CmnTables;
-use cmsgears\community\common\models\entities\Group;
 
 use cmsgears\core\common\services\interfaces\resources\IFileService;
 use cmsgears\community\common\services\interfaces\entities\IGroupService;
@@ -36,6 +30,8 @@ class GroupService extends \cmsgears\core\common\services\base\EntityService imp
 	public static $modelClass	= '\cmsgears\community\common\models\entities\Group';
 
 	public static $modelTable	= CmnTables::TABLE_GROUP;
+
+	public static $typed		= true;
 
 	public static $parentType	= CmnGlobal::TYPE_GROUP;
 
@@ -193,6 +189,27 @@ class GroupService extends \cmsgears\core\common\services\base\EntityService imp
 		return parent::delete( $model, $config );
 	}
 	
+	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
+
+		switch( $column ) {
+
+			case 'model': {
+
+				switch( $action ) {
+
+					case 'delete': {
+
+						$this->delete( $model );
+
+						break;
+					}
+				}
+
+				break;
+			}
+		}
+	}
+
 	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
 
 		switch( $column ) {

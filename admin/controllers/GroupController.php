@@ -46,19 +46,18 @@ class GroupController extends \cmsgears\core\admin\controllers\base\CrudControll
 		$this->modelContentService	= Yii::$app->factory->get( 'modelContentService' );
 
 		// Sidebar
-		$this->sidebar 				= [ 'parent' => 'sidebar-community', 'child' => 'group' ];
+		$this->sidebar 		= [ 'parent' => 'sidebar-community', 'child' => 'group' ];
 
 		// Return Url
-		$this->returnUrl			= Url::previous( 'groups' );
-		$this->returnUrl			= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/all' ], true );
-		
+		$this->returnUrl	= Url::previous( 'groups' );
+		$this->returnUrl	= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/all' ], true );
+
 		// Breadcrumbs
-		$this->breadcrumbs		= [
-			'all' => [ [ 'label' => 'Group' ] ],
-			'create' => [ [ 'label' => 'Group', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
-			'update' => [ [ 'label' => 'Group', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
-			'delete' => [ [ 'label' => 'Group', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ],
-			'items' => [ [ 'label' => 'Group', 'url' => $this->returnUrl ], [ 'label' => 'Items' ] ]
+		$this->breadcrumbs	= [
+			'all' => [ [ 'label' => 'Groups' ] ],
+			'create' => [ [ 'label' => 'Groups', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
+			'update' => [ [ 'label' => 'Groups', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Groups', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
 		];
 	}
 

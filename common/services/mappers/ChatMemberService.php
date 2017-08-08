@@ -3,7 +3,6 @@ namespace cmsgears\community\common\services\mappers;
 
 // CMG Imports
 use cmsgears\community\common\models\base\CmnTables;
-use cmsgears\community\common\models\mappers\ChatMember;
 
 use cmsgears\community\common\services\interfaces\mappers\IChatMemberService;
 

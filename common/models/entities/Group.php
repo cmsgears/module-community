@@ -2,9 +2,8 @@
 namespace cmsgears\community\common\models\entities;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\db\Expression;
-use yii\helpers\ArrayHelper;
 use yii\behaviors\TimestampBehavior;
 use yii\behaviors\SluggableBehavior;
 
@@ -16,7 +15,6 @@ use cmsgears\core\common\models\interfaces\IApproval;
 use cmsgears\core\common\models\interfaces\IOwner;
 use cmsgears\core\common\models\interfaces\IVisibility;
 use cmsgears\core\common\models\entities\User;
-use cmsgears\core\common\models\resources\File;
 use cmsgears\community\common\models\base\CmnTables;
 
 use cmsgears\core\common\models\traits\CreateModifyTrait;
@@ -68,7 +66,8 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 
 	// Public -----------------
 
-	public $mParentType		= CmnGlobal::TYPE_GROUP;
+	public $modelType		= CmnGlobal::TYPE_GROUP;
+
 	public $categoryType	= CmnGlobal::TYPE_GROUP;
 
 	// Protected --------------

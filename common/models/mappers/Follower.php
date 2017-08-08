@@ -2,7 +2,7 @@
 namespace cmsgears\community\common\models\mappers;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\helpers\ArrayHelper;
 use yii\db\Expression;
 use yii\behaviors\TimestampBehavior;

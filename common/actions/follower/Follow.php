@@ -1,8 +1,8 @@
 <?php
-namespace cmsgears\community\frontend\actions\follower;
+namespace cmsgears\community\common\actions\follower;
 
 // Yii Imports
-use \Yii;
+use Yii;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -12,11 +12,11 @@ use cmsgears\community\common\models\mappers\Follower;
 use cmsgears\core\common\utilities\AjaxUtil;
 
 /**
- * Wish action allow users to add model in action to their wishlist.
+ * Follow action allow users to follow model in action.
  *
  * The controller must provide appropriate model service having model class, model table and parent type defined for the base model.
  */
-class Wish extends \cmsgears\core\common\actions\base\ModelAction {
+class Follow extends \cmsgears\core\common\actions\base\ModelAction {
 
 	// Variables ---------------------------------------------------
 
@@ -32,9 +32,9 @@ class Wish extends \cmsgears\core\common\actions\base\ModelAction {
 
 	// Public -----------------
 
-	// Protected --------------
+	public $parent 	= true;
 
-	public $typed 	= true;
+	// Protected --------------
 
 	// Private ----------------
 
@@ -63,9 +63,12 @@ class Wish extends \cmsgears\core\common\actions\base\ModelAction {
 			$user 		= Yii::$app->user->getIdentity();
 			$model		= $this->model;
 
-			$follower	= $followerService->updateByParams( [ 'modelId' => $user->id, 'parentId' => $model->id, 'parentType' => $this->modelService->getParentType(), 'type' => Follower::TYPE_WISHLIST ] );
+			$follower	= $followerService->updateByParams([
+							'modelId' => $user->id, 'parentId' => $model->id,
+							'parentType' => $this->modelService->getParentType(), 'type' => Follower::TYPE_FOLLOW
+						]);
 
-			$data		= [ 'active' => $follower->active, 'count' => $model->getWishersCount() ];
+			$data		= [ 'active' => $follower->active, 'count' => $model->getFollowersCount() ];
 
 			return AjaxUtil::generateSuccess( Yii::$app->coreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ), $data );
 		}
