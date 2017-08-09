@@ -130,7 +130,7 @@ class Follower extends \cmsgears\core\common\models\base\Mapper {
 
 	// Follower ------------------------------
 
-	public function getUser() {
+	public function getModel() {
 
 		return $this->hasOne( User::className(), [ 'id' => 'modelId' ] );
 	}
