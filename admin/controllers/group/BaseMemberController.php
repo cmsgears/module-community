@@ -16,16 +16,38 @@ use cmsgears\community\admin\services\GroupMemberService;
 
 class BaseMemberController extends \cmsgears\core\admin\controllers\BaseController {
 
+	// Variables ---------------------------------------------------
+
+	// Globals ----------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
+
 	// Constructor and Initialisation ------------------------------
 
- 	public function __construct( $id, $module, $config = [] ) {
+	public function init() {
 
-        parent::__construct( $id, $module, $config );
+		parent::init();
 	}
 
-	// Instance Methods --------------------------------------------
+	// Instance methods --------------------------------------------
 
-	// BaseMemberController
+	// Yii interfaces ------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	// yii\base\Controller ----
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// BaseMemberController ------------------
 
 	public function actionAll( $id, $sidebar = [] ) {
 
@@ -37,11 +59,11 @@ class BaseMemberController extends \cmsgears\core\admin\controllers\BaseControll
 
 			$dataProvider = GroupMemberService::getPaginationByGroupId( $id );
 
-		    return $this->render( '@cmsgears/module-community/admin/views/group/member/all', [
-		         'dataProvider' => $dataProvider,
-		         'group' => $model,
-		         'sidebar' => $sidebar
-		    ]);
+			return $this->render( '@cmsgears/module-community/admin/views/group/member/all', [
+				'dataProvider' => $dataProvider,
+				'group' => $model,
+				'sidebar' => $sidebar
+			]);
 		}
 
 		// Model not found
@@ -65,17 +87,15 @@ class BaseMemberController extends \cmsgears\core\admin\controllers\BaseControll
 				}
 			}
 
-	    	return $this->render( '@cmsgears/module-community/admin/views/group/member/delete', [
-	    		'group' => $group,
-	    		'model' => $model,
-	    		'statusMap' => GroupMember::$statusMap,
-	    		'sidebar' => $sidebar
-	    	]);
+			return $this->render( '@cmsgears/module-community/admin/views/group/member/delete', [
+				'group' => $group,
+				'model' => $model,
+				'statusMap' => GroupMember::$statusMap,
+				'sidebar' => $sidebar
+			]);
 		}
 
 		// Model not found
 		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 }
-
-?>

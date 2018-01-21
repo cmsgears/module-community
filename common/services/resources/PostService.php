@@ -1,15 +1,8 @@
 <?php
 namespace cmsgears\community\common\services\resources;
 
-// Yii Imports
-use \Yii;
-use yii\data\Sort;
-
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
-
 use cmsgears\community\common\models\base\CmnTables;
-use cmsgears\community\common\models\resources\Post;
 
 use cmsgears\community\common\services\interfaces\resources\IPostService;
 
@@ -112,4 +105,5 @@ class PostService extends \cmsgears\core\common\services\base\EntityService impl
 	// Update -------------
 
 	// Delete -------------
+
 }

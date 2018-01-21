@@ -14,16 +14,38 @@ use cmsgears\community\admin\services\GroupMessageService;
 
 class BaseMessageController extends \cmsgears\core\admin\controllers\BaseController {
 
+	// Variables ---------------------------------------------------
+
+	// Globals ----------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
+
 	// Constructor and Initialisation ------------------------------
 
- 	public function __construct( $id, $module, $config = [] ) {
+	public function init() {
 
-        parent::__construct( $id, $module, $config );
+		parent::init();
 	}
 
-	// Instance Methods --------------------------------------------
+	// Instance methods --------------------------------------------
 
-	// MessageController
+	// Yii interfaces ------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	// yii\base\Controller ----
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// BaseMessageController -----------------
 
 	public function actionAll( $id, $sidebar = [] ) {
 
@@ -35,17 +57,17 @@ class BaseMessageController extends \cmsgears\core\admin\controllers\BaseControl
 
 			$dataProvider = GroupMessageService::getPaginationByGroupId( $id );
 
-		    return $this->render( '@cmsgears/module-community/admin/views/group/message/all', [
-		         'dataProvider' => $dataProvider,
-		         'group' => $model,
-		         'sidebar' => $sidebar
-		    ]);
+			return $this->render( '@cmsgears/module-community/admin/views/group/message/all', [
+				'dataProvider' => $dataProvider,
+				'group' => $model,
+				'sidebar' => $sidebar
+			]);
 		}
 
 		// Model not found
 		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
-	
+
 	public function actionDelete( $gid, $id, $sidebar = [] ) {
 
 		// Find Model
@@ -63,16 +85,14 @@ class BaseMessageController extends \cmsgears\core\admin\controllers\BaseControl
 				}
 			}
 
-	    	return $this->render( '@cmsgears/module-community/admin/views/group/message/delete', [
-	    		'group' => $group,
-	    		'model' => $model,
-	    		'sidebar' => $sidebar
-	    	]);
+			return $this->render( '@cmsgears/module-community/admin/views/group/message/delete', [
+				'group' => $group,
+				'model' => $model,
+				'sidebar' => $sidebar
+			]);
 		}
 
 		// Model not found
 		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 }
-
-?>

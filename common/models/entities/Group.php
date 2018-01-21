@@ -2,9 +2,8 @@
 namespace cmsgears\community\common\models\entities;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\db\Expression;
-use yii\helpers\ArrayHelper;
 use yii\behaviors\TimestampBehavior;
 use yii\behaviors\SluggableBehavior;
 
@@ -16,7 +15,6 @@ use cmsgears\core\common\models\interfaces\IApproval;
 use cmsgears\core\common\models\interfaces\IOwner;
 use cmsgears\core\common\models\interfaces\IVisibility;
 use cmsgears\core\common\models\entities\User;
-use cmsgears\core\common\models\resources\File;
 use cmsgears\community\common\models\base\CmnTables;
 
 use cmsgears\core\common\models\traits\CreateModifyTrait;
@@ -37,6 +35,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @property int $id
  * @property int $avatarId
+ * @property int $galleryId
  * @property int $ownerId
  * @property int $createdBy
  * @property int $modifiedBy
@@ -44,9 +43,11 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property string $slug
  * @property string $type
  * @property string $icon
+ * @property string $title
  * @property string $description
  * @property short $status
  * @property short $visibility
+ * @property boolean $featured
  * @property date $createdAt
  * @property date $modifiedAt
  * @property string $content
@@ -68,7 +69,8 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 
 	// Public -----------------
 
-	public $mParentType		= CmnGlobal::TYPE_GROUP;
+	public $modelType		= CmnGlobal::TYPE_GROUP;
+
 	public $categoryType	= CmnGlobal::TYPE_GROUP;
 
 	// Protected --------------
@@ -134,15 +136,16 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
         	// Required, Safe
             [ [ 'name', 'type' ], 'required' ],
             [ [ 'id', 'content', 'data' ], 'safe' ],
-            // Unique
-            [ [ 'name', 'type' ], 'unique', 'targetAttribute' => [ 'name', 'type' ] ],
-            // Text Limit
-            [ [ 'type', 'icon' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-            [ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
-            [ 'slug', 'description', 'string', 'min' => 0, 'max' => Yii::$app->core->xxLargeText ],
+			// Text Limit
+			[ [ 'type', 'icon' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ [ 'name' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ [ 'slug' ], 'string', 'min' => 0, 'max' => Yii::$app->core->xxLargeText ],
+			[ [ 'title' ], 'string', 'min' => 0, 'max' => Yii::$app->core->xxxLargeText ],
+			[ [ 'description' ], 'string', 'min' => 0, 'max' => Yii::$app->core->xtraLargeText ],
             // Other
+			[ 'featured', 'boolean' ],
 			[ [ 'status', 'visibility' ], 'number', 'integerOnly' => true ],
-            [ [ 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+            [ [ 'avatarId', 'galleryId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
@@ -159,6 +162,8 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 			'slug' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SLUG ),
 			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
 			'icon' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ICON ),
+			'title' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TITLE ),
+			'description' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DESCRIPTION ),
 			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
 			'visibility' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_VISIBILITY )
 		];
@@ -228,7 +233,7 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'modelContent', 'avatar', 'owner', 'creator', 'modifier' ];
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'modelContent', 'modelContent.banner', 'avatar', 'owner', 'creator', 'modifier' ];
 		$config[ 'relations' ]	= $relations;
 
 		return parent::queryWithAll( $config );
@@ -236,7 +241,7 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 
 	public static function queryWithContent( $config = [] ) {
 
-		$config[ 'relations' ]	= [ 'avatar', 'modelContent' ];
+		$config[ 'relations' ]	= [ 'avatar', 'modelContent', 'modelContent.banner' ];
 
 		return parent::queryWithAll( $config );
 	}
@@ -262,4 +267,5 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 	// Update -----------------
 
 	// Delete -----------------
+
 }

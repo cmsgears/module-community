@@ -1,16 +1,10 @@
 <?php
 namespace cmsgears\community\common\services\entities;
 
-// Yii Imports
-use \Yii;
-use yii\data\Sort;
-
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
 use cmsgears\community\common\models\base\CmnTables;
-use cmsgears\community\common\models\entities\Chat;
 
 use cmsgears\community\common\services\interfaces\entities\IChatService;
 

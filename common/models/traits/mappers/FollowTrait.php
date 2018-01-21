@@ -2,8 +2,8 @@
 namespace cmsgears\community\common\models\traits\mappers;
 
 // Yii Imports
-use \Yii;
-use \yii\db\Query;
+use Yii;
+use yii\db\Query;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -35,6 +35,7 @@ trait FollowTrait {
 
 	public function getModelFollowers() {
 
+		// TODO: Update it
 	}
 
 	public function getFollowers() {
@@ -46,14 +47,14 @@ trait FollowTrait {
 
 	public function generateFollowCounts() {
 
-		$returnArr		= [ Follower::TYPE_LIKE => 0, Follower::TYPE_FOLLOW => 0, Follower::TYPE_WISHLIST => 0, Follower::TYPE_DISLIKE => 0 ];
+		$returnArr		= [ Follower::TYPE_LIKE => 0, Follower::TYPE_DISLIKE => 0, Follower::TYPE_FOLLOW => 0, Follower::TYPE_WISHLIST => 0 ];
 
 		$followerTable	= CmnTables::TABLE_FOLLOWER;
 		$query			= new Query();
 
     	$query->select( [ 'type', 'count(id) as total' ] )
 				->from( $followerTable )
-				->where( [ 'parentId' => $this->id, 'parentType' => $this->mParentType, 'active' => true ] )
+				->where( [ 'parentId' => $this->id, 'parentType' => $this->modelType, 'active' => true ] )
 				->groupBy( 'type' );
 
 		$counts 	= $query->all();
@@ -128,7 +129,7 @@ trait FollowTrait {
 	public function generateUserFollows() {
 
 		$user		= Yii::$app->user->identity;
-		$returnArr	= [ Follower::TYPE_LIKE => false, Follower::TYPE_FOLLOW => false, Follower::TYPE_WISHLIST => false ];
+		$returnArr	= [ Follower::TYPE_LIKE => false, Follower::TYPE_DISLIKE => false, Follower::TYPE_FOLLOW => false, Follower::TYPE_WISHLIST => false ];
 
 		if( isset( $user ) ) {
 
@@ -137,7 +138,7 @@ trait FollowTrait {
 
 	    	$query->select( [ 'type', 'active' ] )
 					->from( $followerTable )
-					->where( [ 'parentId' => $this->id, 'parentType' => $this->mParentType, 'modelId' => $user->id ] );
+					->where( [ 'parentId' => $this->id, 'parentType' => $this->modelType, 'modelId' => $user->id ] );
 
 			$follows = $query->all();
 
@@ -158,6 +159,16 @@ trait FollowTrait {
 		}
 
 		return $this->userFollows[ Follower::TYPE_LIKE ];
+	}
+
+	public function isDisliked() {
+
+		if( !isset( $this->userFollows ) ) {
+
+			$this->userFollows	= $this->generateUserFollows();
+		}
+
+		return $this->userFollows[ Follower::TYPE_DISLIKE ];
 	}
 
 	public function isFollowing() {
@@ -182,7 +193,7 @@ trait FollowTrait {
 
 	// Active/Inactive
 
-	public static function getStatusCounts( $type = ListingFollower::TYPE_FOLLOW ) {
+	public static function getFollowStatusCounts( $type = ListingFollower::TYPE_FOLLOW ) {
 
 		$returnArr		= [ 'all' => 0, CoreGlobal::STATUS_ACTIVE => 0, CoreGlobal::STATUS_INACTIVE => 0 ];
 
@@ -191,7 +202,7 @@ trait FollowTrait {
 
     	$query->select( [ 'active', 'count(id) as total' ] )
 				->from( $followerTable )
-				->where( [ 'parentId' => $this->id, 'parentType' => $this->mParentType, 'type' => $type ] )
+				->where( [ 'parentId' => $this->id, 'parentType' => $this->modelType, 'type' => $type ] )
 				->groupBy( 'active' );
 
 		$counts 	= $query->all();
@@ -227,4 +238,5 @@ trait FollowTrait {
 	// Update -----------------
 
 	// Delete -----------------
+
 }

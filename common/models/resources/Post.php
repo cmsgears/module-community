@@ -2,7 +2,7 @@
 namespace cmsgears\community\common\models\resources;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\db\Expression;
 use yii\behaviors\TimestampBehavior;
 
@@ -40,8 +40,8 @@ class Post extends \cmsgears\core\common\models\base\Entity {
 	const VISIBILITY_FRIENDS	=  5; // friends can view the message
 	const VISIBILITY_PUBLIC		= 10; // anyone can view the message
 
-	const TYPE_WALL		= 0;
-	const TYPE_CHAT		= 5;
+	const TYPE_WALL	= 0;
+	const TYPE_CHAT	= 5;
 
 	// Public -----------------
 

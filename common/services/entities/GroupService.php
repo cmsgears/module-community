@@ -2,18 +2,12 @@
 namespace cmsgears\community\common\services\entities;
 
 // Yii Imports
-use \Yii;
 use yii\data\Sort;
 
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\resources\File;
-use cmsgears\core\common\models\mappers\ModelCategory;
-use cmsgears\cms\common\models\resources\ModelContent;
 use cmsgears\community\common\models\base\CmnTables;
-use cmsgears\community\common\models\entities\Group;
 
 use cmsgears\core\common\services\interfaces\resources\IFileService;
 use cmsgears\community\common\services\interfaces\entities\IGroupService;
@@ -36,6 +30,8 @@ class GroupService extends \cmsgears\core\common\services\base\EntityService imp
 	public static $modelClass	= '\cmsgears\community\common\models\entities\Group';
 
 	public static $modelTable	= CmnTables::TABLE_GROUP;
+
+	public static $typed		= true;
 
 	public static $parentType	= CmnGlobal::TYPE_GROUP;
 
@@ -83,39 +79,41 @@ class GroupService extends \cmsgears\core\common\services\base\EntityService imp
 
 	// Data Provider ------
 
-	public function getPage( $config = [] ) {
+    public function getPage( $config = [] ) {
+
+    	$modelTable = static::$modelTable;
 
 	    $sort = new Sort([
 	        'attributes' => [
 	            'name' => [
-	                'asc' => [ 'name' => SORT_ASC ],
-	                'desc' => ['name' => SORT_DESC ],
+	                'asc' => [ "$modelTable.name" => SORT_ASC ],
+	            	'desc' => [ "$modelTable.name" => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'name'
+	                'label' => 'Name'
 	            ],
 	            'slug' => [
-	                'asc' => [ 'slug' => SORT_ASC ],
-	                'desc' => ['slug' => SORT_DESC ],
+            		'asc' => [ "$modelTable.slug" => SORT_ASC ],
+            		'desc' => [ "$modelTable.slug" => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'slug'
+	                'label' => 'Slug'
 	            ],
 	            'owner' => [
 	                'asc' => [ 'createdBy' => SORT_ASC ],
 	                'desc' => ['createdBy' => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'owner'
+	                'label' => 'Owner'
 	            ],
 	            'cdate' => [
 	                'asc' => [ 'createdAt' => SORT_ASC ],
 	                'desc' => ['createdAt' => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'cdate',
+	                'label' => 'Created At',
 	            ],
 	            'udate' => [
 	                'asc' => [ 'modifiedAt' => SORT_ASC ],
 	                'desc' => ['modifiedAt' => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'udate',
+	                'label' => 'Updated At',
 	            ]
 	        ],
 	        'defaultOrder' => [
@@ -123,9 +121,9 @@ class GroupService extends \cmsgears\core\common\services\base\EntityService imp
 	        ]
 	    ]);
 
-		if( !isset( $conditions[ 'sort' ] ) ) {
+	    if( !isset( $config[ 'sort' ] ) ) {
 
-			$conditions[ 'sort' ] = $sort;
+	    	$config[ 'sort' ] = $sort;
 		}
 
 		return parent::findPage( $config );
@@ -190,6 +188,48 @@ class GroupService extends \cmsgears\core\common\services\base\EntityService imp
 
 		return parent::delete( $model, $config );
 	}
+	
+	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
+
+		switch( $column ) {
+
+			case 'model': {
+
+				switch( $action ) {
+
+					case 'delete': {
+
+						$this->delete( $model );
+
+						break;
+					}
+				}
+
+				break;
+			}
+		}
+	}
+
+	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
+
+		switch( $column ) {
+
+			case 'model': {
+
+				switch( $action ) {
+
+					case 'delete': {
+
+						$this->delete( $model );
+
+						break;
+					}
+				}
+
+				break;
+			}
+		}
+	}
 
 	// Static Methods ----------------------------------------------
 
@@ -214,4 +254,5 @@ class GroupService extends \cmsgears\core\common\services\base\EntityService imp
 	// Update -------------
 
 	// Delete -------------
+
 }

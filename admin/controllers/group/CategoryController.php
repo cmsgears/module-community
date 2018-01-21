@@ -27,12 +27,16 @@ class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryCo
 
         parent::init();
 
+		// Permissions
 		$this->crudPermission 	= CmnGlobal::PERM_GROUP;
+
 		$this->type				= CmnGlobal::TYPE_GROUP;
 		$this->templateType		= CmnGlobal::TYPE_GROUP;
 
+		// Sidebar
 		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'group-category' ];
 
+		// Return Url
 		$this->returnUrl		= Url::previous( 'categories' );
 		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/category/all' ], true );
 	}
@@ -55,7 +59,7 @@ class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryCo
 
 	public function actionAll() {
 
-		Url::remember( [ 'group/category/all' ], 'categories' );
+		Url::remember( Yii::$app->request->getUrl(), 'categories' );
 
 		return parent::actionAll();
 	}

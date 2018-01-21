@@ -1,8 +1,8 @@
 <?php
-namespace cmsgears\community\frontend\actions\follower;
+namespace cmsgears\community\common\actions\follower;
 
 // Yii Imports
-use \Yii;
+use Yii;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -12,11 +12,11 @@ use cmsgears\community\common\models\mappers\Follower;
 use cmsgears\core\common\utilities\AjaxUtil;
 
 /**
- * Follow action allow users to follow model in action.
+ * Dislike action allow users to Dislike/disDislike model in action.
  *
  * The controller must provide appropriate model service having model class, model table and parent type defined for the base model.
  */
-class Follow extends \cmsgears\core\common\actions\base\ModelAction {
+class Dislike extends \cmsgears\core\common\actions\base\ModelAction {
 
 	// Variables ---------------------------------------------------
 
@@ -32,9 +32,9 @@ class Follow extends \cmsgears\core\common\actions\base\ModelAction {
 
 	// Public -----------------
 
-	// Protected --------------
+	public $parent 	= true;
 
-	protected $typed 	= true;
+	// Protected --------------
 
 	// Private ----------------
 
@@ -52,7 +52,7 @@ class Follow extends \cmsgears\core\common\actions\base\ModelAction {
 
 	// CMG parent classes --------------------
 
-	// Like ----------------------------------
+	// Dislike ----------------------------------
 
 	public function run() {
 
@@ -62,10 +62,26 @@ class Follow extends \cmsgears\core\common\actions\base\ModelAction {
 
 			$user 		= Yii::$app->user->getIdentity();
 			$model		= $this->model;
+			$parentType	= $this->parentType;
 
-			$follower	= $followerService->updateByParams( [ 'modelId' => $user->id, 'parentId' => $model->id, 'parentType' => $this->modelService->getParentType(), 'type' => Follower::TYPE_FOLLOW ] );
+			$follower	= $followerService->updateByParams( [ 'modelId' => $user->id, 'parentId' => $model->id, 'parentType' => $parentType, 'type' => Follower::TYPE_DISLIKE ] );
 
-			$data		= [ 'active' => $follower->active, 'count' => $model->getFollowersCount() ];
+			$likeFlag		= count( $followerService->getByConfig([
+								'modelId' => $user->id, 'parentId' => $model->id,
+								'parentType' => $parentType, 'type' => Follower::TYPE_LIKE, 'active' => true
+							]));
+
+			$dislikeFlag	= count( $followerService->getByConfig([
+								'modelId' => $user->id, 'parentId' => $model->id,
+								'parentType' => $parentType, 'type' => Follower::TYPE_DISLIKE, 'active' => true
+							]));
+
+			$data	= [
+						'likeFlag' => $likeFlag,
+						'dislikeFlag' => $dislikeFlag,
+						'likesCount' => $model->getLikesCount(),
+						'dislikesCount' => $model->getDislikesCount()
+					];
 
 			return AjaxUtil::generateSuccess( Yii::$app->coreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ), $data );
 		}

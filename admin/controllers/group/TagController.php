@@ -28,6 +28,7 @@ class TagController extends \cmsgears\cms\admin\controllers\base\TagController {
         parent::init();
 
 		$this->crudPermission 	= CmnGlobal::PERM_GROUP;
+
 		$this->type				= CmnGlobal::TYPE_GROUP;
 		$this->templateType		= CmnGlobal::TYPE_GROUP;
 

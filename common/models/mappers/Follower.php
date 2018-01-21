@@ -2,7 +2,7 @@
 namespace cmsgears\community\common\models\mappers;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\helpers\ArrayHelper;
 use yii\db\Expression;
 use yii\behaviors\TimestampBehavior;
@@ -130,7 +130,7 @@ class Follower extends \cmsgears\core\common\models\base\Mapper {
 
 	// Follower ------------------------------
 
-	public function getUser() {
+	public function getModel() {
 
 		return $this->hasOne( User::className(), [ 'id' => 'modelId' ] );
 	}

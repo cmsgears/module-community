@@ -12,6 +12,8 @@ use cmsgears\core\common\utilities\DateUtil;
 
 class m160623_110601_community_data extends \yii\db\Migration {
 
+	// Public Variables
+
 	// Private Variables
 
 	private $prefix;
@@ -22,8 +24,8 @@ class m160623_110601_community_data extends \yii\db\Migration {
 
 	public function init() {
 
-		// Fixed
-		$this->prefix	= 'cmg_';
+		// Table prefix
+		$this->prefix	= Yii::$app->migration->cmgPrefix;
 
 		$this->site		= Site::findBySlug( CoreGlobal::SITE_MAIN );
 		$this->master	= User::findByUsername( Yii::$app->migration->getSiteMaster() );
@@ -45,8 +47,8 @@ class m160623_110601_community_data extends \yii\db\Migration {
 		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'homeUrl', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
 
 		$roles = [
-			[ $this->master->id, $this->master->id, 'Chat Manager', 'chat-manager', 'dashboard', CoreGlobal::TYPE_SYSTEM, null, 'The role Chat Manager is limited to manage private chat sessions from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Group Manager', 'group-manager', 'dashboard', CoreGlobal::TYPE_SYSTEM, null, 'The role Group Manager is limited to manage groups from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
+			[ $this->master->id, $this->master->id, 'Chat Admin', 'chat-admin', 'dashboard', CoreGlobal::TYPE_SYSTEM, null, 'The role Chat Admin is limited to manage private chat sessions from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Group Admin', 'group-admin', 'dashboard', CoreGlobal::TYPE_SYSTEM, null, 'The role Group Admin is limited to manage groups from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_role', $columns, $roles );
@@ -54,8 +56,8 @@ class m160623_110601_community_data extends \yii\db\Migration {
 		$superAdminRole		= Role::findBySlugType( 'super-admin', CoreGlobal::TYPE_SYSTEM );
 		$adminRole			= Role::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
 
-		$chatManagerRole	= Role::findBySlugType( 'chat-manager', CoreGlobal::TYPE_SYSTEM );
-		$groupManagerRole	= Role::findBySlugType( 'group-manager', CoreGlobal::TYPE_SYSTEM );
+		$chatAdminRole		= Role::findBySlugType( 'chat-admin', CoreGlobal::TYPE_SYSTEM );
+		$groupAdminRole		= Role::findBySlugType( 'group-admin', CoreGlobal::TYPE_SYSTEM );
 
 		// Permissions
 
@@ -63,8 +65,8 @@ class m160623_110601_community_data extends \yii\db\Migration {
 
 		$permissions = [
 			[ $this->master->id, $this->master->id, 'Community', 'community', CoreGlobal::TYPE_SYSTEM, NULL, 'The permission community is to manage community module from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Community Chat', 'community-chat', CoreGlobal::TYPE_SYSTEM, NULL, 'The permission community-chat is to manage user private offline and online chat messages from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Community Group', 'community-group', CoreGlobal::TYPE_SYSTEM, NULL, 'The permission community-group is to manage community groups, group members and messages from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
+			[ $this->master->id, $this->master->id, 'Community Chat', 'community-chat', CoreGlobal::TYPE_SYSTEM, NULL, 'The permission community chat is to manage user private offline and online chat messages from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Community Group', 'community-group', CoreGlobal::TYPE_SYSTEM, NULL, 'The permission community group is to manage community groups, group members and messages from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_permission', $columns, $permissions );
@@ -83,8 +85,8 @@ class m160623_110601_community_data extends \yii\db\Migration {
 		$mappings = [
 			[ $superAdminRole->id, $cmnPerm->id ], [ $superAdminRole->id, $cmnChatPerm->id ], [ $superAdminRole->id, $cmnGroupPerm->id ],
 			[ $adminRole->id, $cmnPerm->id ], [ $adminRole->id, $cmnChatPerm->id ], [ $adminRole->id, $cmnGroupPerm->id ],
-			[ $chatManagerRole->id, $adminPerm->id ], [ $chatManagerRole->id, $userPerm->id ], [ $chatManagerRole->id, $cmnPerm->id ], [ $chatManagerRole->id, $cmnChatPerm->id ],
-			[ $groupManagerRole->id, $adminPerm->id ], [ $groupManagerRole->id, $userPerm->id ], [ $groupManagerRole->id, $cmnPerm->id ], [ $groupManagerRole->id, $cmnGroupPerm->id ]
+			[ $chatAdminRole->id, $adminPerm->id ], [ $chatAdminRole->id, $userPerm->id ], [ $chatAdminRole->id, $cmnPerm->id ], [ $chatAdminRole->id, $cmnChatPerm->id ],
+			[ $groupAdminRole->id, $adminPerm->id ], [ $groupAdminRole->id, $userPerm->id ], [ $groupAdminRole->id, $cmnPerm->id ], [ $groupAdminRole->id, $cmnGroupPerm->id ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_role_permission', $columns, $mappings );
@@ -97,26 +99,26 @@ class m160623_110601_community_data extends \yii\db\Migration {
 		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'homeUrl', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
 
 		$roles = [
-			[ $this->master->id, $this->master->id, 'Group master', 'group-master', '/', CmnGlobal::TYPE_COMMUNITY, null, 'The role master is limited to manage groups from website. Admin has full rights to create, read, update or delete Group and to manage Group Settings. Group Admin can also manage Group Members and change their roles.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Group Admin', 'group-admin', '/', CmnGlobal::TYPE_COMMUNITY, null, 'The role Admin is limited to manage groups from website. Admin has full rights to update Group Profile. Group Admin can also manage Group Members, change their roles with less privileges than Admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Group Moderator', 'group-moderator', '/', CmnGlobal::TYPE_COMMUNITY, null, 'The role Moderator is limited to manage groups from website. Moderators can update or delete Group Messages and change Group Status Message.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Group Member', 'group-member', '/', CmnGlobal::TYPE_COMMUNITY, null, 'The role Member is limited to site users from website. Members can post on group, invite friends to join groups, share group on facebook wall, tweet about group on twitter.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
+			[ $this->master->id, $this->master->id, 'Group Master', 'group-master', '/', CmnGlobal::TYPE_COMMUNITY, null, 'The role master is limited to manage groups from website. Master has full rights to create, read, update or delete Group and to manage Group Settings. Group Master can also manage Group Members and change their roles.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Group Manager', 'group-manager', '/', CmnGlobal::TYPE_COMMUNITY, null, 'The role manager is limited to manage groups from website. Manager has full rights to update Group Profile. Group Manager can also manage Group Members, change their roles with less privileges than Master.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Group Moderator', 'group-moderator', '/', CmnGlobal::TYPE_COMMUNITY, null, 'The role moderator is limited to manage groups from website. Moderators can update or delete Group Messages and change Group Status Message.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Group Member', 'group-member', '/', CmnGlobal::TYPE_COMMUNITY, null, 'The role member is limited to site users from website. Members can post on group, invite friends to join groups, share group on facebook wall, tweet about group on twitter.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_role', $columns, $roles );
 
-		$gmRole			= Role::findBySlugType( 'group-master', CmnGlobal::TYPE_COMMUNITY );
-		$gaRole			= Role::findBySlugType( 'group-admin', CmnGlobal::TYPE_COMMUNITY );
-		$gmodRole		= Role::findBySlugType( 'group-moderator', CmnGlobal::TYPE_COMMUNITY );
-		$gmemRole		= Role::findBySlugType( 'group-member', CmnGlobal::TYPE_COMMUNITY );
+		$masterRole		= Role::findBySlugType( 'group-master', CmnGlobal::TYPE_COMMUNITY );
+		$managerRole	= Role::findBySlugType( 'group-manager', CmnGlobal::TYPE_COMMUNITY );
+		$moderatorRole	= Role::findBySlugType( 'group-moderator', CmnGlobal::TYPE_COMMUNITY );
+		$memberRole		= Role::findBySlugType( 'group-member', CmnGlobal::TYPE_COMMUNITY );
 
 		// Permissions
 
 		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
 
 		$permissions = [
-			[ $this->master->id, $this->master->id, 'Group Master', 'group-master', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Group Master is group of permissions for Group Super Admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Group Admin', 'group-admin', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Group Admin is group of permissions for Group Admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Group Master', 'group-master', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Group Master is group of permissions for Group Master.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Group Manager', 'group-manager', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Group Manager is group of permissions for Group Manager.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 			[ $this->master->id, $this->master->id, 'Group Moderator', 'group-moderator', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Group Moderator is group of permissions for Group Moderator.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 			[ $this->master->id, $this->master->id, 'Group Member', 'group-member', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Group Member is group of permissions for Group Member.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 
@@ -144,7 +146,7 @@ class m160623_110601_community_data extends \yii\db\Migration {
 		$this->batchInsert( $this->prefix . 'core_permission', $columns, $permissions );
 
 		$gMasterPerm			= Permission::findBySlugType( 'group-master', CmnGlobal::TYPE_COMMUNITY );
-		$gAdminPerm				= Permission::findBySlugType( 'group-admin', CmnGlobal::TYPE_COMMUNITY );
+		$gManagerPerm				= Permission::findBySlugType( 'group-manager', CmnGlobal::TYPE_COMMUNITY );
 		$gModeratorPerm			= Permission::findBySlugType( 'group-moderator', CmnGlobal::TYPE_COMMUNITY );
 		$gMemberPerm			= Permission::findBySlugType( 'group-member', CmnGlobal::TYPE_COMMUNITY );
 
@@ -173,10 +175,10 @@ class m160623_110601_community_data extends \yii\db\Migration {
 		$columns = [ 'roleId', 'permissionId' ];
 
 		$mappings = [
-			[ $gmRole->id, $gMasterPerm->id ],
-			[ $gaRole->id, $gAdminPerm->id ],
-			[ $gmodRole->id, $gModeratorPerm->id ],
-			[ $gmemRole->id, $gMemberPerm->id ]
+			[ $masterRole->id, $gMasterPerm->id ],
+			[ $managerRole->id, $gManagerPerm->id ],
+			[ $moderatorRole->id, $gModeratorPerm->id ],
+			[ $memberRole->id, $gMemberPerm->id ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_role_permission', $columns, $mappings );
@@ -207,22 +209,22 @@ class m160623_110601_community_data extends \yii\db\Migration {
 			[ $gMasterPerm->id, $dGroupMsgPerm->id, $gMasterPerm->id, CoreGlobal::TYPE_PERMISSION, 18, 19 ],
 
 			// Admin
-			[ null, null, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 1, 32 ],
-			[ $gAdminPerm->id, $vGroupPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 31 ],
-			[ $gAdminPerm->id, $aGroupPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 3, 30 ],
-			[ $gAdminPerm->id, $usGroupPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 29 ],
-			[ $gAdminPerm->id, $upGroupPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 5, 28 ],
-			[ $gAdminPerm->id, $ustGroupPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 6, 27 ],
-			[ $gAdminPerm->id, $vGroupMPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 7, 26 ],
-			[ $gAdminPerm->id, $aGroupMPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 8, 25 ],
-			[ $gAdminPerm->id, $uGroupMPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 9, 24 ],
-			[ $gAdminPerm->id, $apGroupMPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 10, 23 ],
-			[ $gAdminPerm->id, $bGroupMPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 11, 22 ],
-			[ $gAdminPerm->id, $rGroupMPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 12, 21 ],
-			[ $gAdminPerm->id, $vGroupMsgPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 13, 20 ],
-			[ $gAdminPerm->id, $aGroupMsgPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 14, 19 ],
-			[ $gAdminPerm->id, $uGroupMsgPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 15, 18 ],
-			[ $gAdminPerm->id, $dGroupMsgPerm->id, $gAdminPerm->id, CoreGlobal::TYPE_PERMISSION, 16, 17 ],
+			[ null, null, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 1, 32 ],
+			[ $gManagerPerm->id, $vGroupPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 31 ],
+			[ $gManagerPerm->id, $aGroupPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 3, 30 ],
+			[ $gManagerPerm->id, $usGroupPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 29 ],
+			[ $gManagerPerm->id, $upGroupPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 5, 28 ],
+			[ $gManagerPerm->id, $ustGroupPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 6, 27 ],
+			[ $gManagerPerm->id, $vGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 7, 26 ],
+			[ $gManagerPerm->id, $aGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 8, 25 ],
+			[ $gManagerPerm->id, $uGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 9, 24 ],
+			[ $gManagerPerm->id, $apGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 10, 23 ],
+			[ $gManagerPerm->id, $bGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 11, 22 ],
+			[ $gManagerPerm->id, $rGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 12, 21 ],
+			[ $gManagerPerm->id, $vGroupMsgPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 13, 20 ],
+			[ $gManagerPerm->id, $aGroupMsgPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 14, 19 ],
+			[ $gManagerPerm->id, $uGroupMsgPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 15, 18 ],
+			[ $gManagerPerm->id, $dGroupMsgPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 16, 17 ],
 
 			// Moderator - without Owner Filter
 			[ null, null, $gModeratorPerm->id, CoreGlobal::TYPE_PERMISSION, 1, 10 ],
