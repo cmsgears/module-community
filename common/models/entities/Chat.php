@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\common\models\entities;
 
 // Yii Imports
@@ -9,27 +17,40 @@ use yii\behaviors\TimestampBehavior;
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
+use cmsgears\core\common\models\interfaces\base\IAuthor;
+use cmsgears\core\common\models\interfaces\resources\IContent;
+use cmsgears\core\common\models\interfaces\resources\IData;
+use cmsgears\core\common\models\interfaces\resources\IGridCache;
+
+use cmsgears\core\common\models\base\Entity;
 use cmsgears\community\common\models\base\CmnTables;
 
-use cmsgears\core\common\models\traits\CreateModifyTrait;
+use cmsgears\core\common\models\traits\base\AuthorTrait;
+use cmsgears\core\common\models\traits\resources\ContentTrait;
 use cmsgears\core\common\models\traits\resources\DataTrait;
+use cmsgears\core\common\models\traits\resources\GridCacheTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
 /**
- * Chat Entity
+ * Chat is conversation between users.
  *
- * @property int $id
- * @property int $createdBy
- * @property int $modifiedBy
+ * @property integer $id
+ * @property integer $createdBy
+ * @property integer $modifiedBy
  * @property string $sessionId
  * @property integer $status
  * @property date $createdAt
  * @property date $modifiedAt
  * @property string $content
  * @property string $data
+ * @property string $gridCache
+ * @property boolean $gridCacheValid
+ * @property datetime $gridCachedAt
+ *
+ * @since 1.0.0
  */
-class Chat extends \cmsgears\core\common\models\base\Entity {
+class Chat extends Entity implements IAuthor, IContent, IData, IGridCache {
 
 	// Variables ---------------------------------------------------
 
@@ -51,8 +72,10 @@ class Chat extends \cmsgears\core\common\models\base\Entity {
 
 	// Traits ------------------------------------------------------
 
-	use CreateModifyTrait;
+	use AuthorTrait;
+	use ContentTrait;
 	use DataTrait;
+	use GridCacheTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -71,10 +94,10 @@ class Chat extends \cmsgears\core\common\models\base\Entity {
 
         return [
 			'authorBehavior' => [
-				'class' => AuthorBehavior::className()
+				'class' => AuthorBehavior::class
 			],
             'timestampBehavior' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
 				'createdAtAttribute' => 'createdAt',
  				'updatedAtAttribute' => 'modifiedAt',
  				'value' => new Expression('NOW()')
@@ -89,14 +112,16 @@ class Chat extends \cmsgears\core\common\models\base\Entity {
      */
 	public function rules() {
 
-        return [
-        	// Required, Safe
+		// Model Rules
+		$rules = [
+			// Required, Safe
             [ [ 'sessionId' ], 'required' ],
-			[ [ 'id', 'content', 'data' ], 'safe' ],
+			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
             // Text Limit
             [ 'sessionId', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
             // Other
-			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ 'status', 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ 'gridCacheValid', 'boolean' ],
 			[ [ 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
@@ -108,10 +133,12 @@ class Chat extends \cmsgears\core\common\models\base\Entity {
 	public function attributeLabels() {
 
 		return [
+			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_AUTHOR ),
 			'sessionId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SESSION ),
 			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
-			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
+			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA ),
+			'gridCache' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_GRID_CACHE )
 		];
 	}
 
@@ -134,7 +161,7 @@ class Chat extends \cmsgears\core\common\models\base\Entity {
      */
 	public static function tableName() {
 
-		return CmnTables::TABLE_CHAT;
+		return CmnTables::getTableName( CmnTables::TABLE_CHAT );
 	}
 
 	// CMG parent classes --------------------
@@ -143,6 +170,9 @@ class Chat extends \cmsgears\core\common\models\base\Entity {
 
 	// Read - Query -----------
 
+    /**
+     * @inheritdoc
+     */
 	public static function queryWithHasOne( $config = [] ) {
 
 		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator', 'modifier' ];
@@ -158,4 +188,5 @@ class Chat extends \cmsgears\core\common\models\base\Entity {
 	// Update -----------------
 
 	// Delete -----------------
+
 }

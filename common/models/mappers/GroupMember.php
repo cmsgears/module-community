@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\common\models\mappers;
 
 // Yii Imports
@@ -10,15 +18,17 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\interfaces\IApproval;
+use cmsgears\core\common\models\interfaces\base\IApproval;
+
+use cmsgears\core\common\models\base\Mapper;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\core\common\models\entities\Role;
 use cmsgears\community\common\models\base\CmnTables;
 
-use cmsgears\core\common\models\traits\interfaces\ApprovalTrait;
+use cmsgears\core\common\models\traits\base\ApprovalTrait;
 
 /**
- * GroupMember Entity
+ * GroupMember represents member of group.
  *
  * @property integer $id
  * @property integer $groupId
@@ -28,8 +38,10 @@ use cmsgears\core\common\models\traits\interfaces\ApprovalTrait;
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  * @property datetime $syncedAt
+ *
+ * @since 1.0.0
  */
-class GroupMember extends \cmsgears\core\common\models\base\Entity implements IApproval {
+class GroupMember extends Mapper implements IApproval {
 
 	// Variables ---------------------------------------------------
 
@@ -71,7 +83,7 @@ class GroupMember extends \cmsgears\core\common\models\base\Entity implements IA
         return [
 
             'timestampBehavior' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
 				'createdAtAttribute' => 'createdAt',
  				'updatedAtAttribute' => 'modifiedAt',
  				'value' => new Expression('NOW()')
@@ -86,11 +98,17 @@ class GroupMember extends \cmsgears\core\common\models\base\Entity implements IA
      */
 	public function rules() {
 
-        return [
+		// Model Rules
+		$rules = [
+			// Required, Safe
         	[ [ 'groupId', 'userId', 'roleId' ], 'required' ],
-            [ [ 'status' ], 'safe' ],
+			[ 'id', 'safe' ],
+			// Other
+            [ 'status', 'number', 'integerOnly' => true, 'min' => 0 ],
             [ [ 'createdAt', 'modifiedAt', 'syncedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
+
+		return $rules;
     }
 
     /**
@@ -114,19 +132,34 @@ class GroupMember extends \cmsgears\core\common\models\base\Entity implements IA
 
 	// GroupMember ---------------------------
 
+	/**
+	 * Returns the group corresponding to the member.
+	 *
+	 * @return \cmsgears\community\common\models\entities\Group
+	 */
 	public function getGroup() {
 
-		return $this->hasOne( Group::className(), [ 'id' => 'groupId' ] );
+		return $this->hasOne( Group::class, [ 'id' => 'groupId' ] );
 	}
 
+	/**
+	 * Returns the user corresponding to the member.
+	 *
+	 * @return \cmsgears\core\common\models\entities\User
+	 */
 	public function getUser() {
 
-		return $this->hasOne( User::className(), [ 'id' => 'userId' ] );
+		return $this->hasOne( User::class, [ 'id' => 'userId' ] );
 	}
 
+	/**
+	 * Returns the role corresponding to the member.
+	 *
+	 * @return \cmsgears\core\common\models\entities\Role
+	 */
 	public function getRole() {
 
-		return $this->hasOne( Role::className(), [ 'id' => 'roleId' ] );
+		return $this->hasOne( Role::class, [ 'id' => 'roleId' ] );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -140,7 +173,7 @@ class GroupMember extends \cmsgears\core\common\models\base\Entity implements IA
      */
 	public static function tableName() {
 
-		return CmnTables::TABLE_GROUP_MEMBER;
+		return CmnTables::getTableName( CmnTables::TABLE_GROUP_MEMBER );
 	}
 
 	// CMG parent classes --------------------
@@ -149,6 +182,9 @@ class GroupMember extends \cmsgears\core\common\models\base\Entity implements IA
 
 	// Read - Query -----------
 
+    /**
+     * @inheritdoc
+     */
 	public static function queryWithHasOne( $config = [] ) {
 
 		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'group', 'user', 'role' ];
@@ -157,6 +193,12 @@ class GroupMember extends \cmsgears\core\common\models\base\Entity implements IA
 		return parent::queryWithAll( $config );
 	}
 
+	/**
+	 * Return query to find the model with group.
+	 *
+	 * @param array $config
+	 * @return \yii\db\ActiveQuery to query with group.
+	 */
 	public static function queryWithGroup( $config = [] ) {
 
 		$config[ 'relations' ]	= [ 'group' ];
@@ -164,6 +206,12 @@ class GroupMember extends \cmsgears\core\common\models\base\Entity implements IA
 		return parent::queryWithAll( $config );
 	}
 
+	/**
+	 * Return query to find the model with user.
+	 *
+	 * @param array $config
+	 * @return \yii\db\ActiveQuery to query with user.
+	 */
 	public static function queryWithUser( $config = [] ) {
 
 		$config[ 'relations' ]	= [ 'user', 'role' ];
@@ -174,6 +222,12 @@ class GroupMember extends \cmsgears\core\common\models\base\Entity implements IA
 
 	// Read - Find ------------
 
+	/**
+	 * Find and return the members by given user id.
+	 *
+	 * @param integer $id
+	 * @return GroupMember[]
+	 */
 	public static function findByUserId( $id ) {
 
 		return self::find()->where( [ 'userId' => $id ] )->all();
@@ -187,17 +241,24 @@ class GroupMember extends \cmsgears\core\common\models\base\Entity implements IA
 
 	/**
 	 * Delete all entries having given group id.
+	 *
+	 * @param integer $groupId
+	 * @return integer Number of rows.
 	 */
 	public static function deleteByGroupId( $groupId ) {
 
-		self::deleteAll( 'groupId=:id', [ ':id' => $groupId ] );
+		return self::deleteAll( 'groupId=:id', [ ':id' => $groupId ] );
 	}
 
 	/**
 	 * Delete all entries having given user id.
+	 *
+	 * @param integer $userId
+	 * @return integer Number of rows.
 	 */
 	public static function deleteByUserId( $userId ) {
 
-		self::deleteAll( 'userId=:id', [ ':id' => $userId ] );
+		return self::deleteAll( 'userId=:id', [ ':id' => $userId ] );
 	}
+
 }

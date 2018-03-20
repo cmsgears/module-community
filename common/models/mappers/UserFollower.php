@@ -7,27 +7,27 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\community\common\models\resources;
+namespace cmsgears\community\common\models\mappers;
 
 // CMG Imports
-use cmsgears\core\common\models\base\Meta;
-use cmsgears\ccommunityms\common\models\base\CmnTables;
-use cmsgears\community\common\models\entities\Group;
+use cmsgears\core\common\models\base\Follower;
+use cmsgears\core\common\models\entities\User;
+use cmsgears\community\common\models\base\CmnTables;
 
 /**
- * GroupMeta stores meta and attributes specific to group.
+ * Follower represents interest of one model in another model.
  *
- * @property integer $id
- * @property integer $modelId
- * @property string $name
- * @property string $label
+ * @property int $id
+ * @property int $modelId
+ * @property int $followerId
  * @property string $type
- * @property string $valueType
- * @property string $value
+ * @property boolean $active
+ * @property int $createdAt
+ * @property int $modifiedAt
  *
  * @since 1.0.0
  */
-class GroupMeta extends Meta {
+class UserFollower extends Follower {
 
 	// Variables ---------------------------------------------------
 
@@ -67,16 +67,16 @@ class GroupMeta extends Meta {
 
 	// Validators ----------------------------
 
-	// GroupMeta -----------------------------
+	// UserFollower --------------------------
 
 	/**
-	 * Return corresponding group.
+	 * Return corresponding user.
 	 *
-	 * @return \cmsgears\community\common\models\entities\Group
+	 * @return \cmsgears\core\common\models\entities\User
 	 */
 	public function getParent() {
 
-		return $this->hasOne( Group::class, [ 'id' => 'modelId' ] );
+		return $this->hasOne( User::class, [ 'id' => 'modelId' ] );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -90,12 +90,12 @@ class GroupMeta extends Meta {
      */
 	public static function tableName() {
 
-		return CmnTables::getTableName( CmnTables::TABLE_GROUP_META );
+		return CmnTables::getTableName( CmnTables::TABLE_USER_FOLLOWER );
 	}
 
 	// CMG parent classes --------------------
 
-	// GroupMeta -----------------------------
+	// UserFollower --------------------------
 
 	// Read - Query -----------
 

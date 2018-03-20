@@ -7,7 +7,7 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\community\common\models\mappers;
+namespace cmsgears\community\common\models\resources;
 
 // Yii Imports
 use Yii;
@@ -16,33 +16,32 @@ use yii\behaviors\TimestampBehavior;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
-use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\interfaces\base\IOwner;
+use cmsgears\core\common\models\interfaces\base\IVisibility;
 use cmsgears\core\common\models\interfaces\resources\IContent;
 use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 
 use cmsgears\core\common\models\base\CoreTables;
-use cmsgears\core\common\models\base\Mapper;
+use cmsgears\core\common\models\base\Resource;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\community\common\models\base\CmnTables;
 
-use cmsgears\core\common\models\traits\base\UserOwnerTrait;
+use cmsgears\core\common\models\traits\base\VisibilityTrait;
 use cmsgears\core\common\models\traits\resources\ContentTrait;
 use cmsgears\core\common\models\traits\resources\DataTrait;
 use cmsgears\core\common\models\traits\resources\GridCacheTrait;
 
 /**
- * Friend maps one user to another.
+ * UserPost represent a message posted to user by friends.
  *
  * @property integer $id
- * @property integer $userId
- * @property integer $friendId
- * @property integer $status
+ * @property integer $senderId
+ * @property integer $recipientId
+ * @property integer $visibility
  * @property integer $type
- * @property datetime $createdAt
- * @property datetime $modifiedAt
+ * @property date $createdAt
+ * @property date $modifiedAt
  * @property string $content
  * @property string $data
  * @property string $gridCache
@@ -51,7 +50,7 @@ use cmsgears\core\common\models\traits\resources\GridCacheTrait;
  *
  * @since 1.0.0
  */
-class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
+class UserPost extends Resource implements IContent, IData, IGridCache, IVisibility {
 
 	// Variables ---------------------------------------------------
 
@@ -59,33 +58,7 @@ class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
 
 	// Constants --------------
 
-	const TYPE_CHILDHOOD	=    0;
-	const TYPE_SCHOOL		=  500;
-	const TYPE_COLLEGE		= 1000;
-	const TYPE_TRAVEL		= 1500;
-	const TYPE_PROFESSIONAL	= 2000;
-
-	const STATUS_REQUEST	=    0;
-	const STATUS_REJECTED	=  500;
-	const STATUS_BLOCKED	= 1000;
-	const STATUS_ACTIVE		= 1500;
-
 	// Public -----------------
-
-	public static $typeMap = [
-		self::TYPE_CHILDHOOD => 'Childhood',
-		self::TYPE_SCHOOL => 'School',
-		self::TYPE_COLLEGE => 'College',
-		self::TYPE_TRAVEL => 'Travel',
-		self::TYPE_PROFESSIONAL => 'Professional'
-	];
-
-	public static $statusMap = [
-		self::STATUS_REQUEST => 'Request',
-		self::STATUS_REJECTED => 'Rejected',
-		self::STATUS_BLOCKED => 'Blocked',
-		self::STATUS_ACTIVE => 'Active'
-	];
 
 	// Protected --------------
 
@@ -95,8 +68,6 @@ class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
 
 	// Protected --------------
 
-	protected $modelType = CmnGlobal::TYPE_FRIEND;
-
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
@@ -104,7 +75,7 @@ class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
 	use ContentTrait;
 	use DataTrait;
 	use GridCacheTrait;
-	use UserOwnerTrait;
+	use VisibilityTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -140,17 +111,25 @@ class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
 
 		// Model Rules
 		$rules = [
-        	// Required, Safe
-            [ [ 'userId', 'friendId' ], 'required' ],
+			// Required, Safe
+            [ [ 'senderId', 'recipientId', 'visibility' ], 'required' ],
             [ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
-			// Unique
-			[ [ 'userId', 'friendId' ], 'unique', 'targetAttribute' => [ 'userId', 'friendId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
-            // Other
-            [ [ 'status', 'type' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+			// Other
+            [ 'type', 'number', 'intergerOnly' => true, 'min' => 0 ],
 			[ 'gridCacheValid', 'boolean' ],
-            [ [ 'userId', 'friendId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+            [ [ 'senderId', 'recipientId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+            [ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
+
+		// Trim Text
+		if( Yii::$app->core->trimFieldValue ) {
+
+			$trim[] = [ 'content', 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
+
+			return ArrayHelper::merge( $trim, $rules );
+		}
+
+		return $rules;
     }
 
     /**
@@ -159,9 +138,9 @@ class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
 	public function attributeLabels() {
 
 		return [
-			'userId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_USER ),
-			'friendId' => Yii::$app->cmnMessage->getMessage( CmnGlobal::FIELD_FRIEND ),
-			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
+			'senderId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SENDER ),
+			'recipientId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_RECIPIENT ),
+			'visibility' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_VISIBILITY ),
 			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
 			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA ),
@@ -175,28 +154,30 @@ class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
 
 	// Validators ----------------------------
 
-	// Friend --------------------------------
+	// Post ----------------------------------
 
 	/**
-	 * Return the user who initiated friendship.
+	 * Return the user who sent the message.
 	 *
 	 * @return \cmsgears\core\common\models\entities\User
 	 */
-	public function getUser() {
-
-		return $this->hasOne( User::class, [ 'id' => 'userId' ] );
-	}
-
-	/**
-	 * Return user who got friendship invite.
-	 *
-	 * @return \cmsgears\core\common\models\entities\User
-	 */
-	public function getFriend() {
+	public function getSender() {
 
 		$userTable = CoreTables::getTableName( CoreTables::TABLE_USER );
 
-		return $this->hasOne( User::class, [ 'id' => 'friendId' ] )->from( "$userTable as friend" );
+		return $this->hasOne( User::class, [ 'id' => 'senderId' ] )->from( "$userTable as sender" );
+	}
+
+	/**
+	 * Return the user who receive the message.
+	 *
+	 * @return \cmsgears\core\common\models\entities\User
+	 */
+	public function getRecipient() {
+
+		$userTable = CoreTables::getTableName( CoreTables::TABLE_USER );
+
+		return $this->hasOne( User::class, [ 'id' => 'recipientId' ] )->from( "$userTable as recipient" );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -210,12 +191,12 @@ class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
      */
 	public static function tableName() {
 
-		return CmnTables::getTableName( CmnTables::TABLE_FRIEND );
+		return CmnTables::getTableName( CmnTables::TABLE_USER_POST );
 	}
 
 	// CMG parent classes --------------------
 
-	// Friend --------------------------------
+	// Post ----------------------------------
 
 	// Read - Query -----------
 
@@ -224,7 +205,7 @@ class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
      */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'user', 'friend' ];
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'sender', 'recipient' ];
 		$config[ 'relations' ]	= $relations;
 
 		return parent::queryWithAll( $config );
@@ -237,27 +218,5 @@ class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
 	// Update -----------------
 
 	// Delete -----------------
-
-	/**
-	 * Delete all mappings associated with given user id.
-	 *
-	 * @param integer $userId
-	 * @return integer Number of rows
-	 */
-	public static function deleteByUserId( $userId ) {
-
-		return self::deleteAll( 'userId=:id', [ ':id' => $userId ] );
-	}
-
-	/**
-	 * Delete all mappings associated with given friend id.
-	 *
-	 * @param integer $friendId
-	 * @return integer Number of rows
-	 */
-	public static function deleteByFriendId( $friendId ) {
-
-		return self::deleteAll( 'friendId=:id', [ ':id' => $friendId ] );
-	}
 
 }

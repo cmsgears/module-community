@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\common\models\resources;
 
 // Yii Imports
@@ -10,25 +18,40 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
+use cmsgears\core\common\models\interfaces\base\IVisibility;
+use cmsgears\core\common\models\interfaces\resources\IContent;
+use cmsgears\core\common\models\interfaces\resources\IData;
+use cmsgears\core\common\models\interfaces\resources\IGridCache;
+
+use cmsgears\core\common\models\base\Resource;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\entities\Group;
 
+use cmsgears\core\common\models\traits\base\VisibilityTrait;
+use cmsgears\core\common\models\traits\resources\ContentTrait;
+use cmsgears\core\common\models\traits\resources\DataTrait;
+use cmsgears\core\common\models\traits\resources\GridCacheTrait;
+
 /**
- * Post Entity
+ * GroupPost represent a message posted on group by group members.
  *
  * @property integer $id
  * @property integer $senderId
- * @property integer $recipientId
  * @property integer $groupId
- * @property short $visibility
- * @property short $type
- * @property datetime $createdAt
- * @property datetime $modifiedAt
+ * @property integer $visibility
+ * @property integer $type
+ * @property date $createdAt
+ * @property date $modifiedAt
  * @property string $content
  * @property string $data
+ * @property string $gridCache
+ * @property boolean $gridCacheValid
+ * @property datetime $gridCachedAt
+ *
+ * @since 1.0.0
  */
-class Post extends \cmsgears\core\common\models\base\Entity {
+class GroupPost extends Resource implements IContent, IData, IGridCache, IVisibility {
 
 	// Variables ---------------------------------------------------
 
@@ -36,25 +59,7 @@ class Post extends \cmsgears\core\common\models\base\Entity {
 
 	// Constants --------------
 
-	const VISIBILITY_PRIVATE	=  0; // visible only among sender and recipient
-	const VISIBILITY_FRIENDS	=  5; // friends can view the message
-	const VISIBILITY_PUBLIC		= 10; // anyone can view the message
-
-	const TYPE_WALL	= 0;
-	const TYPE_CHAT	= 5;
-
 	// Public -----------------
-
-	public static $visibilityMap = [
-		self::VISIBILITY_PRIVATE => 'Private',
-		self::VISIBILITY_FRIENDS => 'Friends',
-		self::VISIBILITY_PUBLIC => 'Public'
-	];
-
-	public static $typeMap = [
-		self::TYPE_WALL => 'Wall',
-		self::TYPE_CHAT => 'Chat'
-	];
 
 	// Protected --------------
 
@@ -67,6 +72,11 @@ class Post extends \cmsgears\core\common\models\base\Entity {
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
+
+	use ContentTrait;
+	use DataTrait;
+	use GridCacheTrait;
+	use VisibilityTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -85,7 +95,7 @@ class Post extends \cmsgears\core\common\models\base\Entity {
 
         return [
             'timestampBehavior' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
 				'createdAtAttribute' => 'createdAt',
  				'updatedAtAttribute' => 'modifiedAt',
  				'value' => new Expression('NOW()')
@@ -100,13 +110,27 @@ class Post extends \cmsgears\core\common\models\base\Entity {
      */
 	public function rules() {
 
-        return [
-            [ [ 'senderId', 'visibility' ], 'required' ],
-            [ [ 'id', 'content', 'data' ], 'safe' ],
-            [ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-            [ [ 'senderId', 'recipientId', 'groupId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-            [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+		// Model Rules
+		$rules = [
+			// Required, Safe
+            [ [ 'senderId', 'groupId', 'visibility' ], 'required' ],
+            [ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
+			// Other
+            [ 'type', 'number', 'intergerOnly' => true, 'min' => 0 ],
+			[ 'gridCacheValid', 'boolean' ],
+            [ [ 'senderId', 'groupId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+            [ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
+
+		// Trim Text
+		if( Yii::$app->core->trimFieldValue ) {
+
+			$trim[] = [ 'content', 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
+
+			return ArrayHelper::merge( $trim, $rules );
+		}
+
+		return $rules;
     }
 
     /**
@@ -116,12 +140,12 @@ class Post extends \cmsgears\core\common\models\base\Entity {
 
 		return [
 			'senderId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SENDER ),
-			'recipientId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_RECIPIENT ),
 			'groupId' => Yii::$app->cmnMessage->getMessage( CmnGlobal::FIELD_GROUP ),
 			'visibility' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_VISIBILITY ),
 			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
-			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
+			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA ),
+			'gridCache' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_GRID_CACHE )
 		];
 	}
 
@@ -134,32 +158,23 @@ class Post extends \cmsgears\core\common\models\base\Entity {
 	// Post ----------------------------------
 
 	/**
-	 * @return User
+	 * Return the user who sent the message.
+	 *
+	 * @return \cmsgears\core\common\models\entities\User
 	 */
 	public function getSender() {
 
-		return $this->hasOne( User::className(), [ 'id' => 'senderId' ] );
+		return $this->hasOne( User::class, [ 'id' => 'senderId' ] );
 	}
 
 	/**
-	 * @return User
+	 * Return the group to which the message belongs.
+	 *
+	 * @return \cmsgears\community\common\models\entities\Group
 	 */
-	public function getRecipient() {
-
-		return $this->hasOne( User::className(), [ 'id' => 'recipientId' ] );
-	}
-
 	public function getGroup() {
 
-		return $this->hasOne( Group::className(), [ 'id' => 'groupId' ] );
-	}
-
-	/**
-	 * @return String
-	 */
-	public function getTypeStr() {
-
-		return self::$typeMap[ $this->type ];
+		return $this->hasOne( Group::class, [ 'id' => 'groupId' ] );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -173,7 +188,7 @@ class Post extends \cmsgears\core\common\models\base\Entity {
      */
 	public static function tableName() {
 
-		return CmnTables::TABLE_POST;
+		return CmnTables::getTableName( CmnTables::TABLE_GROUP_POST );
 	}
 
 	// CMG parent classes --------------------
@@ -182,9 +197,12 @@ class Post extends \cmsgears\core\common\models\base\Entity {
 
 	// Read - Query -----------
 
+    /**
+     * @inheritdoc
+     */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'sender', 'recipient', 'group' ];
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'sender', 'group' ];
 		$config[ 'relations' ]	= $relations;
 
 		return parent::queryWithAll( $config );
@@ -197,4 +215,5 @@ class Post extends \cmsgears\core\common\models\base\Entity {
 	// Update -----------------
 
 	// Delete -----------------
+
 }

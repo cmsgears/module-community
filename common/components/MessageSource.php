@@ -1,11 +1,7 @@
 <?php
 namespace cmsgears\community\common\components;
 
-// Yii Imports
-use \Yii;
-
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
 class MessageSource extends \yii\base\Component {
@@ -22,7 +18,8 @@ class MessageSource extends \yii\base\Component {
 		// Generic Fields
 		CmnGlobal::FIELD_FRIEND => 'Friend',
 		CmnGlobal::FIELD_GROUP => 'Group',
-		CmnGlobal::FIELD_CHAT => 'Chat'
+		CmnGlobal::FIELD_CHAT => 'Chat',
+		CmnGlobal::FIELD_BROADCASTED => 'Broadcasted'
 	];
 
 	// Private ----------------
@@ -41,4 +38,5 @@ class MessageSource extends \yii\base\Component {
 
 		return $this->messageDb[ $messageKey ];
 	}
+
 }
