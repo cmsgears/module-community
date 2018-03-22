@@ -7,23 +7,21 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\community\common\services\entities;
+namespace cmsgears\community\common\services\mappers;
 
 // CMG Imports
-use cmsgears\community\common\config\CmnGlobal;
-
 use cmsgears\community\common\models\base\CmnTables;
 
-use cmsgears\community\common\services\interfaces\entities\IChatService;
+use cmsgears\community\common\services\interfaces\mappers\IGroupFollowerService;
 
-use cmsgears\core\common\services\base\EntityService;
+use cmsgears\core\common\services\base\FollowerService;
 
 /**
- * ChatService provide service methods of chat model.
+ * GroupFollowerService provide service methods of group follower.
  *
  * @since 1.0.0
  */
-class ChatService extends EntityService implements IChatService {
+class GroupFollowerService extends FollowerService implements IGroupFollowerService {
 
 	// Variables ---------------------------------------------------
 
@@ -33,11 +31,11 @@ class ChatService extends EntityService implements IChatService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\community\common\models\entities\Chat';
+	public static $modelClass	= '\cmsgears\community\common\models\mappers\GroupFollower';
 
-	public static $modelTable	= CmnTables::TABLE_CHAT;
+	public static $modelTable	= CmnTables::TABLE_GROUP_FOLLOWER;
 
-	public static $parentType	= CmnGlobal::TYPE_CHAT;
+	public static $parentType	= null;
 
 	// Protected --------------
 
@@ -63,7 +61,7 @@ class ChatService extends EntityService implements IChatService {
 
 	// CMG parent classes --------------------
 
-	// ChatService ---------------------------
+	// GroupFollowerService ------------------
 
 	// Data Provider ------
 
@@ -95,7 +93,7 @@ class ChatService extends EntityService implements IChatService {
 
 	// CMG parent classes --------------------
 
-	// ChatService ---------------------------
+	// GroupFollowerService ------------------
 
 	// Data Provider ------
 
@@ -114,4 +112,5 @@ class ChatService extends EntityService implements IChatService {
 	// Update -------------
 
 	// Delete -------------
+
 }

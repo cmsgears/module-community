@@ -7,23 +7,21 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\community\common\services\entities;
+namespace cmsgears\community\common\services\resources;
 
 // CMG Imports
-use cmsgears\community\common\config\CmnGlobal;
-
 use cmsgears\community\common\models\base\CmnTables;
 
-use cmsgears\community\common\services\interfaces\entities\IChatService;
+use cmsgears\community\common\services\interfaces\resources\IGroupPostService;
 
-use cmsgears\core\common\services\base\EntityService;
+use cmsgears\core\common\services\base\ResourceService;
 
 /**
- * ChatService provide service methods of chat model.
+ * GroupPostService provide service methods of group post.
  *
  * @since 1.0.0
  */
-class ChatService extends EntityService implements IChatService {
+class GroupPostService extends ResourceService implements IGroupPostService {
 
 	// Variables ---------------------------------------------------
 
@@ -33,11 +31,11 @@ class ChatService extends EntityService implements IChatService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\community\common\models\entities\Chat';
+	public static $modelClass	= '\cmsgears\community\common\models\resources\GroupPost';
 
-	public static $modelTable	= CmnTables::TABLE_CHAT;
+	public static $modelTable	= CmnTables::TABLE_GROUP_POST;
 
-	public static $parentType	= CmnGlobal::TYPE_CHAT;
+	public static $parentType	= null;
 
 	// Protected --------------
 
@@ -63,7 +61,7 @@ class ChatService extends EntityService implements IChatService {
 
 	// CMG parent classes --------------------
 
-	// ChatService ---------------------------
+	// GroupPostService ----------------------
 
 	// Data Provider ------
 
@@ -80,6 +78,22 @@ class ChatService extends EntityService implements IChatService {
 	// Create -------------
 
 	// Update -------------
+
+	public function update( $model, $config = [] ) {
+
+		$admin = isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
+
+		if( $admin ) {
+
+			return parent::update( $model, [
+				'attributes' => [ 'visibility', 'type', 'content', 'data' ]
+			]);
+		}
+
+		return parent::update( $model, [
+			'attributes' => [ 'content', 'data' ]
+		]);
+	}
 
 	// Delete -------------
 
@@ -95,7 +109,7 @@ class ChatService extends EntityService implements IChatService {
 
 	// CMG parent classes --------------------
 
-	// ChatService ---------------------------
+	// GroupPostService ----------------------
 
 	// Data Provider ------
 
@@ -114,4 +128,5 @@ class ChatService extends EntityService implements IChatService {
 	// Update -------------
 
 	// Delete -------------
+
 }

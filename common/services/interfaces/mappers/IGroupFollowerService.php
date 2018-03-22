@@ -10,14 +10,14 @@
 namespace cmsgears\community\common\services\interfaces\mappers;
 
 // CMG Imports
-use cmsgears\core\common\services\interfaces\base\IMapperService;
+use cmsgears\core\common\services\interfaces\base\IFollowerService;
 
 /**
- * IFriendService declares methods specific to friend model.
+ * IGroupFollowerService declares methods specific to group follower.
  *
  * @since 1.0.0
  */
-interface IFriendService extends IMapperService {
+interface IGroupFollowerService extends IFollowerService {
 
 	// Data Provider ------
 

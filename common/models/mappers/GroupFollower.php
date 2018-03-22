@@ -74,7 +74,7 @@ class GroupFollower extends Follower {
 	 *
 	 * @return \cmsgears\community\common\models\entities\Group
 	 */
-	public function getParent() {
+	public function getModel() {
 
 		return $this->hasOne( Group::class, [ 'id' => 'modelId' ] );
 	}

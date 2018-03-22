@@ -74,7 +74,7 @@ class UserFollower extends Follower {
 	 *
 	 * @return \cmsgears\core\common\models\entities\User
 	 */
-	public function getParent() {
+	public function getModel() {
 
 		return $this->hasOne( User::class, [ 'id' => 'modelId' ] );
 	}

@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\common\services\entities;
 
 // Yii Imports
@@ -14,10 +22,17 @@ use cmsgears\community\common\services\interfaces\entities\IGroupService;
 use cmsgears\community\common\services\interfaces\resources\IGroupMessageService;
 use cmsgears\community\common\services\interfaces\mappers\IGroupMemberService;
 
-use cmsgears\core\common\services\traits\NameTypeTrait;
-use cmsgears\core\common\services\traits\SlugTypeTrait;
+use cmsgears\core\common\services\base\EntityService;
 
-class GroupService extends \cmsgears\core\common\services\base\EntityService implements IGroupService {
+use cmsgears\core\common\services\traits\base\NameTypeTrait;
+use cmsgears\core\common\services\traits\base\SlugTypeTrait;
+
+/**
+ * GroupService provide service methods of group model.
+ *
+ * @since 1.0.0
+ */
+class GroupService extends EntityService implements IGroupService {
 
 	// Variables ---------------------------------------------------
 
@@ -188,27 +203,8 @@ class GroupService extends \cmsgears\core\common\services\base\EntityService imp
 
 		return parent::delete( $model, $config );
 	}
-	
-	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
 
-		switch( $column ) {
-
-			case 'model': {
-
-				switch( $action ) {
-
-					case 'delete': {
-
-						$this->delete( $model );
-
-						break;
-					}
-				}
-
-				break;
-			}
-		}
-	}
+	// Bulk ---------------
 
 	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
 
@@ -230,6 +226,12 @@ class GroupService extends \cmsgears\core\common\services\base\EntityService imp
 			}
 		}
 	}
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 

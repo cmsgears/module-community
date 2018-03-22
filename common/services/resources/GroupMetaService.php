@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\common\services\resources;
 
 // CMG Imports
@@ -6,7 +14,14 @@ use cmsgears\community\common\models\base\CmnTables;
 
 use cmsgears\community\common\services\interfaces\resources\IGroupMetaService;
 
-class GroupMetaService extends \cmsgears\core\common\services\base\MetaService implements IGroupMetaService {
+use cmsgears\core\common\services\base\MetaService;
+
+/**
+ * GroupMetaService provide service methods of group meta.
+ *
+ * @since 1.0.0
+ */
+class GroupMetaService extends MetaService implements IGroupMetaService {
 
 	// Variables ---------------------------------------------------
 
@@ -65,6 +80,14 @@ class GroupMetaService extends \cmsgears\core\common\services\base\MetaService i
 	// Update -------------
 
 	// Delete -------------
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 

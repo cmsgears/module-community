@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\common\services\mappers;
 
 // Yii Imports
@@ -14,9 +22,16 @@ use cmsgears\community\common\services\interfaces\mappers\IGroupMemberService;
 
 use cmsgears\core\common\services\traits\ApprovalTrait;
 
+use cmsgears\core\common\services\base\MapperService;
+
 use cmsgears\core\common\utilities\DateUtil;
 
-class GroupMemberService extends \cmsgears\core\common\services\base\EntityService implements IGroupMemberService {
+/**
+ * GroupMemberService provide service methods of group member.
+ *
+ * @since 1.0.0
+ */
+class GroupMemberService extends MapperService implements IGroupMemberService {
 
 	// Variables ---------------------------------------------------
 
@@ -140,16 +155,16 @@ class GroupMemberService extends \cmsgears\core\common\services\base\EntityServi
 
 	public function addMember( $groupId, $userId, $join = false, $admin = false ) {
 
-		$model			= new GroupMember();
-		$role			= null;
+		$model	= new GroupMember();
+		$role	= null;
 
 		if( $admin ) {
 
-			$role		= RoleService::findBySlugType( CmnGlobal::ROLE_GROUP_MASTER, CmnGlobal::TYPE_COMMUNITY );
+			$role = RoleService::findBySlugType( CmnGlobal::ROLE_GROUP_MASTER, CmnGlobal::TYPE_COMMUNITY );
 		}
 		else {
 
-			$role		= RoleService::findBySlugType( CmnGlobal::ROLE_GROUP_MEMBER, CmnGlobal::TYPE_COMMUNITY );
+			$role = RoleService::findBySlugType( CmnGlobal::ROLE_GROUP_MEMBER, CmnGlobal::TYPE_COMMUNITY );
 		}
 
 		$model->groupId	= $groupId;
@@ -192,6 +207,14 @@ class GroupMemberService extends \cmsgears\core\common\services\base\EntityServi
 
 		GroupMember::deleteByGroupId( $groupId );
 	}
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 

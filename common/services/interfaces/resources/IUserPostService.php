@@ -7,17 +7,17 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\community\common\services\interfaces\mappers;
+namespace cmsgears\community\common\services\interfaces\resources;
 
 // CMG Imports
-use cmsgears\core\common\services\interfaces\base\IMapperService;
+use cmsgears\core\common\services\interfaces\base\IResourceService;
 
 /**
- * IFriendService declares methods specific to friend model.
+ * IUserPostService declares methods specific to user post.
  *
  * @since 1.0.0
  */
-interface IFriendService extends IMapperService {
+interface IUserPostService extends IResourceService {
 
 	// Data Provider ------
 
