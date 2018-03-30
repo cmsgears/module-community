@@ -12,8 +12,6 @@ namespace cmsgears\community\common\services\entities;
 // CMG Imports
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\community\common\models\base\CmnTables;
-
 use cmsgears\community\common\services\interfaces\entities\IChatService;
 
 use cmsgears\core\common\services\base\EntityService;
@@ -34,8 +32,6 @@ class ChatService extends EntityService implements IChatService {
 	// Public -----------------
 
 	public static $modelClass	= '\cmsgears\community\common\models\entities\Chat';
-
-	public static $modelTable	= CmnTables::TABLE_CHAT;
 
 	public static $parentType	= CmnGlobal::TYPE_CHAT;
 
@@ -114,4 +110,5 @@ class ChatService extends EntityService implements IChatService {
 	// Update -------------
 
 	// Delete -------------
+
 }

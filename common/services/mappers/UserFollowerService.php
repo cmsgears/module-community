@@ -10,8 +10,6 @@
 namespace cmsgears\community\common\services\mappers;
 
 // CMG Imports
-use cmsgears\community\common\models\base\CmnTables;
-
 use cmsgears\community\common\services\interfaces\mappers\IUserFollowerService;
 
 use cmsgears\core\common\services\base\FollowerService;
@@ -31,11 +29,7 @@ class UserFollowerService extends FollowerService implements IUserFollowerServic
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\community\common\models\mappers\UserFollower';
-
-	public static $modelTable	= CmnTables::TABLE_USER_FOLLOWER;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\community\common\models\mappers\UserFollower';
 
 	// Protected --------------
 

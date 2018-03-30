@@ -10,8 +10,6 @@
 namespace cmsgears\community\common\services\mappers;
 
 // CMG Imports
-use cmsgears\community\common\models\base\CmnTables;
-
 use cmsgears\community\common\services\interfaces\mappers\IGroupFollowerService;
 
 use cmsgears\core\common\services\base\FollowerService;
@@ -31,11 +29,7 @@ class GroupFollowerService extends FollowerService implements IGroupFollowerServ
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\community\common\models\mappers\GroupFollower';
-
-	public static $modelTable	= CmnTables::TABLE_GROUP_FOLLOWER;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\community\common\models\mappers\GroupFollower';
 
 	// Protected --------------
 

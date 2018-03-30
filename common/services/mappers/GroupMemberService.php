@@ -15,7 +15,6 @@ use yii\data\Sort;
 // CMG Imports
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\mappers\GroupMember;
 
 use cmsgears\community\common\services\interfaces\mappers\IGroupMemberService;
@@ -41,11 +40,7 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\community\common\models\mappers\GroupMember';
-
-	public static $modelTable	= CmnTables::TABLE_GROUP_MEMBER;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\community\common\models\mappers\GroupMember';
 
 	// Protected --------------
 
@@ -79,43 +74,52 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 
 	public function getPage( $config = [] ) {
 
+		$modelClass	= static::$modelClass;
+		$modelTable	= $this->getModelTable();
+
 	    $sort = new Sort([
 	        'attributes' => [
+	            'id' => [
+	                'asc' => [ "$modelTable.id" => SORT_ASC ],
+	                'desc' => [ "$modelTable.id" => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'Id'
+	            ],
 	            'group' => [
-	                'asc' => [ 'groupId' => SORT_ASC ],
-	                'desc' => ['groupId' => SORT_DESC ],
+	                'asc' => [ "$modelTable.groupId" => SORT_ASC ],
+	                'desc' => [ "$modelTable.groupId" => SORT_DESC ],
 	                'default' => SORT_DESC,
 	                'label' => 'Group'
 	            ],
 	            'user' => [
-	                'asc' => [ 'userId' => SORT_ASC ],
-	                'desc' => ['userId' => SORT_DESC ],
+	                'asc' => [ "$modelTable.userId" => SORT_ASC ],
+	                'desc' => [ "$modelTable.userId" => SORT_DESC ],
 	                'default' => SORT_DESC,
 	                'label' => 'User'
 	            ],
 	            'role' => [
-	                'asc' => [ 'roleId' => SORT_ASC ],
-	                'desc' => ['roleId' => SORT_DESC ],
+	                'asc' => [ "$modelTable.roleId" => SORT_ASC ],
+	                'desc' => [ "$modelTable.roleId" => SORT_DESC ],
 	                'default' => SORT_DESC,
 	                'label' => 'Role'
 	            ],
 	            'cdate' => [
-	                'asc' => [ 'createdAt' => SORT_ASC ],
-	                'desc' => ['createdAt' => SORT_DESC ],
+	                'asc' => [ "$modelTable.createdAt" => SORT_ASC ],
+	                'desc' => [ "$modelTable.createdAt" => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'Created At',
+	                'label' => 'Created At'
 	            ],
 	            'udate' => [
-	                'asc' => [ 'modifiedAt' => SORT_ASC ],
-	                'desc' => ['modifiedAt' => SORT_DESC ],
+	                'asc' => [ "$modelTable.modifiedAt" => SORT_ASC ],
+	                'desc' => [ "$modelTable.modifiedAt" => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'Update At',
+	                'label' => 'Update At'
 	            ],
 	            'sdate' => [
-	                'asc' => [ 'syncedAt' => SORT_ASC ],
-	                'desc' => ['syncedAt' => SORT_DESC ],
+	                'asc' => [ "$modelTable.syncedAt" => SORT_ASC ],
+	                'desc' => [ "$modelTable.syncedAt" => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'Synced At',
+	                'label' => 'Synced At'
 	            ]
 	        ],
 	        'defaultOrder' => [
@@ -142,7 +146,9 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 
    	public function getByUserId( $id ) {
 
-		return GroupMember::findByUserId( $id );
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findByUserId( $id );
 	}
 
     // Read - Lists ----
@@ -155,16 +161,16 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 
 	public function addMember( $groupId, $userId, $join = false, $admin = false ) {
 
-		$model	= new GroupMember();
+		$model	= $this->getModelObject();
 		$role	= null;
 
 		if( $admin ) {
 
-			$role = RoleService::findBySlugType( CmnGlobal::ROLE_GROUP_MASTER, CmnGlobal::TYPE_COMMUNITY );
+			$role = Yii::$app->get( 'roleService' )->getBySlugType( CmnGlobal::ROLE_GROUP_MASTER, CmnGlobal::TYPE_COMMUNITY );
 		}
 		else {
 
-			$role = RoleService::findBySlugType( CmnGlobal::ROLE_GROUP_MEMBER, CmnGlobal::TYPE_COMMUNITY );
+			$role = Yii::$app->get( 'roleService' )->getBySlugType( CmnGlobal::ROLE_GROUP_MEMBER, CmnGlobal::TYPE_COMMUNITY );
 		}
 
 		$model->groupId	= $groupId;
@@ -173,7 +179,7 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 
 		if( !$join ) {
 
-			$model->status	= GroupMember::STATUS_ACTIVE;
+			$model->status = GroupMember::STATUS_ACTIVE;
 		}
 
 		$model->save();
@@ -205,7 +211,9 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 
 	public function deleteByGroupId( $groupId ) {
 
-		GroupMember::deleteByGroupId( $groupId );
+		$modelClass	= static::$modelClass;
+
+		$modelClass::deleteByGroupId( $groupId );
 	}
 
 	// Bulk ---------------

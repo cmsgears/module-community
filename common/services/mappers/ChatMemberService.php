@@ -10,8 +10,6 @@
 namespace cmsgears\community\common\services\mappers;
 
 // CMG Imports
-use cmsgears\community\common\models\base\CmnTables;
-
 use cmsgears\community\common\services\interfaces\mappers\IChatMemberService;
 
 use cmsgears\core\common\services\base\MapperService;
@@ -33,11 +31,7 @@ class ChatMemberService extends MapperService implements IChatMemberService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\community\common\models\mappers\ChatMember';
-
-	public static $modelTable	= CmnTables::TABLE_CHAT_MEMBER;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\community\common\models\mappers\ChatMember';
 
 	// Protected --------------
 

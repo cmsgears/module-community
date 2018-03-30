@@ -45,6 +45,7 @@ use cmsgears\core\common\models\traits\base\ApprovalTrait;
 use cmsgears\core\common\models\traits\base\AuthorTrait;
 use cmsgears\core\common\models\traits\base\MultiSiteTrait;
 use cmsgears\core\common\models\traits\base\NameTypeTrait;
+use cmsgears\core\common\models\traits\base\OwnerTrait;
 use cmsgears\core\common\models\traits\base\SlugTypeTrait;
 use cmsgears\core\common\models\traits\base\VisibilityTrait;
 use cmsgears\core\common\models\traits\resources\ContentTrait;
@@ -65,7 +66,6 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $siteId
  * @property integer $avatarId
  * @property integer $galleryId
- * @property integer $ownerId
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property string $name
@@ -123,6 +123,7 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IContent, I
 	use FollowerTrait;
 	use MultiSiteTrait;
 	use NameTypeTrait;
+	use OwnerTrait;
 	use PageContentTrait;
 	use SlugTypeTrait;
 	use TagTrait;
@@ -165,8 +166,9 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IContent, I
 				'class' => SluggableBehavior::class,
 				'attribute' => 'name',
 				'slugAttribute' => 'slug', // Unique for Site Id
+				'immutable' => true,
 				'ensureUnique' => true,
-				'uniqueValidator' => [ 'targetAttribute' => 'siteId' ]
+				'uniqueValidator' => [ 'targetAttribute' => [ 'siteId', 'slug' ] ]
 			]
 		];
 	}
@@ -193,7 +195,7 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IContent, I
 			// Other
 			[ [ 'status', 'visibility', 'order' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'featured', 'gridCacheValid' ], 'boolean' ],
-			[ [ 'siteId', 'avatarId', 'ownerId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'siteId', 'avatarId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 
@@ -216,7 +218,6 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IContent, I
 		return [
 			'siteId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SITE ),
 			'avatarId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_AVATAR ),
-			'ownerId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
 			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_AUTHOR ),
 			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
 			'slug' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SLUG ),
@@ -236,54 +237,11 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IContent, I
 
 	// CMG interfaces ------------------------
 
-	// IOwner
-
-	/**
-	 * Check whether user is owner of the group.
-	 *
-	 * @param \cmsgears\core\common\models\entities\User $user
-	 * @param boolean $strict
-	 * @return boolean
-	 */
-	public function isOwner( $user = null, $strict = false ) {
-
-		if( !isset( $user ) && !$strict ) {
-
-			$user	= Yii::$app->user->getIdentity();
-		}
-
-		if( isset( $user ) ) {
-
-			if( isset( $this->ownerId ) ) {
-
-				return $this->ownerId == $user->id;
-			}
-			else {
-
-				return $this->createdBy == $user->id;
-			}
-		}
-
-		return false;
-	}
-
 	// CMG parent classes --------------------
 
 	// Validators ----------------------------
 
 	// Group ---------------------------------
-
-	/**
-	 * Return the group owner.
-	 *
-	 * @return \cmsgears\core\common\models\entities\User
-	 */
-	public function getOwner() {
-
-		$userTable = CoreTables::getTableName( CoreTables::TABLE_USER );
-
-		return $this->hasOne( User::class, [ 'id' => 'ownerId' ] )->from( "$userTable as owner" );
-	}
 
 	/**
 	 * Return all the group members.
@@ -351,7 +309,7 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IContent, I
      */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'avatar', 'modelContent', 'modelContent.template', 'site', 'owner', 'creator', 'modifier' ];
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'avatar', 'modelContent', 'modelContent.template', 'site', 'creator', 'modifier' ];
 		$config[ 'relations' ]	= $relations;
 
 		return parent::queryWithAll( $config );
@@ -384,24 +342,6 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IContent, I
 	}
 
 	/**
-	 * Return query to find the model with avatar, content, template, banner, owner and owner avatar.
-	 *
-	 * @param array $config
-	 * @return \yii\db\ActiveQuery to query with avatar, content, template, banner, owner and owner avatar.
-	 */
-	public static function queryWithOwner( $config = [] ) {
-
-		$config[ 'relations' ][] = [ 'avatar', 'modelContent', 'modelContent.template', 'modelContent.banner', 'owner' ];
-
-		$config[ 'relations' ][] = [ 'owner.avatar'  => function ( $query ) {
-			$fileTable	= CoreTables::getTableName( CoreTables::TABLE_FILE );
-			$query->from( "$fileTable oavatar" ); }
-		];
-
-		return parent::queryWithAll( $config );
-	}
-
-	/**
 	 * Return query to find the model with avatar, content, template, banner, author and author avatar.
 	 *
 	 * @param array $config
@@ -413,29 +353,6 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IContent, I
 
 		$config[ 'relations' ][] = [ 'creator.avatar'  => function ( $query ) {
 			$fileTable	= CoreTables::getTableName( CoreTables::TABLE_FILE );
-			$query->from( "$fileTable aavatar" ); }
-		];
-
-		return parent::queryWithAll( $config );
-	}
-
-	/**
-	 * Return query to find the model with avatar, content, template, banner, owner, owner avatar, author and author avatar.
-	 *
-	 * @param array $config
-	 * @return \yii\db\ActiveQuery to query with avatar, content, template, banner, owner, owner avatar, author and author avatar.
-	 */
-	public static function queryWithOwnerAuthor( $config = [] ) {
-
-		$fileTable	= CoreTables::getTableName( CoreTables::TABLE_FILE );
-
-		$config[ 'relations' ][] = [ 'avatar', 'modelContent', 'modelContent.template', 'modelContent.banner', 'owner', 'creator' ];
-
-		$config[ 'relations' ][] = [ 'owner.avatar'  => function ( $query ) use( &$fileTable ) {
-			$query->from( "$fileTable oavatar" ); }
-		];
-
-		$config[ 'relations' ][] = [ 'creator.avatar'  => function ( $query ) use( &$fileTable ) {
 			$query->from( "$fileTable aavatar" ); }
 		];
 
@@ -473,28 +390,6 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IContent, I
 		$config[ 'relations' ]	= [ 'avatar', 'members' ];
 
 		return parent::queryWithAll( $config );
-	}
-
-	/**
-	 * Return query to find the group by owner id.
-	 *
-	 * @param integer $id
-	 * @return \yii\db\ActiveQuery to query by owner id.
-	 */
-	public static function queryByOwnerId( $id ) {
-
-		return self::find()->where( 'ownerId =:owner', [ ':owner' => $id ] );
-	}
-
-	/**
-	 * Return query to find the group by appropriate owner.
-	 *
-	 * @param integer $id
-	 * @return \yii\db\ActiveQuery to query by owner id.
-	 */
-	public static function queryByAuthorityId( $id ) {
-
-		return self::find()->where( 'ownerId =:owner OR (ownerId IS NULL AND createdBy =:creator )', [ ':owner' => $id, ':creator' => $id ] );
 	}
 
 	// Read - Find ------------

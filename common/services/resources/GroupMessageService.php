@@ -13,9 +13,6 @@ namespace cmsgears\community\common\services\resources;
 use yii\data\Sort;
 
 // CMG Imports
-use cmsgears\community\common\models\base\CmnTables;
-use cmsgears\community\common\models\resources\GroupMessage;
-
 use cmsgears\community\common\services\interfaces\resources\IGroupMessageService;
 
 use cmsgears\core\common\services\base\ResourceService;
@@ -36,8 +33,6 @@ class GroupMessageService extends ResourceService implements IGroupMessageServic
 	// Public -----------------
 
 	public static $modelClass	= '\cmsgears\community\common\models\resources\GroupMessage';
-
-	public static $modelTable	= CmnTables::TABLE_GROUP_MESSAGE;
 
 	public static $parentType	= null;
 
@@ -71,37 +66,46 @@ class GroupMessageService extends ResourceService implements IGroupMessageServic
 
 	public function getPage( $config = [] ) {
 
+		$modelClass	= static::$modelClass;
+		$modelTable	= $this->getModelTable();
+
 	    $sort = new Sort([
 	        'attributes' => [
+	            'id' => [
+	                'asc' => [ "$modelTable.id" => SORT_ASC ],
+	                'desc' => [ "$modelTable.id" => SORT_DESC ],
+	                'default' => SORT_DESC,
+	                'label' => 'Id'
+	            ],
 	            'group' => [
-	                'asc' => [ 'groupId' => SORT_ASC ],
-	                'desc' => ['groupId' => SORT_DESC ],
+	                'asc' => [ "$modelTable.groupId" => SORT_ASC ],
+	                'desc' => [ "$modelTable.groupId" => SORT_DESC ],
 	                'default' => SORT_DESC,
 	                'label' => 'Group'
 	            ],
 	            'sender' => [
-	                'asc' => [ 'senderId' => SORT_ASC ],
-	                'desc' => ['senderId' => SORT_DESC ],
+	                'asc' => [ "$modelTable.senderId" => SORT_ASC ],
+	                'desc' => [ "$modelTable.senderId" => SORT_DESC ],
 	                'default' => SORT_DESC,
 	                'label' => 'Sender'
 	            ],
 	            'type' => [
-	                'asc' => [ 'type' => SORT_ASC ],
-	                'desc' => ['type' => SORT_DESC ],
+	                'asc' => [ "$modelTable.type" => SORT_ASC ],
+	                'desc' => [ "$modelTable.type" => SORT_DESC ],
 	                'default' => SORT_DESC,
 	                'label' => 'Type'
 	            ],
 	            'cdate' => [
-	                'asc' => [ 'createdAt' => SORT_ASC ],
-	                'desc' => ['createdAt' => SORT_DESC ],
+	                'asc' => [ "$modelTable.createdAt" => SORT_ASC ],
+	                'desc' => [ "$modelTable.createdAt" => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'Created At',
+	                'label' => 'Created At'
 	            ],
 	            'udate' => [
-	                'asc' => [ 'modifiedAt' => SORT_ASC ],
-	                'desc' => ['modifiedAt' => SORT_DESC ],
+	                'asc' => [ "$modelTable.modifiedAt" => SORT_ASC ],
+	                'desc' => [ "$modelTable.modifiedAt" => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'Update At',
+	                'label' => 'Update At'
 	            ]
 	        ],
 	        'defaultOrder' => [
@@ -147,7 +151,9 @@ class GroupMessageService extends ResourceService implements IGroupMessageServic
 
 	public function deleteByGroupId( $groupId ) {
 
-		GroupMessage::deleteByGroupId( $groupId );
+		$modelClass	= static::$modelClass;
+
+		$modelClass::deleteByGroupId( $groupId );
 	}
 
 	// Bulk ---------------

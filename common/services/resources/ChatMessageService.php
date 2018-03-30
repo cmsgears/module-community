@@ -10,8 +10,6 @@
 namespace cmsgears\community\common\services\resources;
 
 // CMG Imports
-use cmsgears\community\common\models\base\CmnTables;
-
 use cmsgears\community\common\services\interfaces\resources\IChatMessageService;
 
 use cmsgears\core\common\services\base\ResourceService;
@@ -31,11 +29,7 @@ class ChatMessageService extends ResourceService implements IChatMessageService 
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\community\common\models\resources\ChatMessage';
-
-	public static $modelTable	= CmnTables::TABLE_CHAT_MESSAGE;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\community\common\models\resources\ChatMessage';
 
 	// Protected --------------
 

@@ -10,8 +10,6 @@
 namespace cmsgears\community\common\services\resources;
 
 // CMG Imports
-use cmsgears\community\common\models\base\CmnTables;
-
 use cmsgears\community\common\services\interfaces\resources\IGroupMetaService;
 
 use cmsgears\core\common\services\base\MetaService;
@@ -31,11 +29,7 @@ class GroupMetaService extends MetaService implements IGroupMetaService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\community\common\models\resources\GroupMeta';
-
-	public static $modelTable	= CmnTables::TABLE_GROUP_META;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\community\common\models\resources\GroupMeta';
 
 	// Protected --------------
 

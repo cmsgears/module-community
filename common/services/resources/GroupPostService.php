@@ -10,8 +10,6 @@
 namespace cmsgears\community\common\services\resources;
 
 // CMG Imports
-use cmsgears\community\common\models\base\CmnTables;
-
 use cmsgears\community\common\services\interfaces\resources\IGroupPostService;
 
 use cmsgears\core\common\services\base\ResourceService;
@@ -31,11 +29,7 @@ class GroupPostService extends ResourceService implements IGroupPostService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\community\common\models\resources\GroupPost';
-
-	public static $modelTable	= CmnTables::TABLE_GROUP_POST;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\community\common\models\resources\GroupPost';
 
 	// Protected --------------
 

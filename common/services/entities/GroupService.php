@@ -15,8 +15,6 @@ use yii\data\Sort;
 // CMG Imports
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\community\common\models\base\CmnTables;
-
 use cmsgears\core\common\services\interfaces\resources\IFileService;
 use cmsgears\community\common\services\interfaces\entities\IGroupService;
 use cmsgears\community\common\services\interfaces\resources\IGroupMessageService;
@@ -43,8 +41,6 @@ class GroupService extends EntityService implements IGroupService {
 	// Public -----------------
 
 	public static $modelClass	= '\cmsgears\community\common\models\entities\Group';
-
-	public static $modelTable	= CmnTables::TABLE_GROUP;
 
 	public static $typed		= true;
 
@@ -96,40 +92,59 @@ class GroupService extends EntityService implements IGroupService {
 
     public function getPage( $config = [] ) {
 
-    	$modelTable = static::$modelTable;
+		$modelClass	= static::$modelClass;
+		$modelTable	= $this->getModelTable();
 
 	    $sort = new Sort([
 	        'attributes' => [
-	            'name' => [
-	                'asc' => [ "$modelTable.name" => SORT_ASC ],
-	            	'desc' => [ "$modelTable.name" => SORT_DESC ],
+				'id' => [
+					'asc' => [ "$modelTable.id" => SORT_ASC ],
+					'desc' => [ "$modelTable.id" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Id'
+				],
+				'template' => [
+					'asc' => [ "$modelTable.templateId" => SORT_ASC ],
+					'desc' => [ "$modelTable.templateId" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Template',
+				],
+	            'creator' => [
+	                'asc' => [ "$modelTable.createdBy" => SORT_ASC ],
+	                'desc' => [ "$modelTable.createdBy" => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'Name'
+	                'label' => 'Created By'
 	            ],
-	            'slug' => [
-            		'asc' => [ "$modelTable.slug" => SORT_ASC ],
-            		'desc' => [ "$modelTable.slug" => SORT_DESC ],
-	                'default' => SORT_DESC,
-	                'label' => 'Slug'
-	            ],
-	            'owner' => [
-	                'asc' => [ 'createdBy' => SORT_ASC ],
-	                'desc' => ['createdBy' => SORT_DESC ],
-	                'default' => SORT_DESC,
-	                'label' => 'Owner'
-	            ],
-	            'cdate' => [
-	                'asc' => [ 'createdAt' => SORT_ASC ],
-	                'desc' => ['createdAt' => SORT_DESC ],
-	                'default' => SORT_DESC,
-	                'label' => 'Created At',
-	            ],
-	            'udate' => [
-	                'asc' => [ 'modifiedAt' => SORT_ASC ],
-	                'desc' => ['modifiedAt' => SORT_DESC ],
-	                'default' => SORT_DESC,
-	                'label' => 'Updated At',
-	            ]
+				'name' => [
+					'asc' => [ "$modelTable.name" => SORT_ASC ],
+					'desc' => [ "$modelTable.name" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Name'
+				],
+				'slug' => [
+					'asc' => [ "$modelTable.slug" => SORT_ASC ],
+					'desc' => [ "$modelTable.slug" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Slug'
+				],
+				'title' => [
+					'asc' => [ "$modelTable.title" => SORT_ASC ],
+					'desc' => [ "$modelTable.title" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Title'
+				],
+				'cdate' => [
+					'asc' => [ "$modelTable.createdAt" => SORT_ASC ],
+					'desc' => [ "$modelTable.createdAt" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Created At'
+				],
+				'udate' => [
+					'asc' => [ "$modelTable.updatedAt" => SORT_ASC ],
+					'desc' => [ "$modelTable.updatedAt" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Updated At'
+				]
 	        ],
 	        'defaultOrder' => [
 	        	'cdate' => SORT_DESC

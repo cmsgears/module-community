@@ -10,8 +10,6 @@
 namespace cmsgears\community\common\services\resources;
 
 // CMG Imports
-use cmsgears\community\common\models\base\CmnTables;
-
 use cmsgears\community\common\services\interfaces\resources\IUserPostService;
 
 use cmsgears\core\common\services\base\ResourceService;
@@ -31,11 +29,7 @@ class UserPostService extends ResourceService implements IUserPostService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\community\common\models\resources\UserPost';
-
-	public static $modelTable	= CmnTables::TABLE_USER_POST;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\community\common\models\resources\UserPost';
 
 	// Protected --------------
 

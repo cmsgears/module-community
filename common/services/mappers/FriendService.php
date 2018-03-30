@@ -10,8 +10,6 @@
 namespace cmsgears\community\common\services\mappers;
 
 // CMG Imports
-use cmsgears\community\common\models\base\CmnTables;
-
 use cmsgears\community\common\services\interfaces\mappers\IFriendService;
 
 use cmsgears\core\common\services\base\MapperService;
@@ -31,11 +29,7 @@ class FriendService extends MapperService implements IFriendService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\community\common\models\mappers\Friend';
-
-	public static $modelTable	= CmnTables::TABLE_FRIEND;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\community\common\models\mappers\Friend';
 
 	// Protected --------------
 
