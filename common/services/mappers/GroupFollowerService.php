@@ -12,7 +12,7 @@ namespace cmsgears\community\common\services\mappers;
 // CMG Imports
 use cmsgears\community\common\services\interfaces\mappers\IGroupFollowerService;
 
-use cmsgears\core\common\services\base\FollowerService;
+use cmsgears\core\common\services\mappers\FollowerService;
 
 /**
  * GroupFollowerService provide service methods of group follower.

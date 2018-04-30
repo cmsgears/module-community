@@ -51,8 +51,8 @@ class m160623_110554_community extends Migration {
 		$this->upFriend();
 
 		// User
-		$this->upUserPost();
 		$this->upUserFollower();
+		$this->upUserPost();
 
 		// Chat
 		$this->upChat();
@@ -61,9 +61,9 @@ class m160623_110554_community extends Migration {
 
 		// Group
 		$this->upGroup();
-		$this->upGroupPost();
-		$this->upGroupFollower();
 		$this->upGroupMeta();
+		$this->upGroupFollower();
+		$this->upGroupPost();
 		$this->upGroupMember();
 		$this->upGroupMessage();
 
@@ -95,6 +95,24 @@ class m160623_110554_community extends Migration {
 		$this->createIndex( 'idx_' . $this->prefix . 'friend_parent', $this->prefix . 'cmn_friend', 'friendId' );
 	}
 
+	private function upUserFollower() {
+
+        $this->createTable( $this->prefix . 'cmn_user_follower', [
+			'id' => $this->bigPrimaryKey( 20 ),
+			'modelId' => $this->bigInteger( 20 )->notNull(),
+			'parentId' => $this->bigInteger( 20 )->notNull(),
+			'type' => $this->smallInteger( 6 )->defaultValue( 0 ),
+			'active' => $this->boolean()->notNull()->defaultValue( false ),
+			'createdAt' => $this->dateTime()->notNull(),
+			'modifiedAt' => $this->dateTime(),
+			'data' => $this->mediumText()
+        ], $this->options );
+
+        // Index for columns user and model
+		$this->createIndex( 'idx_' . $this->prefix . 'user_follower_user', $this->prefix . 'cmn_user_follower', 'modelId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'user_follower_parent', $this->prefix . 'cmn_user_follower', 'parentId' );
+	}
+
 	private function upUserPost() {
 
         $this->createTable( $this->prefix . 'cmn_user_post', [
@@ -115,24 +133,6 @@ class m160623_110554_community extends Migration {
         // Index for columns sender and recipient
 		$this->createIndex( 'idx_' . $this->prefix . 'post_user_sender', $this->prefix . 'cmn_user_post', 'senderId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'post_user_recipient', $this->prefix . 'cmn_user_post', 'recipientId' );
-	}
-
-	private function upUserFollower() {
-
-        $this->createTable( $this->prefix . 'cmn_user_follower', [
-			'id' => $this->bigPrimaryKey( 20 ),
-			'userId' => $this->bigInteger( 20 )->notNull(),
-			'modelId' => $this->bigInteger( 20 )->notNull(),
-			'type' => $this->smallInteger( 6 )->defaultValue( 0 ),
-			'active' => $this->boolean()->notNull()->defaultValue( false ),
-			'createdAt' => $this->dateTime()->notNull(),
-			'modifiedAt' => $this->dateTime(),
-			'data' => $this->mediumText()
-        ], $this->options );
-
-        // Index for columns user and model
-		$this->createIndex( 'idx_' . $this->prefix . 'user_follower_user', $this->prefix . 'cmn_user_follower', 'userId' );
-		$this->createIndex( 'idx_' . $this->prefix . 'user_follower_parent', $this->prefix . 'cmn_user_follower', 'modelId' );
 	}
 
 	private function upChat() {
@@ -215,7 +215,9 @@ class m160623_110554_community extends Migration {
 			'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'visibility' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'order' => $this->smallInteger( 6 )->defaultValue( 0 ),
+			'pinned' => $this->boolean()->notNull()->defaultValue( false ),
 			'featured' => $this->boolean()->notNull()->defaultValue( false ),
+			'reviews' => $this->boolean()->notNull()->defaultValue( false ),
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
 			'content' => $this->mediumText(),
@@ -229,6 +231,42 @@ class m160623_110554_community extends Migration {
 		$this->createIndex( 'idx_' . $this->prefix . 'group_avatar', $this->prefix . 'cmn_group', 'avatarId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'group_creator', $this->prefix . 'cmn_group', 'createdBy' );
 		$this->createIndex( 'idx_' . $this->prefix . 'group_modifier', $this->prefix . 'cmn_group', 'modifiedBy' );
+	}
+
+	private function upGroupMeta() {
+
+        $this->createTable( $this->prefix . 'cmn_group_meta', [
+			'id' => $this->bigPrimaryKey( 20 ),
+			'modelId' => $this->bigInteger( 20 )->notNull(),
+			'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
+			'label' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
+			'type' => $this->string( Yii::$app->core->mediumText ),
+			'active' => $this->boolean()->defaultValue( false ),
+			'valueType' => $this->string( Yii::$app->core->mediumText )->notNull()->defaultValue( Meta::VALUE_TYPE_TEXT ),
+			'value' => $this->text(),
+			'data' => $this->mediumText()
+        ], $this->options );
+
+        // Index for columns site, parent, creator and modifier
+		$this->createIndex( 'idx_' . $this->prefix . 'group_meta_parent', $this->prefix . 'cmn_group_meta', 'modelId' );
+	}
+
+	private function upGroupFollower() {
+
+        $this->createTable( $this->prefix . 'cmn_group_follower', [
+			'id' => $this->bigPrimaryKey( 20 ),
+			'modelId' => $this->bigInteger( 20 )->notNull(),
+			'parentId' => $this->bigInteger( 20 )->notNull(),
+			'type' => $this->smallInteger( 6 )->defaultValue( 0 ),
+			'active' => $this->boolean()->notNull()->defaultValue( false ),
+			'createdAt' => $this->dateTime()->notNull(),
+			'modifiedAt' => $this->dateTime(),
+			'data' => $this->mediumText()
+        ], $this->options );
+
+        // Index for columns user and model
+		$this->createIndex( 'idx_' . $this->prefix . 'group_follower_user', $this->prefix . 'cmn_group_follower', 'modelId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'group_follower_parent', $this->prefix . 'cmn_group_follower', 'parentId' );
 	}
 
 	private function upGroupPost() {
@@ -251,42 +289,6 @@ class m160623_110554_community extends Migration {
         // Index for columns sender, recipient and group
 		$this->createIndex( 'idx_' . $this->prefix . 'post_group_sender', $this->prefix . 'cmn_group_post', 'senderId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'post_group_parent', $this->prefix . 'cmn_group_post', 'groupId' );
-	}
-
-	private function upGroupFollower() {
-
-        $this->createTable( $this->prefix . 'cmn_group_follower', [
-			'id' => $this->bigPrimaryKey( 20 ),
-			'userId' => $this->bigInteger( 20 )->notNull(),
-			'modelId' => $this->bigInteger( 20 )->notNull(),
-			'type' => $this->smallInteger( 6 )->defaultValue( 0 ),
-			'active' => $this->boolean()->notNull()->defaultValue( false ),
-			'createdAt' => $this->dateTime()->notNull(),
-			'modifiedAt' => $this->dateTime(),
-			'data' => $this->mediumText()
-        ], $this->options );
-
-        // Index for columns user and model
-		$this->createIndex( 'idx_' . $this->prefix . 'group_follower_user', $this->prefix . 'cmn_group_follower', 'userId' );
-		$this->createIndex( 'idx_' . $this->prefix . 'group_follower_parent', $this->prefix . 'cmn_group_follower', 'modelId' );
-	}
-
-	private function upGroupMeta() {
-
-        $this->createTable( $this->prefix . 'cmn_group_meta', [
-			'id' => $this->bigPrimaryKey( 20 ),
-			'modelId' => $this->bigInteger( 20 )->notNull(),
-			'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
-			'label' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
-			'type' => $this->string( Yii::$app->core->mediumText ),
-			'active' => $this->boolean()->defaultValue( false ),
-			'valueType' => $this->string( Yii::$app->core->mediumText )->notNull()->defaultValue( Meta::VALUE_TYPE_TEXT ),
-			'value' => $this->text(),
-			'data' => $this->mediumText()
-        ], $this->options );
-
-        // Index for columns site, parent, creator and modifier
-		$this->createIndex( 'idx_' . $this->prefix . 'group_meta_parent', $this->prefix . 'cmn_group_meta', 'modelId' );
 	}
 
 	private function upGroupMember() {
@@ -336,13 +338,13 @@ class m160623_110554_community extends Migration {
 		$this->addForeignKey( 'fk_' . $this->prefix . 'friend_user', $this->prefix . 'cmn_friend', 'userId', $this->prefix . 'core_user', 'id', 'CASCADE' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'friend_parent', $this->prefix . 'cmn_friend', 'friendId', $this->prefix . 'core_user', 'id', 'CASCADE' );
 
+		// User Follower
+        $this->addForeignKey( 'fk_' . $this->prefix . 'user_follower_user', $this->prefix . 'cmn_user_follower', 'modelId', $this->prefix . 'core_user', 'id', 'CASCADE' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'user_follower_parent', $this->prefix . 'cmn_user_follower', 'parentId', $this->prefix . 'core_user', 'id', 'CASCADE' );
+
 		// User Post
         $this->addForeignKey( 'fk_' . $this->prefix . 'user_post_sender', $this->prefix . 'cmn_user_post', 'senderId', $this->prefix . 'core_user', 'id', 'CASCADE' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'user_post_recipient', $this->prefix . 'cmn_user_post', 'recipientId', $this->prefix . 'core_user', 'id', 'CASCADE' );
-
-		// User Follower
-        $this->addForeignKey( 'fk_' . $this->prefix . 'user_follower_user', $this->prefix . 'cmn_user_follower', 'userId', $this->prefix . 'core_user', 'id', 'CASCADE' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'user_follower_parent', $this->prefix . 'cmn_user_follower', 'modelId', $this->prefix . 'core_user', 'id', 'CASCADE' );
 
 		// Chat
         $this->addForeignKey( 'fk_' . $this->prefix . 'chat_creator', $this->prefix . 'cmn_chat', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
@@ -362,16 +364,16 @@ class m160623_110554_community extends Migration {
         $this->addForeignKey( 'fk_' . $this->prefix . 'group_creator', $this->prefix . 'cmn_group', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'group_modifier', $this->prefix . 'cmn_group', 'modifiedBy', $this->prefix . 'core_user', 'id', 'SET NULL' );
 
+		// Group Meta
+        $this->addForeignKey( 'fk_' . $this->prefix . 'group_meta_parent', $this->prefix . 'cmn_group_meta', 'modelId', $this->prefix . 'cmn_group', 'id', 'CASCADE' );
+
+		// Group Follower
+        $this->addForeignKey( 'fk_' . $this->prefix . 'group_follower_user', $this->prefix . 'cmn_group_follower', 'modelId', $this->prefix . 'core_user', 'id', 'CASCADE' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'group_follower_parent', $this->prefix . 'cmn_group_follower', 'parentId', $this->prefix . 'cmn_group', 'id', 'CASCADE' );
+
 		// Group Post
         $this->addForeignKey( 'fk_' . $this->prefix . 'group_post_sender', $this->prefix . 'cmn_group_post', 'senderId', $this->prefix . 'core_user', 'id', 'CASCADE' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'group_post_parent', $this->prefix . 'cmn_group_post', 'groupId', $this->prefix . 'cmn_group', 'id', 'CASCADE' );
-
-		// Group Follower
-        $this->addForeignKey( 'fk_' . $this->prefix . 'group_follower_user', $this->prefix . 'cmn_group_follower', 'userId', $this->prefix . 'core_user', 'id', 'CASCADE' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'group_follower_parent', $this->prefix . 'cmn_group_follower', 'modelId', $this->prefix . 'cmn_group', 'id', 'CASCADE' );
-
-		// Group Meta
-        $this->addForeignKey( 'fk_' . $this->prefix . 'group_meta_parent', $this->prefix . 'cmn_group_meta', 'modelId', $this->prefix . 'cmn_group', 'id', 'CASCADE' );
 
 		// Group Member
         $this->addForeignKey( 'fk_' . $this->prefix . 'group_member_group', $this->prefix . 'cmn_group_member', 'groupId', $this->prefix . 'cmn_group', 'id', 'CASCADE' );
@@ -394,8 +396,8 @@ class m160623_110554_community extends Migration {
 		$this->dropTable( $this->prefix . 'cmn_friend' );
 
 		// User
-		$this->dropTable( $this->prefix . 'cmn_user_post' );
 		$this->dropTable( $this->prefix . 'cmn_user_follower' );
+		$this->dropTable( $this->prefix . 'cmn_user_post' );
 
 		// Chat
         $this->dropTable( $this->prefix . 'cmn_chat' );
@@ -404,9 +406,9 @@ class m160623_110554_community extends Migration {
 
 		// Group
         $this->dropTable( $this->prefix . 'cmn_group' );
-		$this->dropTable( $this->prefix . 'cmn_group_post' );
-		$this->dropTable( $this->prefix . 'cmn_group_follower' );
 		$this->dropTable( $this->prefix . 'cmn_group_meta' );
+		$this->dropTable( $this->prefix . 'cmn_group_follower' );
+		$this->dropTable( $this->prefix . 'cmn_group_post' );
 		$this->dropTable( $this->prefix . 'cmn_group_member' );
 		$this->dropTable( $this->prefix . 'cmn_group_message' );
     }
@@ -417,13 +419,13 @@ class m160623_110554_community extends Migration {
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'friend_user', $this->prefix . 'cmn_friend' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'friend_parent', $this->prefix . 'cmn_friend' );
 
-		// User Post
-        $this->dropForeignKey( 'fk_' . $this->prefix . 'user_post_sender', $this->prefix . 'cmn_user_post' );
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'user_post_recipient', $this->prefix . 'cmn_user_post' );
-
 		// User Follower
         $this->dropForeignKey( 'fk_' . $this->prefix . 'user_follower_user', $this->prefix . 'cmn_user_follower' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'user_follower_parent', $this->prefix . 'cmn_user_follower' );
+
+		// User Post
+        $this->dropForeignKey( 'fk_' . $this->prefix . 'user_post_sender', $this->prefix . 'cmn_user_post' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'user_post_recipient', $this->prefix . 'cmn_user_post' );
 
 		// Chat
         $this->dropForeignKey( 'fk_' . $this->prefix . 'chat_creator', $this->prefix . 'cmn_chat' );
@@ -443,16 +445,16 @@ class m160623_110554_community extends Migration {
         $this->dropForeignKey( 'fk_' . $this->prefix . 'group_creator', $this->prefix . 'cmn_group' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'group_modifier', $this->prefix . 'cmn_group' );
 
-		// Group Post
-        $this->dropForeignKey( 'fk_' . $this->prefix . 'group_post_sender', $this->prefix . 'cmn_group_post' );
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'group_post_parent', $this->prefix . 'cmn_group_post' );
+		// Group Meta
+        $this->dropForeignKey( 'fk_' . $this->prefix . 'group_meta_parent', $this->prefix . 'cmn_group_meta' );
 
 		// Group Follower
         $this->dropForeignKey( 'fk_' . $this->prefix . 'group_follower_user', $this->prefix . 'cmn_group_follower' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'group_follower_parent', $this->prefix . 'cmn_group_follower' );
 
-		// Group Meta
-        $this->dropForeignKey( 'fk_' . $this->prefix . 'group_meta_parent', $this->prefix . 'cmn_group_meta' );
+		// Group Post
+        $this->dropForeignKey( 'fk_' . $this->prefix . 'group_post_sender', $this->prefix . 'cmn_group_post' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'group_post_parent', $this->prefix . 'cmn_group_post' );
 
 		// Group Member
         $this->dropForeignKey( 'fk_' . $this->prefix . 'group_member_group', $this->prefix . 'cmn_group_member' );

@@ -10,7 +10,7 @@
 namespace cmsgears\community\common\services\interfaces\mappers;
 
 // CMG Imports
-use cmsgears\core\common\services\interfaces\base\IFollowerService;
+use cmsgears\core\common\services\interfaces\mappers\IFollowerService;
 
 /**
  * IGroupFollowerService declares methods specific to group follower.
