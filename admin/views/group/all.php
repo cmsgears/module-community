@@ -3,18 +3,19 @@
 use cmsgears\widgets\popup\Popup;
 use cmsgears\core\common\utilities\CodeGenUtil;
 use cmsgears\widgets\grid\DataGrid;
+
 $coreProperties = $this->context->getCoreProperties();
 $siteUrl		= $coreProperties->getSiteUrl();
-$coreProperties = $this->context->getCoreProperties();
 $this->title	= 'Groups | ' . $coreProperties->getSiteTitle();
+$apixBase		= $this->context->apixBase;
 
-// Templates
-$moduleTemplates	= '@cmsgears/module-community/admin/views/templates';
+// View Templates
+$moduleTemplates	= '@cmsgears/module-cms/admin/views/templates';
+$themeTemplates		= '@themes/admin/views/templates';
 ?>
-
 <?= DataGrid::widget([
 	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => 'create', 'data' => [ ],
-	'title' => 'Blocks', 'options' => [ 'class' => 'grid-data grid-data-admin' ],
+	'title' => 'Groups', 'options' => [ 'class' => 'grid-data grid-data-admin' ],
 	'searchColumns' => [ 'name' => 'Name', 'title' => 'Title' ],
 	'sortColumns' => [
 		'name' => 'Name', 'slug' => 'Slug', 'title' => 'Title', 'active' => 'Active',
@@ -35,14 +36,14 @@ $moduleTemplates	= '@cmsgears/module-community/admin/views/templates';
 	'grid' => true, 'columns' => [ 'root' => 'colf colf15', 'factor' => [ null , 'x2', null, 'x2', 'x2', 'x2', 'x2', 'x2', null  ] ],
 	'gridColumns' => [
 		'bulk' => 'Action',
-		'avatar' =>  [ 'title' => 'Avatar', 'generate' => function( $model ) { 
-				$avatar = '<div class="align align-center">'. CodeGenUtil::getImageThumbTag( $model->avatar, [ 'class' => 'avatar', 'image' => 'avatar' ] ) . '</div>'; 
-				return $avatar; } 
+		'avatar' =>  [ 'title' => 'Avatar', 'generate' => function( $model ) {
+				$avatar = '<div class="align align-center">'. CodeGenUtil::getImageThumbTag( $model->avatar, [ 'class' => 'avatar', 'image' => 'avatar' ] ) . '</div>';
+				return $avatar; }
 				],
 		'name' => 'Name',
-		'slug' =>  [ 'title' => 'Slug', 'generate' => function( $model ) { 
+		'slug' =>  [ 'title' => 'Slug', 'generate' => function( $model ) {
 				$slug		= $model->slug;
-				$slugUrl	= "<a href='" . $siteUrl . "group/$slug'>$slug</a>"; 
+				$slugUrl	= "<a href='" . $siteUrl . "group/$slug'>$slug</a>";
 				return $slugUrl; }
 				],
 		'visibility' => [ 'title' => 'Visibility', 'generate' => function( $model ) { return $model->getVisibilityStr(); } ],
@@ -59,13 +60,13 @@ $moduleTemplates	= '@cmsgears/module-community/admin/views/templates';
 ]) ?>
 
 <?= Popup::widget([
-	'title' => 'Update Block', 'size' => 'medium',
+	'title' => 'Apply Bulk Action', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'bulk',
-	'data' => [ 'model' => 'Block', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "community/group/bulk" ]
+	'data' => [ 'model' => 'Group', 'app' => 'grid', 'controller' => 'crud', 'action' => 'bulk', 'url' => "$apixBase/bulk" ]
 ]) ?>
 
 <?= Popup::widget([
-	'title' => 'Delete Block', 'size' => 'medium',
+	'title' => 'Delete Group', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'delete',
-	'data' => [ 'model' => 'Block', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "community/group/delete?id=" ]
+	'data' => [ 'model' => 'Group', 'app' => 'grid', 'controller' => 'crud', 'action' => 'delete', 'url' => "$apixBase/delete?id=" ]
 ]) ?>
