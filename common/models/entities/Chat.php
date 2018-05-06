@@ -117,6 +117,8 @@ class Chat extends Entity implements IAuthor, IContent, IData, IGridCache {
 			// Required, Safe
             [ [ 'sessionId' ], 'required' ],
 			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
+			// Unique
+			[ 'sessionId', 'unique' ],
             // Text Limit
             [ 'sessionId', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
             // Other
