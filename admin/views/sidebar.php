@@ -1,7 +1,6 @@
 <?php
 // Yii Imports
 use yii\helpers\Html;
-use yii\helpers\Url;
 
 // CMG Imports
 use cmsgears\community\common\config\CmnGlobal;
@@ -10,7 +9,7 @@ $core	= Yii::$app->core;
 $user	= Yii::$app->user->getIdentity();
 ?>
 
-<?php if( $core->hasModule( 'core' ) && $user->isPermitted( CmnGlobal::PERM_COMMUNITY) ) { ?>
+<?php if( $core->hasModule( 'community' ) && $user->isPermitted( CmnGlobal::PERM_COMMUNITY_ADMIN ) ) { ?>
 	<div id="sidebar-community" class="collapsible-tab has-children <?php if( strcmp( $parent, 'sidebar-community' ) == 0 ) echo 'active'; ?>">
 		<span class="marker"></span>
 		<div class="tab-header">
@@ -19,7 +18,7 @@ $user	= Yii::$app->user->getIdentity();
 		</div>
 		<div class="tab-content clear <?php if( strcmp( $parent, 'sidebar-community' ) == 0 ) echo 'expanded visible'; ?>">
 			<ul>
-				<?php if( $user->isPermitted( CmnGlobal::PERM_GROUP ) ) { ?>
+				<?php if( $user->isPermitted( CmnGlobal::PERM_GROUP_ADMIN ) ) { ?>
 					<li class='role <?php if( strcmp( $child, 'role' ) == 0 ) echo 'active';?>'><?= Html::a( "Roles", ['/community/role/all'] ) ?></li>
 					<li class='permission <?php if( strcmp( $child, 'permission' ) == 0 ) echo 'active';?>'><?= Html::a( "Permissions", ['/community/permission/all'] ) ?></li>
 					<li class='group <?php if( strcmp( $child, 'group' ) == 0 ) echo 'active'; ?>'><?= Html::a( "Groups", ['/community/group/all'] ) ?></li>
@@ -27,7 +26,7 @@ $user	= Yii::$app->user->getIdentity();
 					<li class='group-category <?php if( strcmp( $child, 'group-category' ) == 0 ) echo 'active'; ?>'><?= Html::a( "Group Categories", ['/community/group/category/all'] ) ?></li>
 					<li class='group-tag <?php if( strcmp( $child, 'group-tag' ) == 0 ) echo 'active'; ?>'><?= Html::a( "Group Tags", ['/community/group/tag/all'] ) ?></li>
 				<?php } ?>
-				<?php if( $user->isPermitted( CmnGlobal::PERM_CHAT ) ) { ?>
+				<?php if( $user->isPermitted( CmnGlobal::PERM_CHAT_ADMIN ) ) { ?>
 					<!--<li class='message <?php if( strcmp( $child, 'message' ) == 0 ) echo 'active';?>'><?= Html::a( "Messages", ['/cmgcmn/message/all'] ) ?></li>-->
 				<?php } ?>
 			</ul>
