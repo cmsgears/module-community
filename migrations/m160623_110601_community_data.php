@@ -94,8 +94,8 @@ class m160623_110601_community_data extends Migration {
 		$columns = [ 'roleId', 'permissionId' ];
 
 		$mappings = [
-			[ $superAdminRole->id, $cmnAdminPerm->id ],
-			[ $adminRole->id, $cmnAdminPerm->id ],
+			[ $superAdminRole->id, $cmnAdminPerm->id ], [ $superAdminRole->id, $chatAdminPerm->id ], [ $superAdminRole->id, $groupAdminPerm->id ],
+			[ $adminRole->id, $cmnAdminPerm->id ], [ $adminRole->id, $chatAdminPerm->id ], [ $adminRole->id, $groupAdminPerm->id ],
 			[ $cmnAdminRole->id, $adminPerm->id ], [ $cmnAdminRole->id, $userPerm->id ], [ $cmnAdminRole->id, $cmnAdminPerm->id ],
 			[ $cmnAdminRole->id, $chatAdminPerm->id ], [ $cmnAdminRole->id, $groupAdminPerm->id ]
 		];
