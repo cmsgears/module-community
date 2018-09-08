@@ -4,14 +4,12 @@ use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 
 // CMG Imports
-use cmsgears\community\common\config\CmnGlobal;
-
 use cmsgears\core\common\widgets\Editor;
 use cmsgears\files\widgets\AvatarUploader;
 use cmsgears\files\widgets\ImageUploader;
 use cmsgears\files\widgets\VideoUploader;
 
-use cmsgears\widgets\category\CategoryAuto;
+use cmsgears\widgets\category\CategorySuggest;
 use cmsgears\widgets\tag\TagMapper;
 
 $coreProperties = $this->context->getCoreProperties();
@@ -151,9 +149,7 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 					<div class="box-header-title">Categories</div>
 				</div>
 				<div class="box-content padding padding-small">
-					<?= CategoryAuto::widget([
-						'options' => [ 'class' => 'box-mapper-auto' ],
-						'type' => CmnGlobal::TYPE_GROUP,
+					<?= CategorySuggest::widget([
 						'model' => $model, 'disabled' => true
 					]) ?>
 				</div>
@@ -165,8 +161,6 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 				</div>
 				<div class="box-content padding padding-small">
 					<?= TagMapper::widget([
-						'options' => [ 'id' => 'box-tag-mapper', 'class' => 'box-tag-mapper' ],
-						'loadAssets' => true,
 						'model' => $model, 'disabled' => true
 					])?>
 				</div>

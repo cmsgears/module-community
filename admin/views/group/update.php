@@ -11,12 +11,13 @@ use cmsgears\files\widgets\AvatarUploader;
 use cmsgears\files\widgets\ImageUploader;
 use cmsgears\files\widgets\VideoUploader;
 
-use cmsgears\widgets\category\CategoryAuto;
+use cmsgears\widgets\category\CategorySuggest;
 use cmsgears\widgets\tag\TagMapper;
 
 $coreProperties = $this->context->getCoreProperties();
 $this->title 	= 'Update Group | ' . $coreProperties->getSiteTitle();
 $returnUrl		= $this->context->returnUrl;
+$apixBase		= $this->context->apixBase;
 
 Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts' => 'site', 'config' => [ 'controls' => 'mini' ] ] );
 ?>
@@ -151,13 +152,11 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 					<div class="box-header-title">Categories</div>
 				</div>
 				<div class="box-content padding padding-small">
-					<?= CategoryAuto::widget([
-						'options' => [ 'class' => 'box-mapper-auto' ],
-						'type' => CmnGlobal::TYPE_GROUP,
-						'model' => $model, 'app' => 'category',
-						'mapActionUrl' => "community/group/assign-category?slug=$model->slug&type=$model->type",
-						'deleteActionUrl' => "community/group/remove-category?slug=$model->slug&type=$model->type"
-					]) ?>
+					<?= CategorySuggest::widget([
+						'model' => $model, 'type' => CmnGlobal::TYPE_GROUP,
+						'mapActionUrl' => "$apixBase/assign-category?slug=$model->slug&type=$model->type",
+						'deleteActionUrl' => "$apixBase/remove-category?slug=$model->slug&type=$model->type"
+					])?>
 				</div>
 			</div>
 			<div class="colf colf15"></div>
@@ -167,11 +166,9 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 				</div>
 				<div class="box-content padding padding-small">
 					<?= TagMapper::widget([
-						'options' => [ 'id' => 'box-tag-mapper', 'class' => 'box-tag-mapper' ],
-						'loadAssets' => true,
-						'model' => $model, 'app' => 'category',
-						'mapActionUrl' => "community/group/assign-tags?slug=$model->slug&type=$model->type",
-						'deleteActionUrl' => "community/group/remove-tag?slug=$model->slug&type=$model->type"
+						'model' => $model,
+						'mapActionUrl' => "$apixBase/assign-tags?slug=$model->slug&type=$model->type",
+						'deleteActionUrl' => "$apixBase/remove-tag?slug=$model->slug&type=$model->type"
 					])?>
 				</div>
 			</div>
