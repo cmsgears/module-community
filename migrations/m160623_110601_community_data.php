@@ -147,24 +147,24 @@ class m160623_110601_community_data extends Migration {
 		$hierarchy = [
 			// Group Manager - Organization, Approver
 			[ null, null, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 1, 18 ],
-			[ $groupManagerPerm->id, $vGroupsPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 17 ],
-			[ $groupManagerPerm->id, $aGroupPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 3, 16 ],
-			[ $groupManagerPerm->id, $uGroupPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 15 ],
-			[ $groupManagerPerm->id, $dGroupPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 5, 14 ],
-			[ $groupManagerPerm->id, $apGroupPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 6, 13 ],
-			[ $groupManagerPerm->id, $pGroupPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 7, 12 ],
-			[ $groupManagerPerm->id, $iGroupsPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 8, 11 ],
-			[ $groupManagerPerm->id, $eGroupsPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 9, 10 ],
+			[ $groupManagerPerm->id, $vGroupsPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 3 ],
+			[ $groupManagerPerm->id, $aGroupPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 5 ],
+			[ $groupManagerPerm->id, $uGroupPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 6, 7 ],
+			[ $groupManagerPerm->id, $dGroupPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 8, 9 ],
+			[ $groupManagerPerm->id, $apGroupPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 10, 11 ],
+			[ $groupManagerPerm->id, $pGroupPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 12, 13 ],
+			[ $groupManagerPerm->id, $iGroupsPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 14, 15 ],
+			[ $groupManagerPerm->id, $eGroupsPerm->id, $groupManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 16, 17 ],
 
 			// Group Author- Individual
 			[ null, null, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 1, 16 ],
-			[ $groupAuthorPerm->id, $vGroupsPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 15 ],
-			[ $groupAuthorPerm->id, $aGroupPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 3, 14 ],
-			[ $groupAuthorPerm->id, $uGroupPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 13 ],
-			[ $groupAuthorPerm->id, $dGroupPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 5, 12 ],
-			[ $groupAuthorPerm->id, $pGroupPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 6, 11 ],
-			[ $groupAuthorPerm->id, $iGroupsPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 7, 10 ],
-			[ $groupAuthorPerm->id, $eGroupsPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 8, 9 ]
+			[ $groupAuthorPerm->id, $vGroupsPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 3 ],
+			[ $groupAuthorPerm->id, $aGroupPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 5 ],
+			[ $groupAuthorPerm->id, $uGroupPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 6, 7 ],
+			[ $groupAuthorPerm->id, $dGroupPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 8, 9 ],
+			[ $groupAuthorPerm->id, $pGroupPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 10, 11 ],
+			[ $groupAuthorPerm->id, $iGroupsPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 12, 13 ],
+			[ $groupAuthorPerm->id, $eGroupsPerm->id, $groupAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 14, 15 ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_model_hierarchy', $columns, $hierarchy );
@@ -257,35 +257,35 @@ class m160623_110601_community_data extends Migration {
 		$hierarchy = [
 			// Manager
 			[ null, null, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 1, 30 ],
-			[ $gManagerPerm->id, $usGroupPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 29 ],
-			[ $gManagerPerm->id, $upGroupPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 3, 28 ],
-			[ $gManagerPerm->id, $ustGroupPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 27 ],
-			[ $gManagerPerm->id, $iGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 5, 26 ],
-			[ $gManagerPerm->id, $vGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 6, 25 ],
-			[ $gManagerPerm->id, $aGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 7, 24 ],
-			[ $gManagerPerm->id, $uGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 8, 23 ],
-			[ $gManagerPerm->id, $apGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 9, 22 ],
-			[ $gManagerPerm->id, $bGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 10, 21 ],
-			[ $gManagerPerm->id, $rGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 11, 20 ],
-			[ $gManagerPerm->id, $vGroupMsgPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 12, 19 ],
-			[ $gManagerPerm->id, $aGroupMsgPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 13, 18 ],
-			[ $gManagerPerm->id, $uGroupMsgPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 14, 17 ],
-			[ $gManagerPerm->id, $dGroupMsgPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 15, 16 ],
+			[ $gManagerPerm->id, $usGroupPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 3 ],
+			[ $gManagerPerm->id, $upGroupPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 5 ],
+			[ $gManagerPerm->id, $ustGroupPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 6, 7 ],
+			[ $gManagerPerm->id, $iGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 8, 9 ],
+			[ $gManagerPerm->id, $vGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 10, 11 ],
+			[ $gManagerPerm->id, $aGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 12, 13 ],
+			[ $gManagerPerm->id, $uGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 14, 15 ],
+			[ $gManagerPerm->id, $apGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 16, 17 ],
+			[ $gManagerPerm->id, $bGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 18, 19 ],
+			[ $gManagerPerm->id, $rGroupMPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 20, 21 ],
+			[ $gManagerPerm->id, $vGroupMsgPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 22, 23 ],
+			[ $gManagerPerm->id, $aGroupMsgPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 24, 25 ],
+			[ $gManagerPerm->id, $uGroupMsgPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 26, 27 ],
+			[ $gManagerPerm->id, $dGroupMsgPerm->id, $gManagerPerm->id, CoreGlobal::TYPE_PERMISSION, 28, 29 ],
 
 			// Moderator - without Message Owner Filter
 			[ null, null, $gModeratorPerm->id, CoreGlobal::TYPE_PERMISSION, 1, 12 ],
-			[ $gModeratorPerm->id, $iGroupMPerm->id, $gModeratorPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 11 ],
-			[ $gModeratorPerm->id, $vGroupMsgPerm->id, $gModeratorPerm->id, CoreGlobal::TYPE_PERMISSION, 3, 10 ],
-			[ $gModeratorPerm->id, $aGroupMsgPerm->id, $gModeratorPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 9 ],
-			[ $gModeratorPerm->id, $uGroupMsgPerm->id, $gModeratorPerm->id, CoreGlobal::TYPE_PERMISSION, 5, 8 ],
-			[ $gModeratorPerm->id, $dGroupMsgPerm->id, $gModeratorPerm->id, CoreGlobal::TYPE_PERMISSION, 6, 7 ],
+			[ $gModeratorPerm->id, $iGroupMPerm->id, $gModeratorPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 3 ],
+			[ $gModeratorPerm->id, $vGroupMsgPerm->id, $gModeratorPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 5 ],
+			[ $gModeratorPerm->id, $aGroupMsgPerm->id, $gModeratorPerm->id, CoreGlobal::TYPE_PERMISSION, 6, 7 ],
+			[ $gModeratorPerm->id, $uGroupMsgPerm->id, $gModeratorPerm->id, CoreGlobal::TYPE_PERMISSION, 8, 9 ],
+			[ $gModeratorPerm->id, $dGroupMsgPerm->id, $gModeratorPerm->id, CoreGlobal::TYPE_PERMISSION, 10, 11 ],
 
 			// Member - with Message Owner Filter
 			[ null, null, $gMemberPerm->id, CoreGlobal::TYPE_PERMISSION, 1, 10 ],
-			[ $gMemberPerm->id, $vGroupMsgPerm->id, $gMemberPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 9 ],
-			[ $gMemberPerm->id, $aGroupMsgPerm->id, $gMemberPerm->id, CoreGlobal::TYPE_PERMISSION, 3, 8 ],
-			[ $gMemberPerm->id, $uGroupMsgPerm->id, $gMemberPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 7 ],
-			[ $gMemberPerm->id, $dGroupMsgPerm->id, $gMemberPerm->id, CoreGlobal::TYPE_PERMISSION, 5, 6 ]
+			[ $gMemberPerm->id, $vGroupMsgPerm->id, $gMemberPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 3 ],
+			[ $gMemberPerm->id, $aGroupMsgPerm->id, $gMemberPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 5 ],
+			[ $gMemberPerm->id, $uGroupMsgPerm->id, $gMemberPerm->id, CoreGlobal::TYPE_PERMISSION, 6, 7 ],
+			[ $gMemberPerm->id, $dGroupMsgPerm->id, $gMemberPerm->id, CoreGlobal::TYPE_PERMISSION, 8, 9 ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_model_hierarchy', $columns, $hierarchy );
