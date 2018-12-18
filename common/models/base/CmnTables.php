@@ -29,6 +29,9 @@ class CmnTables extends DbTables {
 
 	// Resources ------------
 
+	// Friend Requests
+	const TABLE_FRIEND_REQUEST	= 'cmg_cmn_friend_request';
+
 	// User - Wall and Followers
 	const TABLE_USER_POST		= 'cmg_cmn_user_post';
 	const TABLE_USER_FOLLOWER	= 'cmg_cmn_user_follower';

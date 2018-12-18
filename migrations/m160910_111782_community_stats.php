@@ -8,8 +8,6 @@
  */
 
 // CMG Imports
-use cmsgears\core\common\base\Migration;
-
 use cmsgears\core\common\models\resources\Stats;
 use cmsgears\community\common\models\base\CmnTables;
 
@@ -19,7 +17,7 @@ use cmsgears\community\common\models\base\CmnTables;
  *
  * @since 1.0.0
  */
-class m160623_111782_community_stats extends Migration {
+class m160910_111782_community_stats extends \cmsgears\core\common\base\Migration {
 
 	// Public Variables
 
@@ -32,10 +30,10 @@ class m160623_111782_community_stats extends Migration {
 	public function init() {
 
 		// Table prefix
-		$this->prefix		= Yii::$app->migration->cmgPrefix;
+		$this->prefix = Yii::$app->migration->cmgPrefix;
 
 		// Get the values via config
-		$this->options		= Yii::$app->migration->getTableOptions();
+		$this->options = Yii::$app->migration->getTableOptions();
 
 		// Default collation
 		if( $this->db->driverName === 'mysql' ) {
@@ -56,6 +54,7 @@ class m160623_111782_community_stats extends Migration {
 
 		$tableData	= [
 			[ $this->prefix . 'cmn_friend', 'rows', 0 ],
+			[ $this->prefix . 'cmn_friend_request', 'rows', 0 ],
 			[ $this->prefix . 'cmn_user_post', 'rows', 0 ],
 			[ $this->prefix . 'cmn_user_follower', 'rows', 0 ],
 			[ $this->prefix . 'cmn_chat', 'rows', 0 ],
@@ -75,6 +74,7 @@ class m160623_111782_community_stats extends Migration {
 	public function down() {
 
 		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_FRIEND ) );
+		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_FRIEND_REQUEST ) );
 		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_USER_POST ) );
 		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_USER_FOLLOWER ) );
 		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_CHAT ) );
