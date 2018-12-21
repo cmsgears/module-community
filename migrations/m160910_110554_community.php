@@ -277,9 +277,10 @@ class m160910_110554_community extends \cmsgears\core\common\base\Migration {
         $this->createTable( $this->prefix . 'cmn_group_meta', [
 			'id' => $this->bigPrimaryKey( 20 ),
 			'modelId' => $this->bigInteger( 20 )->notNull(),
+			'icon' => $this->string( Yii::$app->core->largeText )->defaultValue( null ),
 			'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
 			'label' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
-			'type' => $this->string( Yii::$app->core->mediumText ),
+			'type' => $this->string( Yii::$app->core->mediumText )->notNull(),
 			'active' => $this->boolean()->defaultValue( false ),
 			'order' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'valueType' => $this->string( Yii::$app->core->mediumText )->notNull()->defaultValue( Meta::VALUE_TYPE_TEXT ),
