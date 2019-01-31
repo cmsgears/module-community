@@ -1,24 +1,48 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\common\config;
 
+/**
+ * CmnGlobal defines the global constants and variables available for community and dependent modules.
+ *
+ * @since 1.0.0
+ */
 class CmnGlobal {
 
 	// System Sites ---------------------------------------------------
 
 	// System Pages ---------------------------------------------------
 
+	const PAGE_SEARCH_GROUPS = 'search-groups';
+
 	// Grouping by type ------------------------------------------------
 
-	const TYPE_COMMUNITY	= 'community';
+	const TYPE_COMMUNITY = 'community';
 
-	const TYPE_FRIEND		= 'friend';
+	const TYPE_FRIEND = 'friend';
+
+	const TYPE_USER_POST = 'user-post';
 
 	const TYPE_GROUP		= 'group';
 	const TYPE_GROUP_META	= 'group-meta';
+	const TYPE_GROUP_POST	= 'group-post';
 
-	const TYPE_CHAT			= 'chat';
+	const TYPE_CHAT = 'chat';
 
 	// Templates -------------------------------------------------------
+
+	const TPL_NOTIFY_GROUP_REGISTER = 'group-register';
+
+	const TPL_NOTIFY_GROUP_MEMBER_ADD		= 'group-member-add';
+	const TPL_NOTIFY_GROUP_MEMBER_SUBMIT	= 'group-member-submit';
+	const TPL_NOTIFY_GROUP_MEMBER_JOIN		= 'group-member-join';
 
 	// Config ----------------------------------------------------------
 
@@ -89,10 +113,10 @@ class CmnGlobal {
 	// Model Fields ----------------------------------------------------
 
 	// Generic Fields
-	const FIELD_FRIEND			= 'friendField';
-	const FIELD_GROUP			= 'groupField';
-	const FIELD_CHAT			= 'chatField';
+	const FIELD_FRIEND	= 'friendField';
+	const FIELD_GROUP	= 'groupField';
+	const FIELD_CHAT	= 'chatField';
 
-	const FIELD_BROADCASTED		= 'boradcastedField';
+	const FIELD_BROADCASTED = 'boradcastedField';
 
 }

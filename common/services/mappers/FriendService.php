@@ -12,14 +12,12 @@ namespace cmsgears\community\common\services\mappers;
 // CMG Imports
 use cmsgears\community\common\services\interfaces\mappers\IFriendService;
 
-use cmsgears\core\common\services\base\MapperService;
-
 /**
  * FriendService provide service methods of friend model.
  *
  * @since 1.0.0
  */
-class FriendService extends MapperService implements IFriendService {
+class FriendService extends \cmsgears\core\common\services\base\MapperService implements IFriendService {
 
 	// Variables ---------------------------------------------------
 
@@ -76,7 +74,7 @@ class FriendService extends MapperService implements IFriendService {
 	public function update( $model, $config = [] ) {
 
 		return parent::update( $model, [
-			'attributes' => [ 'status', 'content', 'data' ]
+			'attributes' => [ 'status', 'type', 'content' ]
 		]);
 	}
 

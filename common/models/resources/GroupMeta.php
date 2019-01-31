@@ -10,8 +10,7 @@
 namespace cmsgears\community\common\models\resources;
 
 // CMG Imports
-use cmsgears\core\common\models\base\Meta;
-use cmsgears\ccommunityms\common\models\base\CmnTables;
+use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\entities\Group;
 
 /**
@@ -19,15 +18,19 @@ use cmsgears\community\common\models\entities\Group;
  *
  * @property integer $id
  * @property integer $modelId
+ * @property string $icon
  * @property string $name
  * @property string $label
  * @property string $type
+ * @property boolean $active
+ * @property integer $order
  * @property string $valueType
  * @property string $value
+ * @property string $data
  *
  * @since 1.0.0
  */
-class GroupMeta extends Meta {
+class GroupMeta extends \cmsgears\core\common\models\base\Meta {
 
 	// Variables ---------------------------------------------------
 

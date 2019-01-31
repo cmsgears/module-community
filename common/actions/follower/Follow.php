@@ -32,7 +32,7 @@ class Follow extends \cmsgears\core\common\actions\base\ModelAction {
 
 	// Public -----------------
 
-	public $parent 	= true;
+	public $parent = true;
 
 	// Protected --------------
 
@@ -52,23 +52,23 @@ class Follow extends \cmsgears\core\common\actions\base\ModelAction {
 
 	// CMG parent classes --------------------
 
-	// Like ----------------------------------
+	// Follow --------------------------------
 
 	public function run() {
 
 		if( isset( $this->model ) ) {
 
-			$followerService	= Yii::$app->factory->get( 'followerService' );
+			$followerService = Yii::$app->factory->get( 'followerService' );
 
-			$user 		= Yii::$app->user->getIdentity();
-			$model		= $this->model;
+			$user 	= Yii::$app->core->getUser();
+			$model	= $this->model;
 
-			$follower	= $followerService->updateByParams([
-							'modelId' => $user->id, 'parentId' => $model->id,
-							'parentType' => $this->modelService->getParentType(), 'type' => Follower::TYPE_FOLLOW
-						]);
+			$follower = $followerService->updateByParams([
+				'modelId' => $user->id, 'parentId' => $model->id,
+				'parentType' => $this->modelService->getParentType(), 'type' => Follower::TYPE_FOLLOW
+			]);
 
-			$data		= [ 'active' => $follower->active, 'count' => $model->getFollowersCount() ];
+			$data = [ 'active' => $follower->active, 'count' => $model->getFollowersCount() ];
 
 			return AjaxUtil::generateSuccess( Yii::$app->coreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ), $data );
 		}
@@ -76,4 +76,5 @@ class Follow extends \cmsgears\core\common\actions\base\ModelAction {
 		// Trigger Ajax Failure
         return AjaxUtil::generateFailure( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
+
 }

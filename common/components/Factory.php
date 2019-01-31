@@ -12,15 +12,12 @@ namespace cmsgears\community\common\components;
 // Yii Imports
 use Yii;
 
-// CMG Imports
-use cmsgears\core\common\base\Component;
-
 /**
  * The Community Factory component initialise the services available in Community Module.
  *
  * @since 1.0.0
  */
-class Factory extends Component {
+class Factory extends \cmsgears\core\common\base\Component {
 
 	// Global -----------------
 
@@ -72,11 +69,15 @@ class Factory extends Component {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		$factory->set( 'cmsgears\community\common\services\interfaces\resources\IChatMessageService', 'cmsgears\community\common\services\resources\ChatMessageService' );
-		$factory->set( 'cmsgears\community\common\services\interfaces\resources\IGroupMetaService', 'cmsgears\community\common\services\resources\GroupMetaService' );
-		$factory->set( 'cmsgears\community\common\services\interfaces\resources\IGroupMessageService', 'cmsgears\community\common\services\resources\GroupMessageService' );
-		$factory->set( 'cmsgears\community\common\services\interfaces\resources\IGroupPostService', 'cmsgears\community\common\services\resources\GroupPostService' );
-		$factory->set( 'cmsgears\community\common\services\interfaces\resources\IUserPostService', 'cmsgears\community\common\services\resources\UserPostService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\resources\user\IPostService', 'cmsgears\community\common\services\resources\user\PostService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\resources\user\IPostMetaService', 'cmsgears\community\common\services\resources\user\PostMetaService' );
+
+		$factory->set( 'cmsgears\community\common\services\interfaces\resources\chat\IMessageService', 'cmsgears\community\common\services\resources\chat\MessageService' );
+
+		$factory->set( 'cmsgears\community\common\services\interfaces\resources\group\IMetaService', 'cmsgears\community\common\services\resources\group\MetaService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\resources\group\IMessageService', 'cmsgears\community\common\services\resources\group\MessageService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\resources\group\IPostService', 'cmsgears\community\common\services\resources\group\PostService' );
+		$factory->set( 'cmsgears\community\common\services\interfaces\resources\group\IPostMetaService', 'cmsgears\community\common\services\resources\group\PostMetaService' );
 	}
 
 	/**
@@ -86,11 +87,14 @@ class Factory extends Component {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		$factory->set( 'cmsgears\community\common\services\interfaces\mappers\IChatMemberService', 'cmsgears\community\common\services\mappers\ChatMemberService' );
 		$factory->set( 'cmsgears\community\common\services\interfaces\mappers\IFriendService', 'cmsgears\community\common\services\mappers\FriendService' );
+
+		$factory->set( 'cmsgears\community\common\services\interfaces\mappers\IUserFollowerService', 'cmsgears\community\common\services\mappers\UserFollowerService' );
+
+		$factory->set( 'cmsgears\community\common\services\interfaces\mappers\IChatMemberService', 'cmsgears\community\common\services\mappers\ChatMemberService' );
+
 		$factory->set( 'cmsgears\community\common\services\interfaces\mappers\IGroupFollowerService', 'cmsgears\community\common\services\mappers\GroupFollowerService' );
 		$factory->set( 'cmsgears\community\common\services\interfaces\mappers\IGroupMemberService', 'cmsgears\community\common\services\mappers\GroupMemberService' );
-		$factory->set( 'cmsgears\community\common\services\interfaces\mappers\IUserFollowerService', 'cmsgears\community\common\services\mappers\UserFollowerService' );
 	}
 
 	/**
@@ -101,6 +105,7 @@ class Factory extends Component {
 		$factory = Yii::$app->factory->getContainer();
 
 		$factory->set( 'cmsgears\community\common\services\interfaces\entities\IChatService', 'cmsgears\community\common\services\entities\ChatService' );
+
 		$factory->set( 'cmsgears\community\common\services\interfaces\entities\IGroupService', 'cmsgears\community\common\services\entities\GroupService' );
 	}
 
@@ -111,11 +116,15 @@ class Factory extends Component {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		$factory->set( 'chatMessageService', 'cmsgears\community\common\services\resources\ChatMessageService' );
-		$factory->set( 'groupMetaService', 'cmsgears\community\common\services\resources\GroupMetaService' );
-		$factory->set( 'groupMessageService', 'cmsgears\community\common\services\resources\GroupMessageService' );
-		$factory->set( 'groupPostService', 'cmsgears\community\common\services\resources\GroupPostService' );
-		$factory->set( 'userPostService', 'cmsgears\community\common\services\resources\UserPostService' );
+		$factory->set( 'userPostService', 'cmsgears\community\common\services\resources\user\PostService' );
+		$factory->set( 'userPostMetaService', 'cmsgears\community\common\services\resources\user\PostMetaService' );
+
+		$factory->set( 'chatMessageService', 'cmsgears\community\common\services\resources\chat\MessageService' );
+
+		$factory->set( 'groupMetaService', 'cmsgears\community\common\services\resources\group\MetaService' );
+		$factory->set( 'groupMessageService', 'cmsgears\community\common\services\resources\group\MessageService' );
+		$factory->set( 'groupPostService', 'cmsgears\community\common\services\resources\group\PostService' );
+		$factory->set( 'groupPostMetaService', 'cmsgears\community\common\services\resources\group\PostMetaService' );
 	}
 
 	/**
@@ -125,11 +134,14 @@ class Factory extends Component {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		$factory->set( 'chatMemberService', 'cmsgears\community\common\services\mappers\ChatMemberService' );
 		$factory->set( 'friendService', 'cmsgears\community\common\services\mappers\FriendService' );
+
+		$factory->set( 'userFollowerService', 'cmsgears\community\common\services\mappers\UserFollowerService' );
+
+		$factory->set( 'chatMemberService', 'cmsgears\community\common\services\mappers\ChatMemberService' );
+
 		$factory->set( 'groupFollowerService', 'cmsgears\community\common\services\mappers\GroupFollowerService' );
 		$factory->set( 'groupMemberService', 'cmsgears\community\common\services\mappers\GroupMemberService' );
-		$factory->set( 'userFollowerService', 'cmsgears\community\common\services\mappers\UserFollowerService' );
 	}
 
 	/**
@@ -140,6 +152,7 @@ class Factory extends Component {
 		$factory = Yii::$app->factory->getContainer();
 
 		$factory->set( 'chatService', 'cmsgears\community\common\services\entities\ChatService' );
+
 		$factory->set( 'groupService', 'cmsgears\community\common\services\entities\GroupService' );
 	}
 

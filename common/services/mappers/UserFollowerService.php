@@ -12,14 +12,12 @@ namespace cmsgears\community\common\services\mappers;
 // CMG Imports
 use cmsgears\community\common\services\interfaces\mappers\IUserFollowerService;
 
-use cmsgears\core\common\services\base\FollowerService;
-
 /**
  * UserFollowerService provide service methods of user follower.
  *
  * @since 1.0.0
  */
-class UserFollowerService extends FollowerService implements IUserFollowerService {
+class UserFollowerService extends \cmsgears\core\common\services\base\FollowerService implements IUserFollowerService {
 
 	// Variables ---------------------------------------------------
 

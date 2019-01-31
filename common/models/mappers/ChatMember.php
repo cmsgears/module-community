@@ -18,10 +18,15 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\base\Mapper;
+use cmsgears\core\common\models\interfaces\base\IApproval;
+use cmsgears\core\common\models\interfaces\resources\IData;
+
 use cmsgears\core\common\models\entities\User;
 use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\entities\Chat;
+
+use cmsgears\core\common\models\traits\base\ApprovalTrait;
+use cmsgears\core\common\models\traits\resources\DataTrait;
 
 /**
  * ChatMember represents member of chat.
@@ -29,13 +34,16 @@ use cmsgears\community\common\models\entities\Chat;
  * @property integer $id
  * @property integer $chatId
  * @property integer $userId
+ * @property string $verifyToken
+ * @property integer $status
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  * @property datetime $syncedAt
+ * @property string $data
  *
  * @since 1.0.0
  */
-class ChatMember extends Mapper {
+class ChatMember extends \cmsgears\core\common\models\base\Mapper implements IApproval, IData {
 
 	// Variables ---------------------------------------------------
 
@@ -57,6 +65,9 @@ class ChatMember extends Mapper {
 
 	// Traits ------------------------------------------------------
 
+	use ApprovalTrait;
+	use DataTrait;
+
 	// Constructor and Initialisation ------------------------------
 
 	// Instance methods --------------------------------------------
@@ -72,15 +83,14 @@ class ChatMember extends Mapper {
      */
     public function behaviors() {
 
-        return [
-
-            'timestampBehavior' => [
-                'class' => TimestampBehavior::class,
+		return [
+			'timestampBehavior' => [
+				'class' => TimestampBehavior::class,
 				'createdAtAttribute' => 'createdAt',
- 				'updatedAtAttribute' => 'modifiedAt',
- 				'value' => new Expression('NOW()')
-            ]
-        ];
+				'updatedAtAttribute' => 'modifiedAt',
+				'value' => new Expression('NOW()')
+			]
+		];
     }
 
 	// yii\base\Model ---------
@@ -93,9 +103,14 @@ class ChatMember extends Mapper {
 		// Model Rules
 		$rules = [
         	// Required, Safe
-        	[ [ 'chatId', 'userId' ], 'required' ],
-            [ 'id', 'safe' ],
+        	[ [ 'chatId', 'userId', 'status' ], 'required' ],
+            [ [ 'id', 'data' ], 'safe' ],
+			// Unique
+			[ 'userId', 'unique', 'targetAttribute' => [ 'chatId', 'userId' ], 'comboNotUnique' => 'User already exist.' ],
+            // Text Limit
+			[ 'verifyToken', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
             // Other
+			[ 'status', 'number', 'integerOnly' => true, 'min' => 0 ],
             [ [ 'createdAt', 'modifiedAt', 'syncedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
 
@@ -141,6 +156,11 @@ class ChatMember extends Mapper {
 		return $this->hasOne( User::class, [ 'id' => 'userId' ] );
 	}
 
+	public function generateVerifyToken() {
+
+		$this->verifyToken = Yii::$app->security->generateRandomString();
+	}
+
 	// Static Methods ----------------------------------------------
 
 	// Yii parent classes --------------------
@@ -166,8 +186,9 @@ class ChatMember extends Mapper {
      */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'chat', 'user' ];
-		$config[ 'relations' ]	= $relations;
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'chat', 'user' ];
+
+		$config[ 'relations' ] = $relations;
 
 		return parent::queryWithAll( $config );
 	}

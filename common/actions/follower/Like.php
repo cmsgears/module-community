@@ -32,7 +32,7 @@ class Like extends \cmsgears\core\common\actions\base\ModelAction {
 
 	// Public -----------------
 
-	public $parent 	= true;
+	public $parent = true;
 
 	// Protected --------------
 
@@ -58,30 +58,34 @@ class Like extends \cmsgears\core\common\actions\base\ModelAction {
 
 		if( isset( $this->model ) ) {
 
-			$followerService	= Yii::$app->factory->get( 'followerService' );
+			$followerService = Yii::$app->factory->get( 'followerService' );
 
-			$user 		= Yii::$app->user->getIdentity();
-			$model		= $this->model;
+			$user 	= Yii::$app->core->getUser();
+			$model	= $this->model;
+
 			$parentType	= $this->parentType;
 
-			$follower	= $followerService->updateByParams( [ 'modelId' => $user->id, 'parentId' => $model->id, 'parentType' => $parentType, 'type' => Follower::TYPE_LIKE ] );
+			$follower = $followerService->updateByParams([
+				'modelId' => $user->id, 'parentId' => $model->id,
+				'parentType' => $parentType, 'type' => Follower::TYPE_LIKE
+			]);
 
-			$likeFlag		= count( $followerService->getByConfig([
-								'modelId' => $user->id, 'parentId' => $model->id,
-								'parentType' => $parentType, 'type' => Follower::TYPE_LIKE, 'active' => true
-							]));
+			$likeFlag = count( $followerService->getByConfig([
+				'modelId' => $user->id, 'parentId' => $model->id,
+				'parentType' => $parentType, 'type' => Follower::TYPE_LIKE, 'active' => true
+			]));
 
-			$dislikeFlag	= count( $followerService->getByConfig([
-								'modelId' => $user->id, 'parentId' => $model->id,
-								'parentType' => $parentType, 'type' => Follower::TYPE_DISLIKE, 'active' => true
-							]));
+			$dislikeFlag = count( $followerService->getByConfig([
+				'modelId' => $user->id, 'parentId' => $model->id,
+				'parentType' => $parentType, 'type' => Follower::TYPE_DISLIKE, 'active' => true
+			]));
 
-			$data	= [
-						'likeFlag' => $likeFlag,
-						'dislikeFlag' => $dislikeFlag,
-						'likesCount' => $model->getLikesCount(),
-						'dislikesCount' => $model->getDislikesCount()
-					];
+			$data = [
+				'likeFlag' => $likeFlag,
+				'dislikeFlag' => $dislikeFlag,
+				'likesCount' => $model->getLikesCount(),
+				'dislikesCount' => $model->getDislikesCount()
+			];
 
 			return AjaxUtil::generateSuccess( Yii::$app->coreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ), $data );
 		}
@@ -89,4 +93,5 @@ class Like extends \cmsgears\core\common\actions\base\ModelAction {
 		// Trigger Ajax Failure
         return AjaxUtil::generateFailure( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
+
 }

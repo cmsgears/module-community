@@ -22,7 +22,6 @@ use cmsgears\core\common\models\interfaces\resources\IContent;
 use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 
-use cmsgears\core\common\models\base\Entity;
 use cmsgears\community\common\models\base\CmnTables;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
@@ -38,8 +37,9 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $id
  * @property integer $createdBy
  * @property integer $modifiedBy
- * @property string $sessionId
+ * @property string $title
  * @property integer $status
+ * @property string $sessionId
  * @property date $createdAt
  * @property date $modifiedAt
  * @property string $content
@@ -50,7 +50,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class Chat extends Entity implements IAuthor, IContent, IData, IGridCache {
+class Chat extends \cmsgears\core\common\models\base\Entity implements IAuthor, IContent, IData, IGridCache {
 
 	// Variables ---------------------------------------------------
 
@@ -58,7 +58,30 @@ class Chat extends Entity implements IAuthor, IContent, IData, IGridCache {
 
 	// Constants --------------
 
+	const STATUS_NEW		=   0;
+	const STATUS_ACTIVE		= 100;
+	const STATUS_DORMANT	= 200;
+
 	// Public -----------------
+
+	public static $statusMap = [
+		self::STATUS_NEW => 'New',
+		self::STATUS_ACTIVE => 'Active',
+		self::STATUS_DORMANT => 'Dormant'
+	];
+
+	public static $revStatusMap = [
+		'New' => self::STATUS_NEW,
+		'Active' => self::STATUS_ACTIVE,
+		'Dormant' => self::STATUS_DORMANT
+	];
+
+	// Used for url params
+	public static $urlRevStatusMap = [
+		'new' => self::STATUS_NEW,
+		'active' => self::STATUS_ACTIVE,
+		'dormant' => self::STATUS_DORMANT
+	];
 
 	// Protected --------------
 
@@ -115,18 +138,21 @@ class Chat extends Entity implements IAuthor, IContent, IData, IGridCache {
 		// Model Rules
 		$rules = [
 			// Required, Safe
-            [ [ 'sessionId' ], 'required' ],
+			[ [ 'sessionId' ], 'required' ],
 			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
 			// Unique
 			[ 'sessionId', 'unique' ],
-            // Text Limit
-            [ 'sessionId', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
-            // Other
+			// Text Limit
+			[ 'sessionId', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xxxLargeText ],
+			// Other
 			[ 'status', 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ 'gridCacheValid', 'boolean' ],
 			[ [ 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-            [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
-        ];
+			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+		];
+
+		return $rules;
     }
 
     /**
@@ -136,8 +162,9 @@ class Chat extends Entity implements IAuthor, IContent, IData, IGridCache {
 
 		return [
 			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_AUTHOR ),
-			'sessionId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SESSION ),
+			'title' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TITLE ),
 			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
+			'sessionId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SESSION ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
 			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA ),
 			'gridCache' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_GRID_CACHE )
@@ -151,6 +178,16 @@ class Chat extends Entity implements IAuthor, IContent, IData, IGridCache {
 	// Validators ----------------------------
 
 	// Chat ----------------------------------
+
+	public function generateSessionId() {
+
+		$this->sessionId = Yii::$app->security->generateRandomString();
+	}
+
+	public function getStatusStr() {
+
+		return static::$statusMap[ $this->status ];
+	}
 
 	// Static Methods ----------------------------------------------
 
@@ -177,8 +214,9 @@ class Chat extends Entity implements IAuthor, IContent, IData, IGridCache {
      */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator', 'modifier' ];
-		$config[ 'relations' ]	= $relations;
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator', 'modifier' ];
+
+		$config[ 'relations' ] = $relations;
 
 		return parent::queryWithAll( $config );
 	}

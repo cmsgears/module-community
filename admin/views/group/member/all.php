@@ -1,77 +1,93 @@
 <?php
-use \Yii;
-use yii\helpers\Html; 
-use yii\widgets\LinkPager;
+// CMG Imports
+use cmsgears\widgets\popup\Popup;
 
-use cmsgears\core\common\utilities\CodeGenUtil;
+use cmsgears\widgets\grid\DataGrid;
 
 $coreProperties = $this->context->getCoreProperties();
-$this->title 	= $coreProperties->getSiteTitle() . " | Group Members";
+$title			= $this->context->title;
+$this->title	= $title . 's | ' . $coreProperties->getSiteTitle();
+$apixBase		= $this->context->apixBase;
 
-$gid			= $group->id;
-
-// Sidebar
-$this->params[ 'sidebar-parent' ] 	= $sidebar[ 'parent' ];
-$this->params[ 'sidebar-child' ] 	= $sidebar[ 'child' ];
-
-// Data
-$pagination		= $dataProvider->getPagination();
-$models			= $dataProvider->getModels();
+// View Templates
+$moduleTemplates	= '@cmsgears/module-community/admin/views/templates';
+$themeTemplates		= '@themes/admin/views/templates';
 ?>
-<div class="cud-box">
-	<h2>Group Members</h2>
-	<form action="#" class="frm-split">
-		<label>Name</label>
-		<label><?= $group->name ?></label>			
-	</form>
-</div>
-<div class="data-grid">
-	<div class="grid-header">
-		<?= LinkPager::widget( [ 'pagination' => $pagination ] ); ?>
-	</div>
-	<div class="wrap-grid">
-		<table>
-			<thead>
-				<tr>
-					<th>Avatar</th>
-					<th>Username</th>
-					<th>Name</th>
-					<th>Email</th>
-					<th>Role</th>
-					<th>Status</th>
-					<th>Joined On</th>
-					<th>Refreshed On</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php
+<?= DataGrid::widget([
+	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => "create?pid=$parent->id", 'data' => [ 'parent' => $parent ],
+	'title' => $this->title, 'options' => [ 'class' => 'grid-data grid-data-admin' ],
+	'searchColumns' => [ 'user' => 'User', 'email' => 'email' ],
+	'sortColumns' => [
+		'user' => 'User', 'role' => 'Role', 'email' => 'email', 'status' => 'Status',
+		'cdate' => 'Created At', 'udate' => 'Updated At'
+	],
+	'filters' => [
+		'status' => [
+			'new' => 'New', 'submitted' => 'Submitted', 'rejected' => 'Rejected', 're-submitted' => 'Re Submitted',
+			'confirmed' => 'Confirmed', 'active' => 'Active', 'frozen' => 'Frozen', 'uplift-freeze' => 'Uplift Freeze',
+			'blocked' => 'Blocked', 'uplift-block' => 'Uplift Block', 'terminated' => 'Terminated'
+		]
+	],
+	'reportColumns' => [
+		'user' => [ 'title' => 'User', 'type' => 'text' ],
+		'email' => [ 'title' => 'Email', 'type' => 'text' ],
+		'status' => [ 'title' => 'Status', 'type' => 'select', 'options' => $statusMap ]
+	],
+	'bulkPopup' => 'popup-grid-bulk', 'bulkActions' => [
+		'status' => [ 'approved' => 'Approve', 'active' => 'Activate', 'blocked' => 'Block', 'terminated' => 'Terminate' ],
+		'model' => [ 'delete' => 'Delete' ]
+	],
+	'header' => false, 'footer' => true,
+	'grid' => true, 'columns' => [ 'root' => 'colf colf15', 'factor' => [ null, 'x3', 'x3', 'x3', null, null, null, 'x2' ] ],
+	'gridColumns' => [
+		'bulk' => 'Action',
+		'role' => [ 'title' => 'Role', 'generate' => function( $model ) { return $model->role->name; } ],
+		'user' => [ 'title' => 'User', 'generate' => function( $model ) { return $model->user->getName(); } ],
+		'email' => [ 'title' => 'Email', 'generate' => function( $model ) { return $model->user->email; } ],
+		'status' => [ 'title' => 'Status', 'generate' => function( $model ) { return $model->getStatusStr(); } ],
+		'createdAt' => 'Created At',
+		'modifiedAt' => 'Updated At',
+		'actions' => 'Actions'
+	],
+	'gridCards' => [ 'root' => 'col col12', 'factor' => 'x3' ],
+	'templateDir' => "$themeTemplates/widget/grid",
+	//'dataView' => "$moduleTemplates/grid/data/group-member",
+	//'cardView' => "$moduleTemplates/grid/cards/group-member",
+	'actionView' => "$moduleTemplates/grid/actions/group-member"
+])?>
 
-					foreach( $models as $groupMember ) {
-						
-						$id		= $groupMember->id;
-						$user 	= $groupMember->user;
-						$role	= $groupMember->role;
-				?>
-					<tr>
-						<td><?= CodeGenUtil::getImageThumbTag( $user->avatar, [ 'class' => 'avatar', 'image' => 'avatar' ] ) ?></td>
-						<td><?= $user->username ?></td>
-						<td><?= $user->getName() ?></td>
-						<td><?= $user->email ?></td>
-						<td><?= $role->name ?></td>
-						<td><?= $groupMember->getStatusStr() ?></td>
-						<td><?= $groupMember->createdAt ?></td>
-						<td><?= $groupMember->syncedAt ?></td>
-						<td>
-							<span class="wrap-icon-action" title="Delete Group Member"><?= Html::a( "", ["/cmgcmn/group/member/delete?gid=$gid&id=$id"], ['class'=>'icon-action icon-action-delete'] )  ?></span>
-						</td>
-					</tr>
-				<?php } ?>
-			</tbody>
-		</table>
-	</div>
-	<div class="grid-footer">
-		<div class="text"> <?=CodeGenUtil::getPaginationDetail( $dataProvider ) ?> </div>
-		<?= LinkPager::widget( [ 'pagination' => $pagination ] ); ?>
-	</div>
-</div>
+<?= Popup::widget([
+	'title' => 'Apply Bulk Action', 'size' => 'medium',
+	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'bulk',
+	'data' => [ 'model' => 'Group Member', 'app' => 'grid', 'controller' => 'crud', 'action' => 'bulk', 'url' => "$apixBase/bulk" ]
+])?>
+
+<?= Popup::widget([
+	'title' => 'Approve Group Member', 'size' => 'medium',
+	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'approve',
+	'data' => [ 'model' => 'Group Member', 'app' => 'grid', 'controller' => 'crud', 'action' => 'generic', 'url' => "$apixBase/approve?id=" ]
+])?>
+
+<?= Popup::widget([
+	'title' => 'Block Group Member', 'size' => 'medium',
+	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'block',
+	'data' => [ 'model' => 'Group Member', 'app' => 'grid', 'controller' => 'crud', 'action' => 'generic', 'url' => "$apixBase/toggle-block?id=" ]
+])?>
+
+<?= Popup::widget([
+	'title' => 'Activate Group Member', 'size' => 'medium',
+	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'activate',
+	'data' => [ 'model' => 'Group Member', 'app' => 'grid', 'controller' => 'crud', 'action' => 'generic', 'url' => "$apixBase/toggle-block?id=" ]
+])?>
+
+<?= Popup::widget([
+	'title' => 'Terminate Group Member', 'size' => 'medium',
+	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'terminate',
+	'data' => [ 'model' => 'Group Member', 'app' => 'grid', 'controller' => 'crud', 'action' => 'generic', 'url' => "$apixBase/terminate?id=" ]
+])?>
+
+<?= Popup::widget([
+	'title' => 'Delete Group Member', 'size' => 'medium',
+	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'delete',
+	'data' => [ 'model' => 'Group Member', 'app' => 'grid', 'controller' => 'crud', 'action' => 'delete', 'url' => "$apixBase/delete?id=" ]
+])?>

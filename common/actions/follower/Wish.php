@@ -32,7 +32,7 @@ class Wish extends \cmsgears\core\common\actions\base\ModelAction {
 
 	// Public -----------------
 
-	public $parent 	= true;
+	public $parent = true;
 
 	// Protected --------------
 
@@ -58,17 +58,17 @@ class Wish extends \cmsgears\core\common\actions\base\ModelAction {
 
 		if( isset( $this->model ) ) {
 
-			$followerService	= Yii::$app->factory->get( 'followerService' );
+			$followerService = Yii::$app->factory->get( 'followerService' );
 
-			$user 		= Yii::$app->user->getIdentity();
-			$model		= $this->model;
+			$user 	= Yii::$app->core->getUser();
+			$model	= $this->model;
 
-			$follower	= $followerService->updateByParams([
-							'modelId' => $user->id, 'parentId' => $model->id,
-							'parentType' => $this->modelService->getParentType(), 'type' => Follower::TYPE_WISHLIST
-						]);
+			$follower = $followerService->updateByParams([
+				'modelId' => $user->id, 'parentId' => $model->id,
+				'parentType' => $this->modelService->getParentType(), 'type' => Follower::TYPE_WISHLIST
+			]);
 
-			$data		= [ 'active' => $follower->active, 'count' => $model->getWishersCount() ];
+			$data = [ 'active' => $follower->active, 'count' => $model->getWishersCount() ];
 
 			return AjaxUtil::generateSuccess( Yii::$app->coreMessage->getMessage( CoreGlobal::MESSAGE_REQUEST ), $data );
 		}
@@ -76,4 +76,5 @@ class Wish extends \cmsgears\core\common\actions\base\ModelAction {
 		// Trigger Ajax Failure
         return AjaxUtil::generateFailure( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
+
 }

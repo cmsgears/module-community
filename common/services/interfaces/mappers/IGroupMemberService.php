@@ -28,17 +28,19 @@ interface IGroupMemberService extends IMapperService, IApproval {
 
     // Read - Models ---
 
-	public function getByUserId( $id );
+   	public function getByGroupId( $groupId );
+
+   	public function getByUserId( $userId );
 
     // Read - Lists ----
 
     // Read - Maps -----
 
+	public function searchByGroupIdName( $groupId, $name );
+
 	// Read - Others ---
 
 	// Create -------------
-
-	public function addMember( $groupId, $userId, $join = false, $admin = false );
 
 	// Update -------------
 
@@ -47,6 +49,10 @@ interface IGroupMemberService extends IMapperService, IApproval {
 	public function deleteByGroupId( $groupId );
 
 	// Bulk ---------------
+
+	public function applyBulkByGroupId( $column, $action, $target, $groupId );
+
+	public function applyBulkByUserId( $column, $action, $target, $userId );
 
 	// Notifications ------
 

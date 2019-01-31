@@ -12,6 +12,7 @@ namespace cmsgears\community\common\models\entities;
 // Yii Imports
 use Yii;
 use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 use yii\behaviors\TimestampBehavior;
 use yii\behaviors\SluggableBehavior;
 
@@ -21,6 +22,7 @@ use cmsgears\community\common\config\CmnGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IApproval;
 use cmsgears\core\common\models\interfaces\base\IAuthor;
+use cmsgears\core\common\models\interfaces\base\IFeatured;
 use cmsgears\core\common\models\interfaces\base\IMultiSite;
 use cmsgears\core\common\models\interfaces\base\INameType;
 use cmsgears\core\common\models\interfaces\base\IOwner;
@@ -36,9 +38,11 @@ use cmsgears\core\common\models\interfaces\mappers\ICategory;
 use cmsgears\core\common\models\interfaces\mappers\IFollower;
 use cmsgears\core\common\models\interfaces\mappers\ITag;
 use cmsgears\cms\common\models\interfaces\resources\IPageContent;
+use cmsgears\cms\common\models\interfaces\mappers\IBlock;
+use cmsgears\cms\common\models\interfaces\mappers\IElement;
+use cmsgears\cms\common\models\interfaces\mappers\IWidget;
 
 use cmsgears\core\common\models\base\CoreTables;
-use cmsgears\core\common\models\base\Entity;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\resources\GroupMeta;
@@ -46,6 +50,7 @@ use cmsgears\community\common\models\mappers\GroupFollower;
 
 use cmsgears\core\common\models\traits\base\ApprovalTrait;
 use cmsgears\core\common\models\traits\base\AuthorTrait;
+use cmsgears\core\common\models\traits\base\FeaturedTrait;
 use cmsgears\core\common\models\traits\base\MultiSiteTrait;
 use cmsgears\core\common\models\traits\base\NameTypeTrait;
 use cmsgears\core\common\models\traits\base\OwnerTrait;
@@ -61,6 +66,9 @@ use cmsgears\core\common\models\traits\mappers\CategoryTrait;
 use cmsgears\core\common\models\traits\mappers\FollowerTrait;
 use cmsgears\core\common\models\traits\mappers\TagTrait;
 use cmsgears\cms\common\models\traits\resources\PageContentTrait;
+use cmsgears\cms\common\models\traits\mappers\BlockTrait;
+use cmsgears\cms\common\models\traits\mappers\ElementTrait;
+use cmsgears\cms\common\models\traits\mappers\WidgetTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
@@ -70,16 +78,18 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @property integer $id
  * @property integer $siteId
+ * @property integer $ownerId
  * @property integer $avatarId
- * @property integer $galleryId
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property string $name
  * @property string $slug
  * @property string $type
  * @property string $icon
+ * @property string $texture
  * @property string $title
  * @property string $description
+ * @property string $email
  * @property integer $status
  * @property integer $visibility
  * @property integer $order
@@ -96,8 +106,9 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class Group extends Entity implements IApproval, IAuthor, ICategory, IComment, IContent, IData, IFollower, IGridCache,
-	IMeta, IMultiSite, INameType, IOwner, IPageContent, ISlugType, ITag, IVisibility, IVisual {
+class Group extends \cmsgears\core\common\models\base\Entity implements IApproval, IAuthor, IBlock, ICategory,
+	IComment, IContent, IData, IElement, IFeatured, IFollower, IGridCache, IMeta, IMultiSite, INameType, IOwner,
+	IPageContent, ISlugType, ITag, IVisibility, IVisual, IWidget {
 
 	// Variables ---------------------------------------------------
 
@@ -127,10 +138,13 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IComment, I
 
 	use ApprovalTrait;
 	use AuthorTrait;
+	use BlockTrait;
 	use CategoryTrait;
 	use CommentTrait;
 	use ContentTrait;
 	use DataTrait;
+	use ElementTrait;
+	use FeaturedTrait;
 	use FollowerTrait;
 	use GridCacheTrait;
 	use MetaTrait;
@@ -142,16 +156,17 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IComment, I
 	use TagTrait;
 	use VisibilityTrait;
 	use VisualTrait;
+	use WidgetTrait;
 
 	// Constructor and Initialisation ------------------------------
 
-	public function init() {
-
-		parent::init();
+	public function __construct( $config = [] ) {
 
 		$this->followerClass = GroupFollower::class;
 
 		$this->metaClass = GroupMeta::class;
+
+		parent::__construct();
 	}
 
 	// Instance methods --------------------------------------------
@@ -204,15 +219,16 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IComment, I
 			[ 'slug', 'unique', 'targetAttribute' => [ 'siteId', 'slug' ] ],
 			// Text Limit
 			[ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-			[ 'icon', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
+			[ [ 'icon', 'texture' ], 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
 			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
-			[ 'slug', 'string', 'min' => 0, 'max' => Yii::$app->core->xxLargeText ],
+			[ [ 'slug', 'email' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			[ 'title', 'string', 'min' => 0, 'max' => Yii::$app->core->xxxLargeText ],
 			[ 'description', 'string', 'min' => 0, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
+			[ 'email', 'email' ],
 			[ [ 'status', 'visibility', 'order' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'pinned', 'featured', 'reviews', 'gridCacheValid' ], 'boolean' ],
-			[ [ 'siteId', 'avatarId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'siteId', 'ownerId', 'avatarId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 
@@ -234,14 +250,17 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IComment, I
 
 		return [
 			'siteId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SITE ),
+			'ownerId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
 			'avatarId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_AVATAR ),
 			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_AUTHOR ),
 			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
 			'slug' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SLUG ),
 			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
 			'icon' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ICON ),
+			'texture' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TEXTURE ),
 			'title' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TITLE ),
 			'description' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DESCRIPTION ),
+			'email' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_EMAIL ),
 			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
 			'visibility' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_VISIBILITY ),
 			'order' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ORDER ),
@@ -262,6 +281,11 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IComment, I
 
 	// Group ---------------------------------
 
+	public function getOwner() {
+
+		return $this->hasOne( User::class, [ 'id' => 'ownerId' ] );
+	}
+
 	/**
 	 * Return all the group members.
 	 *
@@ -279,8 +303,25 @@ class Group extends Entity implements IApproval, IAuthor, ICategory, IComment, I
 	 */
 	public function getMemberUsers() {
 
+		$memberTable = CmnTables::getTableName( CmnTables::TABLE_GROUP_MEMBER );
+
 		return $this->hasMany( User::class, [ 'id' => 'userId' ] )
-			->viaTable( CmnTables::getTableName( CmnTables::TABLE_GROUP_MEMBER ), [ 'groupId' => 'id' ] );
+			->viaTable( $memberTable, [ 'groupId' => 'id' ] );
+	}
+
+	public function getEmail() {
+
+		$email = $this->email;
+
+		if( empty( $email ) ) {
+
+			if( isset( $this->owner ) ) {
+
+				$email = $this->owner->email;
+			}
+		}
+
+		return $email;
 	}
 
 	// Static Methods ----------------------------------------------

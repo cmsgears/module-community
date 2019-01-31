@@ -1,14 +1,26 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\admin\controllers\group;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\helpers\Url;
 
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
+/**
+ * TemplateController provide actions specific to group templates.
+ *
+ * @since 1.0.0
+ */
 class TemplateController extends \cmsgears\core\admin\controllers\base\TemplateController {
 
 	// Variables ---------------------------------------------------
@@ -23,18 +35,34 @@ class TemplateController extends \cmsgears\core\admin\controllers\base\TemplateC
 
 	// Constructor and Initialisation ------------------------------
 
- 	public function init() {
+	public function init() {
 
-        parent::init();
+		parent::init();
 
-		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'group-template' ];
+		// Permission
+		$this->crudPermission = CmnGlobal::PERM_GROUP_ADMIN;
 
-		$this->crudPermission 	= CmnGlobal::PERM_GROUP;
+		// Config
+		$this->type		= CmnGlobal::TYPE_GROUP;
+		$this->apixBase	= 'community/group/template';
 
-		$this->type				= CmnGlobal::TYPE_GROUP;
+		// Sidebar
+		$this->sidebar = [ 'parent' => 'sidebar-community', 'child' => 'group-template' ];
 
-		$this->returnUrl		= Url::previous( 'templates' );
-		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/template/all' ], true );
+		// Return Url
+		$this->returnUrl = Url::previous( 'group-templates' );
+		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/template/all' ], true );
+
+		// Breadcrumbs
+		$this->breadcrumbs = [
+			'base' => [
+				[ 'label' => 'Home', 'url' => Url::toRoute( '/dashboard' ) ]
+			],
+			'all' => [ [ 'label' => 'Group Templates' ] ],
+			'create' => [ [ 'label' => 'Group Templates', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
+			'update' => [ [ 'label' => 'Group Templates', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Group Templates', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
+		];
 	}
 
 	// Instance methods --------------------------------------------
@@ -53,10 +81,11 @@ class TemplateController extends \cmsgears\core\admin\controllers\base\TemplateC
 
 	// TemplateController --------------------
 
-	public function actionAll() {
+	public function actionAll( $config = [] ) {
 
-		Url::remember( [ 'group/template/all' ], 'templates' );
+		Url::remember( Yii::$app->request->getUrl(), 'group-templates' );
 
-		return parent::actionAll();
+		return parent::actionAll( $config );
 	}
+
 }

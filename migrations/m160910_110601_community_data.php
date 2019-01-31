@@ -9,18 +9,19 @@
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\cms\common\config\CmsGlobal;
 use cmsgears\community\common\config\CmnGlobal;
-
-use cmsgears\core\common\base\Migration;
 
 use cmsgears\core\common\models\entities\Site;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\core\common\models\entities\Role;
 use cmsgears\core\common\models\entities\Permission;
 
+use cmsgears\cms\common\models\entities\Page;
+
 use cmsgears\core\common\utilities\DateUtil;
 
-class m160910_110601_community_data extends Migration {
+class m160910_110601_community_data extends \cmsgears\core\common\base\Migration {
 
 	// Public Variables
 
@@ -53,6 +54,9 @@ class m160910_110601_community_data extends Migration {
 
 		// Roles and Permissions having type set to group
 		$this->insertGroupRolePermission();
+
+		// Init system pages
+		$this->insertSystemPages();
     }
 
 	private function insertRolePermission() {
@@ -83,11 +87,11 @@ class m160910_110601_community_data extends Migration {
 
 		$this->batchInsert( $this->prefix . 'core_permission', $columns, $permissions );
 
-		$adminPerm			= Permission::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
-		$userPerm			= Permission::findBySlugType( 'user', CoreGlobal::TYPE_SYSTEM );
-		$cmnAdminPerm		= Permission::findBySlugType( 'admin-community', CoreGlobal::TYPE_SYSTEM );
-		$chatAdminPerm		= Permission::findBySlugType( 'admin-chat', CoreGlobal::TYPE_SYSTEM );
-		$groupAdminPerm		= Permission::findBySlugType( 'admin-group', CoreGlobal::TYPE_SYSTEM );
+		$adminPerm		= Permission::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
+		$userPerm		= Permission::findBySlugType( 'user', CoreGlobal::TYPE_SYSTEM );
+		$cmnAdminPerm	= Permission::findBySlugType( 'admin-community', CoreGlobal::TYPE_SYSTEM );
+		$chatAdminPerm	= Permission::findBySlugType( 'admin-chat', CoreGlobal::TYPE_SYSTEM );
+		$groupAdminPerm	= Permission::findBySlugType( 'admin-group', CoreGlobal::TYPE_SYSTEM );
 
 		// RBAC Mapping
 
@@ -96,8 +100,8 @@ class m160910_110601_community_data extends Migration {
 		$mappings = [
 			[ $superAdminRole->id, $cmnAdminPerm->id ], [ $superAdminRole->id, $chatAdminPerm->id ], [ $superAdminRole->id, $groupAdminPerm->id ],
 			[ $adminRole->id, $cmnAdminPerm->id ], [ $adminRole->id, $chatAdminPerm->id ], [ $adminRole->id, $groupAdminPerm->id ],
-			[ $cmnAdminRole->id, $adminPerm->id ], [ $cmnAdminRole->id, $userPerm->id ], [ $cmnAdminRole->id, $cmnAdminPerm->id ],
-			[ $cmnAdminRole->id, $chatAdminPerm->id ], [ $cmnAdminRole->id, $groupAdminPerm->id ]
+			[ $cmnAdminRole->id, $adminPerm->id ], [ $cmnAdminRole->id, $userPerm->id ],
+			[ $cmnAdminRole->id, $cmnAdminPerm->id ], [ $cmnAdminRole->id, $chatAdminPerm->id ], [ $cmnAdminRole->id, $groupAdminPerm->id ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_role_permission', $columns, $mappings );
@@ -190,29 +194,29 @@ class m160910_110601_community_data extends Migration {
 
 		// Permissions
 
-		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
+		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'type', 'icon', 'group', 'description', 'createdAt', 'modifiedAt' ];
 
 		$permissions = [
-			[ $this->master->id, $this->master->id, 'Group Manager', 'group-manager', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Group Manager is group of permissions for Group Manager.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Group Moderator', 'group-moderator', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Group Moderator is group of permissions for Group Moderator.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Group Member', 'group-member', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Group Member is group of permissions for Group Member.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Group Manager', 'group-manager', CmnGlobal::TYPE_COMMUNITY, NULL, true, 'The permission Group Manager is group of permissions for Group Manager.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Group Moderator', 'group-moderator', CmnGlobal::TYPE_COMMUNITY, NULL, true, 'The permission Group Moderator is group of permissions for Group Moderator.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Group Member', 'group-member', CmnGlobal::TYPE_COMMUNITY, NULL, true, 'The permission Group Member is group of permissions for Group Member.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 
-			[ $this->master->id, $this->master->id, 'Update Group Settings', 'update-group-settings', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Update Group Settings is to update group settings from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Update Group Profile', 'update-group-profile', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Update Group Profile is to update group profile from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Update Group Status', 'update-group-status', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Update Group Status is to update group status from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Update Group Settings', 'update-group-settings', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission Update Group Settings is to update group settings from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Update Group Profile', 'update-group-profile', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission Update Group Profile is to update group profile from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Update Group Status', 'update-group-status', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission Update Group Status is to update group status from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 
-			[ $this->master->id, $this->master->id, 'Invite Group Members', 'invite-group-members', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Invite Group Members is to invite group members from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'View Group Members', 'view-group-members', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission View Group Members is to view group members from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Add Group Member', 'add-group-member', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Add Group Member is to add group member from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Update Group Member', 'update-group-member', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Update Group Member is to update group member from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Approve Group Member', 'approve-group-member', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Approve Group Member is to approve group member from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Block Group Member', 'block-group-member', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Block Group Member is to block group member from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Remove Group Member', 'remove-group-member', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Remove Group Member is to remove group member from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Invite Group Members', 'invite-group-members', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission Invite Group Members is to invite group members from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'View Group Members', 'view-group-members', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission View Group Members is to view group members from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Add Group Member', 'add-group-member', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission Add Group Member is to add group member from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Update Group Member', 'update-group-member', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission Update Group Member is to update group member from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Approve Group Member', 'approve-group-member', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission Approve Group Member is to approve group member from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Block Group Member', 'block-group-member', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission Block Group Member is to block group member from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Remove Group Member', 'remove-group-member', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission Remove Group Member is to remove group member from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 
-			[ $this->master->id, $this->master->id, 'View Group Posts', 'view-group-posts', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission View Group Posts is to view group messages from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Add Group Post', 'add-group-post', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Add Group Post is to add group message from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Update Group Post', 'update-group-post', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Update Group Post is to update group message from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->master->id, $this->master->id, 'Delete Group Post', 'delete-group-post', CmnGlobal::TYPE_COMMUNITY, NULL, 'The permission Delete Group Post is to delete group message from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
+			[ $this->master->id, $this->master->id, 'View Group Posts', 'view-group-posts', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission View Group Posts is to view group messages from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Add Group Post', 'add-group-post', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission Add Group Post is to add group message from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Update Group Post', 'update-group-post', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission Update Group Post is to update group message from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Delete Group Post', 'delete-group-post', CmnGlobal::TYPE_COMMUNITY, NULL, false, 'The permission Delete Group Post is to delete group message from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_permission', $columns, $permissions );
@@ -289,6 +293,30 @@ class m160910_110601_community_data extends Migration {
 		];
 
 		$this->batchInsert( $this->prefix . 'core_model_hierarchy', $columns, $hierarchy );
+	}
+
+	private function insertSystemPages() {
+
+		$columns = [ 'siteId', 'createdBy', 'modifiedBy', 'name', 'slug', 'type', 'icon', 'title', 'status', 'visibility', 'order', 'featured', 'comments', 'createdAt', 'modifiedAt' ];
+
+		$pages	= [
+			// Hidden Search Pages
+			[ $this->site->id, $this->master->id, $this->master->id, 'Search Groups', CmnGlobal::PAGE_SEARCH_GROUPS, CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ]
+		];
+
+		$this->batchInsert( $this->prefix . 'cms_page', $columns, $pages );
+
+		$summary = "Lorem ipsum is a pseudo-Latin text used in web design, typography, layout, and printing in place of English to emphasise design elements over content. It\'s also called placeholder (or filler) text. It\'s a convenient tool for mock-ups. It helps to outline the visual elements of a document or presentation, eg typography, font, or layout. Lorem ipsum is mostly a part of a Latin text by the classical author and philosopher Cicero.";
+		$content = "Lorem ipsum is a pseudo-Latin text used in web design, typography, layout, and printing in place of English to emphasise design elements over content. It\'s also called placeholder (or filler) text. It\'s a convenient tool for mock-ups. It helps to outline the visual elements of a document or presentation, eg typography, font, or layout. Lorem ipsum is mostly a part of a Latin text by the classical author and philosopher Cicero.";
+
+		$columns = [ 'parentId', 'parentType', 'seoName', 'seoDescription', 'seoKeywords', 'seoRobot', 'summary', 'content', 'publishedAt' ];
+
+		$pages	= [
+			// Hidden Search Pages
+			[ Page::findBySlugType( CmnGlobal::PAGE_SEARCH_GROUPS, CmsGlobal::TYPE_PAGE )->id, CmsGlobal::TYPE_PAGE, null, null, null, null, $summary, $content, DateUtil::getDateTime() ]
+		];
+
+		$this->batchInsert( $this->prefix . 'cms_model_content', $columns, $pages );
 	}
 
     public function down() {

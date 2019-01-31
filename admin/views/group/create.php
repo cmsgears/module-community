@@ -1,19 +1,25 @@
 <?php
 // Yii Imports
-use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 
 // CMG Imports
+use cmsgears\core\common\widgets\ActiveForm;
 use cmsgears\core\common\widgets\Editor;
 use cmsgears\files\widgets\AvatarUploader;
 use cmsgears\files\widgets\ImageUploader;
 use cmsgears\files\widgets\VideoUploader;
 
+use cmsgears\icons\widgets\IconChooser;
+use cmsgears\icons\widgets\TextureChooser;
+
 $coreProperties = $this->context->getCoreProperties();
 $this->title 	= 'Add Group | ' . $coreProperties->getSiteTitle();
 $returnUrl		= $this->context->returnUrl;
+$apixBase		= $this->context->apixBase;
 
-Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts' => 'site', 'config' => [ 'controls' => 'mini' ] ] );
+$ownerName = isset( $model->owner ) ? $model->owner->getName() . ', ' . $model->owner->email : null;
+
+Editor::widget();
 ?>
 <div class="box-crud-wrap row">
 	<div class="box-crud-wrap-main colf colf3x2">
@@ -24,6 +30,16 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 			</div>
 			<div class="box-content-wrap frm-split-40-60">
 				<div class="box-content">
+					<div class="row margin margin-bottom-medium">
+						<div class="row row-medium">
+							<?= Yii::$app->formDesigner->getAutoSuggest( $form, $model, 'ownerId', [
+								'placeholder' => 'Search Owner', 'icon' => 'cmti cmti-search',
+								'app' => 'core', 'controller' => 'user',
+								'value' => $ownerName, 'url' => 'core/user/auto-search'
+							]) ?>
+						</div>
+						<div class="note">Notes: Assign group owner as existing user if required.</div>
+					</div>
 					<div class="row">
 						<div class="col col2">
 							<?= $form->field( $model, 'name' ) ?>
@@ -34,10 +50,10 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 					</div>
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $model, 'description' )->textarea() ?>
+							<?= $form->field( $content, 'templateId' )->dropDownList( $templatesMap, [ 'class' => 'cmt-select' ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $content, 'templateId' )->dropDownList( $templatesMap, [ 'class' => 'cmt-select' ] ) ?>
+							<?= $form->field( $model, 'description' )->textarea() ?>
 						</div>
 					</div>
 					<div class="row">
@@ -50,9 +66,30 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 					</div>
 					<div class="row">
 						<div class="col col2">
+							<?= IconChooser::widget( [ 'model' => $model, 'options' => [ 'class' => 'icon-picker-wrap' ] ] ) ?>
+						</div>
+						<div class="col col2">
+							<?= TextureChooser::widget( [ 'model' => $model, 'options' => [ 'class' => 'icon-picker-wrap' ] ] ) ?>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col col3">
+							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'reviews', null, 'cmti cmti-checkbox' ) ?>
+						</div>
+						<div class="col col3">
+							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'pinned', null, 'cmti cmti-checkbox' ) ?>
+						</div>
+						<div class="col col3">
 							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'featured', null, 'cmti cmti-checkbox' ) ?>
 						</div>
-						<div class="col col2"></div>
+					</div>
+					<div class="row">
+						<div class="col col2">
+							<?= $form->field( $model, 'email' )->textInput() ?>
+						</div>
+						<div class="col col2">
+							<?= $form->field( $model, 'order' )->textInput() ?>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -67,15 +104,15 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 					<div class="row padding padding-small-v">
 						<div class="col col12x4">
 							<label>Avatar</label>
-							<?= AvatarUploader::widget( [ 'model' => $avatar ] ) ?>
+							<?= AvatarUploader::widget( [ 'model' => $avatar, 'clearAction' => true ] ) ?>
 						</div>
 						<div class="col col12x4">
 							<label>Banner</label>
-							<?= ImageUploader::widget( [ 'model' => $banner ] ) ?>
+							<?= ImageUploader::widget( [ 'model' => $banner, 'clearAction' => true ] ) ?>
 						</div>
 						<div class="col col12x4">
 							<label>Video</label>
-							<?= VideoUploader::widget( [ 'model' => $video ] ) ?>
+							<?= VideoUploader::widget( [ 'model' => $video, 'clearAction' => true ] ) ?>
 						</div>
 					</div>
 				</div>
@@ -129,14 +166,11 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 				</div>
 			</div>
 		</div>
-
 		<div class="filler-height filler-height-medium"></div>
-
 		<div class="align align-right">
 			<?= Html::a( 'Cancel', $returnUrl, [ 'class' => 'btn btn-medium' ] ); ?>
-			<input class="element-medium" type="submit" value="Add" />
+			<input class="frm-element-medium" type="submit" value="Create" />
 		</div>
-
 		<div class="filler-height filler-height-medium"></div>
 		<?php ActiveForm::end(); ?>
 	</div>

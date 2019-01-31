@@ -17,17 +17,18 @@ use cmsgears\community\common\models\entities\Group;
 /**
  * GroupFollower represents interest of user in group.
  *
- * @property int $id
- * @property int $modelId
- * @property int $followerId
- * @property string $type
+ * @property integer $id
+ * @property integer $modelId
+ * @property integer $parentId
+ * @property integer $type
  * @property boolean $active
- * @property int $createdAt
- * @property int $modifiedAt
+ * @property datetime $createdAt
+ * @property datetime $modifiedAt
+ * @property string $data
  *
  * @since 1.0.0
  */
-class GroupFollower extends Follower {
+class GroupFollower extends \cmsgears\core\common\models\base\Follower {
 
 	// Variables ---------------------------------------------------
 
@@ -69,14 +70,9 @@ class GroupFollower extends Follower {
 
 	// GroupFollower -------------------------
 
-	/**
-	 * Return corresponding group.
-	 *
-	 * @return \cmsgears\community\common\models\entities\Group
-	 */
-	public function getModel() {
+	public function getParent() {
 
-		return $this->hasOne( Group::class, [ 'id' => 'modelId' ] );
+		return $this->hasOne( Group::class, [ 'id' => 'parentId' ] );
 	}
 
 	// Static Methods ----------------------------------------------

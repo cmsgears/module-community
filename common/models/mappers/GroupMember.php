@@ -19,13 +19,15 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IApproval;
+use cmsgears\core\common\models\interfaces\resources\IData;
 
-use cmsgears\core\common\models\base\Mapper;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\core\common\models\entities\Role;
 use cmsgears\community\common\models\base\CmnTables;
+use cmsgears\community\common\models\entities\Group;
 
 use cmsgears\core\common\models\traits\base\ApprovalTrait;
+use cmsgears\core\common\models\traits\resources\DataTrait;
 
 /**
  * GroupMember represents member of group.
@@ -35,13 +37,15 @@ use cmsgears\core\common\models\traits\base\ApprovalTrait;
  * @property integer $userId
  * @property integer $roleId
  * @property integer $status
+ * @property string $verifyToken
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  * @property datetime $syncedAt
+ * @property string $data
  *
  * @since 1.0.0
  */
-class GroupMember extends Mapper implements IApproval {
+class GroupMember extends \cmsgears\core\common\models\base\Mapper implements IApproval, IData {
 
 	// Variables ---------------------------------------------------
 
@@ -57,6 +61,8 @@ class GroupMember extends Mapper implements IApproval {
 
 	// Public -----------------
 
+	public $registerUser;
+
 	// Protected --------------
 
 	// Private ----------------
@@ -64,6 +70,7 @@ class GroupMember extends Mapper implements IApproval {
 	// Traits ------------------------------------------------------
 
 	use ApprovalTrait;
+	use DataTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -81,9 +88,8 @@ class GroupMember extends Mapper implements IApproval {
     public function behaviors() {
 
         return [
-
             'timestampBehavior' => [
-                'class' => TimestampBehavior::class,
+				'class' => TimestampBehavior::class,
 				'createdAtAttribute' => 'createdAt',
  				'updatedAtAttribute' => 'modifiedAt',
  				'value' => new Expression('NOW()')
@@ -101,10 +107,18 @@ class GroupMember extends Mapper implements IApproval {
 		// Model Rules
 		$rules = [
 			// Required, Safe
-        	[ [ 'groupId', 'userId', 'roleId' ], 'required' ],
-			[ 'id', 'safe' ],
+			[ 'roleId', 'required' ],
+			[ [ 'groupId', 'userId' ], 'required', 'on' => 'create' ], // Create from admin with auto-search user
+			[ 'groupId', 'required', 'on' => 'register' ], // Create by registering new user
+			[ [ 'id', 'data' ], 'safe' ],
+			// Unique
+			[ 'userId', 'unique', 'targetAttribute' => [ 'groupId', 'userId' ], 'comboNotUnique' => 'User already exist.' ],
+            // Text Limit
+			[ 'verifyToken', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
 			// Other
             [ 'status', 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ 'registerUser', 'boolean' ],
+			[ [ 'groupId', 'userId', 'roleId' ], 'number', 'integerOnly' => true, 'min' => 1, 'tooSmall' =>  Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_SELECT ) ],
             [ [ 'createdAt', 'modifiedAt', 'syncedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
 
@@ -120,7 +134,8 @@ class GroupMember extends Mapper implements IApproval {
 			'groupId' => Yii::$app->cmnMessage->getMessage( CmnGlobal::FIELD_GROUP ),
 			'userId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_USER ),
 			'roleId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ROLE ),
-			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS )
+			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
+			'registerUser' => 'Register User'
 		];
 	}
 
@@ -160,6 +175,25 @@ class GroupMember extends Mapper implements IApproval {
 	public function getRole() {
 
 		return $this->hasOne( Role::class, [ 'id' => 'roleId' ] );
+	}
+
+	public function generateVerifyToken() {
+
+		$this->verifyToken = Yii::$app->security->generateRandomString();
+	}
+
+	public function hasPermission( $slug ) {
+
+		$role = $this->role;
+
+		$permissions = $role->getPermissionsSlugList();
+
+		return in_array( $slug, $permissions );
+	}
+
+	public function belongsToGroup( $group ) {
+
+		return $this->groupId == $group->id;
 	}
 
 	// Static Methods ----------------------------------------------
@@ -219,18 +253,28 @@ class GroupMember extends Mapper implements IApproval {
 		return parent::queryWithAll( $config );
 	}
 
-
 	// Read - Find ------------
+
+	/**
+	 * Find and return the members by given group id.
+	 *
+	 * @param integer $groupId
+	 * @return GroupMember[]
+	 */
+	public static function findByGroupId( $groupId ) {
+
+		return self::find()->where( [ 'groupId' => $groupId ] )->all();
+	}
 
 	/**
 	 * Find and return the members by given user id.
 	 *
-	 * @param integer $id
+	 * @param integer $userId
 	 * @return GroupMember[]
 	 */
-	public static function findByUserId( $id ) {
+	public static function findByUserId( $userId ) {
 
-		return self::find()->where( [ 'userId' => $id ] )->all();
+		return self::find()->where( [ 'userId' => $userId ] )->all();
 	}
 
 	// Create -----------------

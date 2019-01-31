@@ -43,6 +43,13 @@ class m160910_111612_community_index extends \cmsgears\core\common\base\Migratio
 		// User Post
 		$this->createIndex( 'idx_' . $this->prefix . 'user_post_type', $this->prefix . 'cmn_user_post', 'type' );
 
+		// Group Post Meta
+		$this->createIndex( 'idx_' . $this->prefix . 'user_post_meta_name', $this->prefix . 'cmn_user_post_meta', 'name' );
+		$this->createIndex( 'idx_' . $this->prefix . 'user_post_meta_type', $this->prefix . 'cmn_user_post_meta', 'type' );
+		//$this->createIndex( 'idx_' . $this->prefix . 'user_post_meta_type_v', $this->prefix . 'cmn_user_post_meta', 'valueType' );
+		//$this->createIndex( 'idx_' . $this->prefix . 'user_post_meta_mit', $this->prefix . 'cmn_user_post_meta', [ 'modelId', 'type' ] );
+		//$this->createIndex( 'idx_' . $this->prefix . 'user_post_meta_mitn', $this->prefix . 'cmn_user_post_meta', [ 'modelId', 'type', 'name' ] );
+
 		// Chat
 		$this->createIndex( 'idx_' . $this->prefix . 'chat_status', $this->prefix . 'cmn_chat', 'status' );
 
@@ -69,6 +76,13 @@ class m160910_111612_community_index extends \cmsgears\core\common\base\Migratio
 
 		// Group Post
 		$this->createIndex( 'idx_' . $this->prefix . 'group_post_type', $this->prefix . 'cmn_group_post', 'type' );
+
+		// Group Post Meta
+		$this->createIndex( 'idx_' . $this->prefix . 'group_post_meta_name', $this->prefix . 'cmn_group_post_meta', 'name' );
+		$this->createIndex( 'idx_' . $this->prefix . 'group_post_meta_type', $this->prefix . 'cmn_group_post_meta', 'type' );
+		//$this->createIndex( 'idx_' . $this->prefix . 'group_post_meta_type_v', $this->prefix . 'cmn_group_post_meta', 'valueType' );
+		//$this->createIndex( 'idx_' . $this->prefix . 'group_post_meta_mit', $this->prefix . 'cmn_group_post_meta', [ 'modelId', 'type' ] );
+		//$this->createIndex( 'idx_' . $this->prefix . 'group_post_meta_mitn', $this->prefix . 'cmn_group_post_meta', [ 'modelId', 'type', 'name' ] );
 
 		// Group Message
 		//$this->createIndex( 'idx_' . $this->prefix . 'group_message_cons', $this->prefix . 'cmn_group_message', 'consumed' );
@@ -102,6 +116,13 @@ class m160910_111612_community_index extends \cmsgears\core\common\base\Migratio
 		// User Post
 		$this->dropIndex( 'idx_' . $this->prefix . 'user_post_type', $this->prefix . 'cmn_user_post' );
 
+		// Group Post Meta
+		$this->dropIndex( 'idx_' . $this->prefix . 'user_post_meta_name', $this->prefix . 'cmn_user_post_meta' );
+		$this->dropIndex( 'idx_' . $this->prefix . 'user_post_meta_type', $this->prefix . 'cmn_user_post_meta' );
+		//$this->dropIndex( 'idx_' . $this->prefix . 'user_post_meta_type_v', $this->prefix . 'cmn_user_post_meta' );
+		//$this->dropIndex( 'idx_' . $this->prefix . 'user_post_meta_mit', $this->prefix . 'cmn_user_post_meta' );
+		//$this->dropIndex( 'idx_' . $this->prefix . 'user_post_meta_mitn', $this->prefix . 'cmn_user_post_meta' );
+
 		// Chat
 		$this->dropIndex( 'idx_' . $this->prefix . 'chat_status', $this->prefix . 'cmn_chat' );
 
@@ -128,6 +149,13 @@ class m160910_111612_community_index extends \cmsgears\core\common\base\Migratio
 
 		// Group Post
 		$this->dropIndex( 'idx_' . $this->prefix . 'group_post_type', $this->prefix . 'cmn_group_post' );
+
+		// Group Post Meta
+		$this->dropIndex( 'idx_' . $this->prefix . 'group_post_meta_name', $this->prefix . 'cmn_group_post_meta' );
+		$this->dropIndex( 'idx_' . $this->prefix . 'group_post_meta_type', $this->prefix . 'cmn_group_post_meta' );
+		//$this->dropIndex( 'idx_' . $this->prefix . 'group_post_meta_type_v', $this->prefix . 'cmn_group_post_meta' );
+		//$this->dropIndex( 'idx_' . $this->prefix . 'group_post_meta_mit', $this->prefix . 'cmn_group_post_meta' );
+		//$this->dropIndex( 'idx_' . $this->prefix . 'group_post_meta_mitn', $this->prefix . 'cmn_group_post_meta' );
 
 		// Group Message
 		//$this->dropIndex( 'idx_' . $this->prefix . 'group_message_cons', $this->prefix . 'cmn_group_message' );

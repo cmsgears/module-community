@@ -24,7 +24,6 @@ use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 
 use cmsgears\core\common\models\base\CoreTables;
-use cmsgears\core\common\models\base\Mapper;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\community\common\models\base\CmnTables;
 
@@ -51,7 +50,7 @@ use cmsgears\core\common\models\traits\resources\GridCacheTrait;
  *
  * @since 1.0.0
  */
-class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
+class Friend extends \cmsgears\core\common\models\base\Mapper implements IContent, IData, IGridCache, IOwner {
 
 	// Variables ---------------------------------------------------
 
@@ -59,11 +58,12 @@ class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
 
 	// Constants --------------
 
-	const TYPE_CHILDHOOD	=    0;
-	const TYPE_SCHOOL		=  500;
-	const TYPE_COLLEGE		= 1000;
-	const TYPE_TRAVEL		= 1500;
-	const TYPE_PROFESSIONAL	= 2000;
+	const TYPE_CHILDHOOD	=     0;
+	const TYPE_SCHOOL		=   500;
+	const TYPE_COLLEGE		=  1000;
+	const TYPE_TRAVEL		=  1500;
+	const TYPE_PROFESSIONAL	=  2000;
+	const TYPE_OTHER		= 10000;
 
 	const STATUS_REQUEST	=    0;
 	const STATUS_REJECTED	=  500;
@@ -77,7 +77,8 @@ class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
 		self::TYPE_SCHOOL => 'School',
 		self::TYPE_COLLEGE => 'College',
 		self::TYPE_TRAVEL => 'Travel',
-		self::TYPE_PROFESSIONAL => 'Professional'
+		self::TYPE_PROFESSIONAL => 'Professional',
+		self::TYPE_OTHER => 'Other'
 	];
 
 	public static $statusMap = [
@@ -144,7 +145,7 @@ class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
             [ [ 'userId', 'friendId' ], 'required' ],
             [ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
 			// Unique
-			[ [ 'userId', 'friendId' ], 'unique', 'targetAttribute' => [ 'userId', 'friendId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
+			[ 'friendId', 'unique', 'targetAttribute' => [ 'userId', 'friendId' ], 'comboNotUnique' => 'Friend already exist.' ],
             // Other
             [ [ 'status', 'type' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ 'gridCacheValid', 'boolean' ],
@@ -224,8 +225,9 @@ class Friend extends Mapper implements IContent, IData, IGridCache, IOwner {
      */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'user', 'friend' ];
-		$config[ 'relations' ]	= $relations;
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'user', 'friend' ];
+
+		$config[ 'relations' ] = $relations;
 
 		return parent::queryWithAll( $config );
 	}

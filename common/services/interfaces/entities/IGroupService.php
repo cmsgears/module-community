@@ -10,18 +10,16 @@
 namespace cmsgears\community\common\services\interfaces\entities;
 
 // CMG Imports
-use cmsgears\core\common\services\interfaces\base\IEntityService;
+use cmsgears\cms\common\services\interfaces\base\IContentService;
 
 /**
  * IGroupService declares methods specific to group model.
  *
  * @since 1.0.0
  */
-interface IGroupService extends IEntityService {
+interface IGroupService extends IContentService {
 
 	// Data Provider ------
-
-	public function getPageByType( $type );
 
 	// Read ---------------
 
@@ -32,6 +30,8 @@ interface IGroupService extends IEntityService {
     // Read - Maps -----
 
 	// Read - Others ---
+
+	public function getEmail( $model, $config = [] );
 
 	// Create -------------
 

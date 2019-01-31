@@ -10,24 +10,24 @@
 namespace cmsgears\community\common\models\mappers;
 
 // CMG Imports
-use cmsgears\core\common\models\base\Follower;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\community\common\models\base\CmnTables;
 
 /**
  * Follower represents interest of one model in another model.
  *
- * @property int $id
- * @property int $modelId
- * @property int $followerId
+ * @property integer $id
+ * @property integer $modelId
+ * @property integer $parentId
  * @property string $type
  * @property boolean $active
- * @property int $createdAt
- * @property int $modifiedAt
+ * @property integer $createdAt
+ * @property integer $modifiedAt
+ * @property string $data
  *
  * @since 1.0.0
  */
-class UserFollower extends Follower {
+class UserFollower extends \cmsgears\core\common\models\base\Follower {
 
 	// Variables ---------------------------------------------------
 
@@ -70,13 +70,13 @@ class UserFollower extends Follower {
 	// UserFollower --------------------------
 
 	/**
-	 * Return corresponding user.
+	 * Return corresponding followed user.
 	 *
 	 * @return \cmsgears\core\common\models\entities\User
 	 */
-	public function getModel() {
+	public function getParent() {
 
-		return $this->hasOne( User::class, [ 'id' => 'modelId' ] );
+		return $this->hasOne( User::class, [ 'id' => 'parentId' ] );
 	}
 
 	// Static Methods ----------------------------------------------

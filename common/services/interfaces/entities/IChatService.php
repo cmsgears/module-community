@@ -35,6 +35,12 @@ interface IChatService extends IEntityService {
 
 	// Update -------------
 
+	public function updateStatus( $model, $status );
+
+	public function activate( $model );
+
+	public function dormant( $model );
+
 	// Delete -------------
 
 	// Bulk ---------------

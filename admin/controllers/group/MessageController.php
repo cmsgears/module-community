@@ -1,15 +1,27 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\admin\controllers\group;
 
 // Yii Imports
-use \Yii;
-use yii\filters\VerbFilter;
-use yii\web\NotFoundHttpException;
+use Yii;
+use yii\helpers\Url;
 
 // CMG Imports
 use cmsgears\community\common\config\CmnGlobal;
 
-class MessageController extends BaseMessageController {
+/**
+ * MessageController provides actions specific to group messages.
+ *
+ * @since 1.0.0
+ */
+class MessageController extends \cmsgears\community\admin\controllers\base\group\MessageController {
 
 	// Variables ---------------------------------------------------
 
@@ -26,6 +38,39 @@ class MessageController extends BaseMessageController {
 	public function init() {
 
 		parent::init();
+
+		// Permission
+		$this->crudPermission = CmnGlobal::PERM_GROUP_ADMIN;
+
+		// Config
+		$this->title	= 'Group Message';
+		$this->apixBase	= 'community/group/message';
+
+		// Services
+		$this->parentService = Yii::$app->factory->get( 'groupService' );
+
+		// Sidebar
+		$this->sidebar = [ 'parent' => 'sidebar-community', 'child' => 'group' ];
+
+		// Return Url
+		$this->returnUrl = Url::previous( 'group-messages' );
+		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/group/message/all' ], true );
+
+		// All Url
+		$allUrl = Url::previous( 'groups' );
+		$allUrl = isset( $allUrl ) ? $allUrl : Url::toRoute( [ '/community/group/all' ], true );
+
+		// Breadcrumbs
+		$this->breadcrumbs = [
+			'base' => [
+				[ 'label' => 'Home', 'url' => Url::toRoute( '/dashboard' ) ],
+				[ 'label' => 'Groups', 'url' =>  $allUrl ]
+			],
+			'all' => [ [ 'label' => 'Group Messages' ] ],
+			'create' => [ [ 'label' => 'Group Messages', 'url' => $this->returnUrl ], [ 'label' => 'Create' ] ],
+			'update' => [ [ 'label' => 'Group Messages', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Group Messages', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
+		];
 	}
 
 	// Instance methods --------------------------------------------
@@ -36,41 +81,19 @@ class MessageController extends BaseMessageController {
 
 	// yii\base\Component -----
 
-	public function behaviors() {
-
-		return [
-			'rbac' => [
-				'class' => Yii::$app->cmgCore->getRbacFilterClass(),
-				'actions' => [
-					'all' => [ 'permission' => CmnGlobal::PERM_GROUP ],
-					'delete' => [ 'permission' => CmnGlobal::PERM_GROUP ]
-				]
-			],
-			'verbs' => [
-				'class' => VerbFilter::className(),
-				'actions' => [
-					'all'    => [ 'get' ],
-					'delete' => [ 'get', 'post' ]
-				]
-			]
-		];
-	}
-
 	// yii\base\Controller ----
 
 	// CMG interfaces ------------------------
 
 	// CMG parent classes --------------------
 
-	// MessageController----------------------
+	// MessageController ---------------------
 
-	public function actionAll( $id ) {
+	public function actionAll( $pid ) {
 
-		return parent::actionAll( $id, [ 'parent' => 'sidebar-group', 'child' => 'group' ] );
+		Url::remember( Yii::$app->request->getUrl(), 'group-messages' );
+
+		return parent::actionAll( $pid );
 	}
 
-	public function actionDelete( $gid, $id ) {
-
-		return parent::actionDelete( $gid, $id, [ 'parent' => 'sidebar-group', 'child' => 'group' ] );
-	}
 }

@@ -10,6 +10,7 @@
 namespace cmsgears\community\common\services\interfaces\mappers;
 
 // CMG Imports
+use cmsgears\core\common\services\interfaces\base\IApproval;
 use cmsgears\core\common\services\interfaces\base\IMapperService;
 
 /**
@@ -17,9 +18,11 @@ use cmsgears\core\common\services\interfaces\base\IMapperService;
  *
  * @since 1.0.0
  */
-interface IChatMemberService extends IMapperService {
+interface IChatMemberService extends IMapperService, IApproval {
 
 	// Data Provider ------
+
+	public function getPageByChatId( $chatId );
 
 	// Read ---------------
 
@@ -34,6 +37,8 @@ interface IChatMemberService extends IMapperService {
 	// Create -------------
 
 	// Update -------------
+
+	public function updateSync( $model, $config = [] );
 
 	// Delete -------------
 

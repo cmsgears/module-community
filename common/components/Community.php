@@ -9,15 +9,12 @@
 
 namespace cmsgears\community\common\components;
 
-// CMG Imports
-use cmsgears\core\common\base\Component;
-
 /**
  * Community component initialises the Community Module.
  *
  * @since 1.0.0
  */
-class Community extends Component {
+class Community extends \cmsgears\core\common\base\Component {
 
 	// Global -----------------
 

@@ -1,14 +1,19 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\admin\controllers;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\helpers\Url;
 
 // CMG Imports
-
-// CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
 class PermissionController extends \cmsgears\core\admin\controllers\base\PermissionController {
@@ -29,25 +34,26 @@ class PermissionController extends \cmsgears\core\admin\controllers\base\Permiss
 
         parent::init();
 
-		// Permissions
-		$this->crudPermission 	= CmnGlobal::PERM_COMMUNITY;
+		// Config
+		$this->type		= CmnGlobal::TYPE_COMMUNITY;
+		$this->system	= false;
 
 		// Sidebar
-		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'permission' ];
-
-		$this->type				= CmnGlobal::TYPE_COMMUNITY;
+		$this->sidebar = [ 'parent' => 'sidebar-community', 'child' => 'permission' ];
 
 		// Return Url
-		$this->returnUrl		= Url::previous( 'permissions' );
-		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/permission/all' ], true );
-		
+		$this->returnUrl = Url::previous( 'community-permissions' );
+		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/permission/all' ], true );
+
 		// Breadcrumbs
-		$this->breadcrumbs		= [
-			'all' => [ [ 'label' => 'Permission' ] ],
-			'create' => [ [ 'label' => 'Permission', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
-			'update' => [ [ 'label' => 'Permission', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
-			'delete' => [ [ 'label' => 'Permission', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ],
-			'items' => [ [ 'label' => 'Permission', 'url' => $this->returnUrl ], [ 'label' => 'Items' ] ]
+		$this->breadcrumbs = [
+			'base' => [
+				[ 'label' => 'Home', 'url' => Url::toRoute( '/dashboard' ) ]
+			],
+			'all' => [ [ 'label' => 'Community Permissions' ] ],
+			'create' => [ [ 'label' => 'Community Permissions', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
+			'update' => [ [ 'label' => 'Community Permissions', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Community Permissions', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
 		];
 	}
 
@@ -67,10 +73,11 @@ class PermissionController extends \cmsgears\core\admin\controllers\base\Permiss
 
 	// PermissionController ------------------
 
-	public function actionAll() {
+	public function actionAll( $config = [] ) {
 
-		Url::remember( Yii::$app->request->getUrl(), 'permissions' );
+		Url::remember( Yii::$app->request->getUrl(), 'community-permissions' );
 
-		return parent::actionAll();
+		return parent::actionAll( $config );
 	}
+
 }

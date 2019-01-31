@@ -10,18 +10,18 @@
 namespace cmsgears\community\common\services\mappers;
 
 // Yii Imports
+use Yii;
 use yii\data\Sort;
 
 // CMG Imports
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\community\common\models\mappers\GroupMember;
-
+use cmsgears\core\common\services\interfaces\entities\IRoleService;
+use cmsgears\core\common\services\interfaces\entities\IUserService;
+use cmsgears\core\common\services\interfaces\mappers\ISiteMemberService;
 use cmsgears\community\common\services\interfaces\mappers\IGroupMemberService;
 
-use cmsgears\core\common\services\traits\ApprovalTrait;
-
-use cmsgears\core\common\services\base\MapperService;
+use cmsgears\core\common\services\traits\base\ApprovalTrait;
 
 use cmsgears\core\common\utilities\DateUtil;
 
@@ -30,7 +30,7 @@ use cmsgears\core\common\utilities\DateUtil;
  *
  * @since 1.0.0
  */
-class GroupMemberService extends MapperService implements IGroupMemberService {
+class GroupMemberService extends \cmsgears\core\common\services\base\MapperService implements IGroupMemberService {
 
 	// Variables ---------------------------------------------------
 
@@ -50,6 +50,10 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 
 	// Protected --------------
 
+	protected $roleService;
+	protected $memberService;
+	protected $userService;
+
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
@@ -57,6 +61,15 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 	use ApprovalTrait;
 
 	// Constructor and Initialisation ------------------------------
+
+	public function __construct( IRoleService $roleService, ISiteMemberService $memberService, IUserService $userService, $config = [] ) {
+
+		$this->roleService		= $roleService;
+		$this->memberService	= $memberService;
+		$this->userService		= $userService;
+
+		parent::__construct( $config );
+	}
 
 	// Instance methods --------------------------------------------
 
@@ -77,6 +90,10 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 		$modelClass	= static::$modelClass;
 		$modelTable	= $this->getModelTable();
 
+		$groupTable	= Yii::$app->factory->get( 'groupService' )->getModelTable();
+		$userTable	= $this->userService->getModelTable();
+		$roleTable	= $this->roleService->getModelTable();
+
 	    $sort = new Sort([
 	        'attributes' => [
 	            'id' => [
@@ -86,23 +103,29 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 	                'label' => 'Id'
 	            ],
 	            'group' => [
-	                'asc' => [ "$modelTable.groupId" => SORT_ASC ],
-	                'desc' => [ "$modelTable.groupId" => SORT_DESC ],
+	                'asc' => [ "$groupTable.name" => SORT_ASC ],
+	                'desc' => [ "$groupTable.name" => SORT_DESC ],
 	                'default' => SORT_DESC,
 	                'label' => 'Group'
 	            ],
-	            'user' => [
-	                'asc' => [ "$modelTable.userId" => SORT_ASC ],
-	                'desc' => [ "$modelTable.userId" => SORT_DESC ],
-	                'default' => SORT_DESC,
-	                'label' => 'User'
-	            ],
-	            'role' => [
-	                'asc' => [ "$modelTable.roleId" => SORT_ASC ],
-	                'desc' => [ "$modelTable.roleId" => SORT_DESC ],
-	                'default' => SORT_DESC,
-	                'label' => 'Role'
-	            ],
+				'user' => [
+					'asc' => [ "$userTable.name" => SORT_ASC ],
+					'desc' => [ "$userTable.name" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'User',
+				],
+				'role' => [
+					'asc' => [ "$roleTable.name" => SORT_ASC ],
+					'desc' => [ "$roleTable.name" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Role',
+				],
+				'status' => [
+					'asc' => [ "$modelTable.status" => SORT_ASC ],
+					'desc' => [ "$modelTable.status" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Status',
+				],
 	            'cdate' => [
 	                'asc' => [ "$modelTable.createdAt" => SORT_ASC ],
 	                'desc' => [ "$modelTable.createdAt" => SORT_DESC ],
@@ -127,12 +150,53 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 	        ]
 	    ]);
 
-		if( !isset( $conditions[ 'sort' ] ) ) {
+		if( !isset( $config[ 'sort' ] ) ) {
 
-			$conditions[ 'sort' ] = $sort;
+			$config[ 'sort' ] = $sort;
 		}
 
-		return parent::findPage( $config );
+		// Query ------------
+
+		if( !isset( $config[ 'query' ] ) ) {
+
+			$config[ 'hasOne' ] = true;
+		}
+
+		// Filters ----------
+
+		// Filter - Status
+		$status	= Yii::$app->request->getQueryParam( 'status' );
+
+		if( isset( $status ) && isset( $modelClass::$urlRevStatusMap[ $status ] ) ) {
+
+			$config[ 'conditions' ][ "$modelTable.status" ]	= $modelClass::$urlRevStatusMap[ $status ];
+		}
+
+		// Searching --------
+
+		$searchCol	= Yii::$app->request->getQueryParam( 'search' );
+
+		if( isset( $searchCol ) ) {
+
+			$search = [
+				'user' => "$userTable.name",
+				'email' => "$userTable.email"
+			];
+
+			$config[ 'search-col' ] = $search[ $searchCol ];
+		}
+
+		// Reporting --------
+
+		$config[ 'report-col' ]	= [
+			'user' => "$userTable.name",
+			'email' => "$userTable.email",
+			'status' => "$modelTable.status"
+		];
+
+		// Result -----------
+
+		return parent::getPage( $config );
 	}
 
 	public function getPageByGroupId( $groupId ) {
@@ -144,45 +208,228 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 
     // Read - Models ---
 
-   	public function getByUserId( $id ) {
+   	public function getByGroupId( $groupId ) {
 
 		$modelClass	= static::$modelClass;
 
-		return $modelClass::findByUserId( $id );
+		return $modelClass::findByGroupId( $groupId );
+	}
+
+   	public function getByUserId( $userId ) {
+
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findByUserId( $userId );
 	}
 
     // Read - Lists ----
 
     // Read - Maps -----
 
+	public function searchByGroupIdName( $groupId, $name ) {
+
+		$modelClass	= static::$modelClass;
+		$modelTable	= $this->getModelTable();
+
+		$userTable	= Yii::$app->factory->get( 'userService' )->getModelTable();
+
+		$terminated	= $modelClass::STATUS_TERMINATED;
+
+		$models	= $modelClass::queryWithUser()
+					->where( "$modelTable.groupId =:gid AND $modelTable.status < $terminated", [ ':gid' => $groupId ] )
+					->andWhere( "$userTable.name like :name", [ ':name' => "$name%" ] )
+					->limit( 5 )->all();
+
+		$results = [];
+
+		foreach( $models as $model ) {
+
+			$user = $model->user;
+			$role = $model->role;
+
+			$results[] = [ 'id' => $model->id, 'name' => $user->getName(), 'email' => $user->email, 'role' => $role->name ];
+		}
+
+		return $results;
+	}
+
 	// Read - Others ---
 
 	// Create -------------
 
-	public function addMember( $groupId, $userId, $join = false, $admin = false ) {
+	public function create( $model, $config = [] ) {
 
-		$model	= $this->getModelObject();
-		$role	= null;
+		$modelClass	= static::$modelClass;
 
-		if( $admin ) {
+		$group	= isset( $config[ 'group' ] ) ? $config[ 'group' ] : null;
+		$role	= isset( $config[ 'role' ] ) ? $config[ 'role' ] : null;
+		$user	= isset( $config[ 'user' ] ) ? $config[ 'user' ] : null;
 
-			$role = Yii::$app->get( 'roleService' )->getBySlugType( CmnGlobal::ROLE_GROUP_MASTER, CmnGlobal::TYPE_COMMUNITY );
-		}
-		else {
+		$model->groupId	= isset( $group ) ? $group->id : $model->groupId;
+		$model->roleId	= isset( $role ) ? $role->id : $model->roleId;
+		$model->userId	= isset( $user ) ? $user->id : $model->userId;
 
-			$role = Yii::$app->get( 'roleService' )->getBySlugType( CmnGlobal::ROLE_GROUP_MEMBER, CmnGlobal::TYPE_COMMUNITY );
-		}
+		$model->status	= isset( $model->status ) ? $model->status : $modelClass::STATUS_NEW;
 
-		$model->groupId	= $groupId;
-		$model->userId	= $userId;
-		$model->roleId	= $role->id;
+		if( empty( $model->roleId ) ) {
 
-		if( !$join ) {
+			$role = $this->roleService->getBySlugType( CmnGlobal::ROLE_GROUP_MEMBER, CmnGlobal::TYPE_COMMUNITY );
 
-			$model->status = GroupMember::STATUS_ACTIVE;
+			$model->roleId = $role->id;
 		}
 
-		$model->save();
+		return parent::create( $model, $config );
+	}
+
+	public function add( $model, $config = [] ) {
+
+		$admin		= isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
+		$notify		= isset( $config[ 'notify' ] ) ? $config[ 'notify' ] : true;
+		$mail		= isset( $config[ 'mail' ] ) ? $config[ 'mail' ] : true;
+		$avatar		= isset( $config[ 'avatar' ] ) ? $config[ 'avatar' ] : null;
+		$group		= isset( $config[ 'group' ] ) ? $config[ 'group' ] : null;
+		$user		= isset( $config[ 'user' ] ) ? $config[ 'user' ] : null;
+		$member		= isset( $config[ 'member' ] ) ? $config[ 'member' ] : null;
+		$adminLink	= isset( $config[ 'adminLink' ] ) ? $config[ 'adminLink' ] : '/community/group/member/update';
+
+		$transaction = Yii::$app->db->beginTransaction();
+
+		try {
+
+			// Create User and group member in case existing user is not selected
+			if( isset( $user ) && isset( $member ) ) {
+
+				$user = $this->userService->create( $user, [ 'avatar' => $avatar ] );
+
+				$member->userId = $user->id;
+
+				// Add User to current Site
+				$this->memberService->create( $member );
+			}
+
+			// Create Group Member
+			$model = $this->create( $model, [ 'group' => $group, 'user' => $user ] );
+
+			// Update User Status to Submitted for further approval
+			if( Yii::$app->core->userApproval ) {
+
+				$this->userService->submit( $model->user );
+			}
+
+			$transaction->commit();
+		}
+		catch( Exception $e ) {
+
+			$transaction->rollBack();
+
+			return false;
+		}
+
+		$group = $model->group;
+
+		// Notify Group Admin
+		if( $notify ) {
+
+			// Trigger Notification
+			Yii::$app->eventManager->triggerNotification( CmnGlobal::TPL_NOTIFY_GROUP_MEMBER_ADD,
+				[ 'model' => $model, 'service' => $this, 'group' => $group, 'user' => $model->user, 'role' => $model->role ],
+				[ 'parentId' => $group->id, 'parentType' => CmnGlobal::TYPE_GROUP, 'email' => $group->getEmail(), 'adminLink' => "{$adminLink}?id={$model->id}" ]
+			);
+		}
+
+		// Trigger mail to Member
+		if( $mail ) {
+
+			// New User
+			if( isset( $user ) && isset( $member ) ) {
+
+				Yii::$app->cmnMailer->sendCreateGroupMemberMail( $model, $group, $user );
+			}
+			// Existing User
+			else {
+
+				$model->generateVerifyToken();
+
+				Yii::$app->cmnMailer->sendInviteGroupMemberMail( $model, $group, $model->user );
+			}
+		}
+
+		return $model;
+	}
+
+	public function register( $model, $config = [] ) {
+
+		$notify		= isset( $config[ 'notify' ] ) ? $config[ 'notify' ] : true;
+		$mail		= isset( $config[ 'mail' ] ) ? $config[ 'mail' ] : true;
+		$adminLink	= isset( $config[ 'adminLink' ] ) ? $config[ 'adminLink' ] : '/community/group/member/update';
+
+		$group	= $config[ 'group' ];
+		$user	= Yii::$app->core->getUser();
+
+		$transaction = Yii::$app->db->beginTransaction();
+
+		try {
+
+			$model = $this->create( $model, [ 'group' => $group, 'user' => $user ] );
+
+			// Update User status of newly registered user
+			if( $user->isRegistration() ) {
+
+				$this->userService->submit( $user );
+			}
+
+			$transaction->commit();
+		}
+		catch( Exception $e ) {
+
+			$transaction->rollBack();
+
+			return false;
+		}
+
+		// Notify Site & Group Admin
+		if( $notify ) {
+
+			Yii::$app->eventManager->triggerNotification( CmnGlobal::TPL_NOTIFY_GROUP_MEMBER_SUBMIT,
+				[ 'model' => $model, 'service' => $this, 'group' => $group, 'user' => $model->user, 'role' => $model->role ],
+				[ 'parentId' => $group->id, 'parentType' => CmnGlobal::TYPE_GROUP, 'email' => $group->getEmail(), 'adminLink' => "{$adminLink}?id={$model->id}" ]
+			);
+		}
+
+		// Email Member
+		if( $mail ) {
+
+			Yii::$app->cmnMailer->sendRegisterGroupMemberMail( $model, $group, $user );
+		}
+
+		return $model;
+	}
+
+	public function join( $model, $config = [] ) {
+
+		$notify		= isset( $config[ 'notify' ] ) ? $config[ 'notify' ] : true;
+		$mail		= isset( $config[ 'mail' ] ) ? $config[ 'mail' ] : true;
+		$adminLink	= isset( $config[ 'adminLink' ] ) ? $config[ 'adminLink' ] : '/community/group/member/update';
+
+		$group	= $config[ 'group' ];
+		$user	= Yii::$app->core->getUser();
+
+		$model = $this->create( $model, [ 'group' => $group, 'user' => $user ] );
+
+		// Notify Group Admin
+		if( $notify ) {
+
+			Yii::$app->eventManager->triggerNotification( CmnGlobal::TPL_NOTIFY_GROUP_MEMBER_JOIN,
+				[ 'model' => $model, 'service' => $this, 'group' => $group, 'user' => $model->user, 'role' => $model->role ],
+				[ 'parentId' => $group->id, 'parentType' => CmnGlobal::TYPE_GROUP, 'email' => $group->getEmail(), 'adminLink' => "{$adminLink}?id={$model->id}" ]
+			);
+		}
+
+		// Email Member
+		if( $mail ) {
+
+			Yii::$app->cmnMailer->sendJoinGroupMemberMail( $model, $group, $user );
+		}
 
 		return $model;
 	}
@@ -193,13 +440,15 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 
 		$admin = isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
 
-		$model->syncedAt = DateUtil::getDateTime();
-
 		if( $admin ) {
 
 			return parent::update( $model, [
-				'attributes' => [ 'status', 'syncedAt' ]
+				'attributes' => [ 'roleId', 'status' ]
 			]);
+		}
+		else {
+
+			$model->syncedAt = DateUtil::getDateTime();
 		}
 
 		return parent::update( $model, [
@@ -217,6 +466,91 @@ class GroupMemberService extends MapperService implements IGroupMemberService {
 	}
 
 	// Bulk ---------------
+
+	public function applyBulkByGroupId( $column, $action, $target, $groupId ) {
+
+		foreach( $target as $id ) {
+
+			$model = $this->getById( $id );
+
+			if( isset( $model ) && !$model->isTerminated() && $model->groupId == $groupId ) {
+
+				$this->applyBulk( $model, $column, $action, $target );
+			}
+		}
+	}
+
+	public function applyBulkByUserId( $column, $action, $target, $userId ) {
+
+		foreach( $target as $id ) {
+
+			$model = $this->getById( $id );
+
+			if( isset( $model ) && !$model->isTerminated() && $model->userId == $userId ) {
+
+				$this->applyBulk( $model, $column, $action, $target );
+			}
+		}
+	}
+
+	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
+
+		switch( $column ) {
+
+			case 'status': {
+
+				switch( $action ) {
+
+					case 'approved': {
+
+						if( $model->isBelowRejected() ) {
+
+							$this->approve( $model );
+						}
+
+						break;
+					}
+					case 'active': {
+
+						$this->activate( $model );
+
+						break;
+					}
+					case 'blocked': {
+
+						$this->block( $model );
+
+						break;
+					}
+					case 'terminated': {
+
+						if( !$model->isTerminated() ) {
+
+							$this->terminate( $model );
+						}
+
+						break;
+					}
+				}
+
+				break;
+			}
+			case 'model': {
+
+				switch( $action ) {
+
+					case 'delete': {
+
+						$this->delete( $model );
+
+						break;
+					}
+				}
+
+				break;
+			}
+		}
+	}
 
 	// Notifications ------
 
