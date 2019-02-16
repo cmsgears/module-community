@@ -7,7 +7,7 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
 $core	= Yii::$app->core;
-$user	= Yii::$app->user->getIdentity();
+$user	= $core->getUser();
 ?>
 <?php if( $core->hasModule( 'community' ) && $user->isPermitted( CmnGlobal::PERM_COMMUNITY_ADMIN ) ) { ?>
 	<div id="sidebar-community" class="collapsible-tab has-children <?= $parent === 'sidebar-community' ? 'active' : null ?>">

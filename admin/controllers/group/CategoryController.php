@@ -43,6 +43,7 @@ class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryCo
 		$this->crudPermission = CmnGlobal::PERM_GROUP_ADMIN;
 
 		// Config
+		$this->title		= 'Group';
 		$this->type			= CmnGlobal::TYPE_GROUP;
 		$this->templateType	= CmnGlobal::TYPE_GROUP;
 		$this->apixBase		= 'community/group/category';
