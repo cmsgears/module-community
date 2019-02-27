@@ -1,72 +1,67 @@
 <?php
-use \Yii;
-use yii\helpers\Html; 
-use yii\widgets\LinkPager;
+// CMG Imports
+use cmsgears\widgets\popup\Popup;
 
-use cmsgears\core\common\utilities\CodeGenUtil;
+use cmsgears\widgets\grid\DataGrid;
 
 $coreProperties = $this->context->getCoreProperties();
-$this->title 	= $coreProperties->getSiteTitle() . " | Group Messages";
+$title			= $this->context->title;
+$this->title	= $title . 's | ' . $coreProperties->getSiteTitle();
+$apixBase		= $this->context->apixBase;
 
-$gid			= $group->id;
-
-// Sidebar
-$this->params[ 'sidebar-parent' ] 	= $sidebar[ 'parent' ];
-$this->params[ 'sidebar-child' ] 	= $sidebar[ 'child' ];
-
-// Data
-$pagination		= $dataProvider->getPagination();
-$models			= $dataProvider->getModels();
+// View Templates
+$moduleTemplates	= '@cmsgears/module-community/admin/views/templates';
+$themeTemplates		= '@themes/admin/views/templates';
 ?>
-<div class="cud-box">
-	<h2>Group Messages</h2>
-	<form action="#" class="frm-split">
-		<label>Name</label>
-		<label><?= $group->name ?></label>		
-	</form>
-</div>
-<div class="data-grid">
-	<div class="grid-header">
-		<?= LinkPager::widget( [ 'pagination' => $pagination ] ); ?>
-	</div>
-	<div class="wrap-grid">
-		<table>
-			<thead>
-				<tr>
-					<th>Avatar</th>
-					<th>Username</th>
-					<th>Name</th>
-					<th>Email</th>
-					<th>Content</th>
-					<th>Created On</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php
+<?= DataGrid::widget([
+	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => "create?pid=$parent->id", 'data' => [ 'parent' => $parent ],
+	'title' => 'Groups', 'options' => [ 'class' => 'grid-data grid-data-admin' ],
+	'searchColumns' => [ 'content' => 'Content' ],
+	'sortColumns' => [
+		'sender' => 'Sender', 'broadcasted' => 'Broadcasted', 'delivered' => 'Delivered',
+		'consumed' => 'Consumed', 'cdate' => 'Created At', 'udate' => 'Updated At'
+	],
+	'filters' => [
+		'model' => [ 'broadcasted' => 'Broadcasted', 'delivered' => 'Delivered', 'consumed' => 'Consumed' ]
+	],
+	'reportColumns' => [
+		'content' => [ 'title' => 'Content', 'type' => 'text' ],
+		'broadcasted' => [ 'title' => 'Broadcasted', 'type' => 'flag' ],
+		'delivered' => [ 'title' => 'Delivered', 'type' => 'flag' ],
+		'consumed' => [ 'title' => 'Consumed', 'type' => 'flag' ]
+	],
+	'bulkPopup' => 'popup-grid-bulk', 'bulkActions' => [
+		'model' => [ 'broadcasted' => 'Broadcasted', 'delivered' => 'Delivered', 'consumed' => 'Consumed', 'delete' => 'Delete' ]
+	],
+	'header' => false, 'footer' => true,
+	'grid' => true, 'columns' => [ 'root' => 'colf colf15', 'factor' => [ null, null, 'x2', null, null, null, 'x6', 'x2' ] ],
+	'gridColumns' => [
+		'bulk' => 'Action',
+		'icon' => [ 'title' => 'Icon', 'generate' => function( $model ) {
+			$icon = "<div class=\"align align-center\"><i class=\"$model->icon\"></i></div>" ; return $icon;
+		}],
+		'sender' => [ 'title' => 'Sender', 'generate' => function( $model ) { return $model->sender->name; } ],
+		'broadcasted' => [ 'title' => 'Broadcasted', 'generate' => function( $model ) { return $model->getBroadcastedStr(); } ],
+		'delivered' => [ 'title' => 'Delivered', 'generate' => function( $model ) { return $model->getDeliveredStr(); } ],
+		'consumed' => [ 'title' => 'Consumed', 'generate' => function( $model ) { return $model->getConsumedStr(); } ],
+		'message' => [ 'title' => 'Message', 'generate' => function( $model ) { return $model->getMediumContent(); } ],
+		'actions' => 'Actions'
+	],
+	'gridCards' => [ 'root' => 'col col12', 'factor' => 'x3' ],
+	'templateDir' => "$themeTemplates/widget/grid",
+	//'dataView' => "$moduleTemplates/grid/data/group-message",
+	//'cardView' => "$moduleTemplates/grid/cards/group-message",
+	'actionView' => "$moduleTemplates/grid/actions/group-message"
+]) ?>
 
-					foreach( $models as $groupMessage ) {
+<?= Popup::widget([
+	'title' => 'Apply Bulk Action', 'size' => 'medium',
+	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'bulk',
+	'data' => [ 'model' => 'Group Message', 'app' => 'grid', 'controller' => 'crud', 'action' => 'bulk', 'url' => "$apixBase/bulk" ]
+])?>
 
-						$id		= $groupMessage->id;
-						$user 	= $groupMessage->member->user;
-				?>
-					<tr>
-						<td><?= CodeGenUtil::getImageThumbTag( $user->avatar, [ 'class' => 'avatar', 'image' => 'avatar' ] ) ?></td>
-						<td><?= $user->username ?></td>
-						<td><?= $user->name ?></td>
-						<td><?= $user->email ?></td>
-						<td><?= $groupMessage->content ?></td>
-						<td><?= $groupMessage->createdAt ?></td>
-						<td>
-							<span class="wrap-icon-action" title="Delete Group Message"><?= Html::a( "", ["/cmgcmn/group/message/delete?gid=$gid&id=$id"], ['class'=>'icon-action icon-action-delete'] )  ?></span>
-						</td>
-					</tr>
-				<?php } ?>
-			</tbody>
-		</table>
-	</div>
-	<div class="grid-footer">
-		<div class="text"> <?=CodeGenUtil::getPaginationDetail( $dataProvider ) ?> </div>
-		<?= LinkPager::widget( [ 'pagination' => $pagination ] ); ?>
-	</div>
-</div>
+<?= Popup::widget([
+	'title' => 'Delete Group Message', 'size' => 'medium',
+	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'delete',
+	'data' => [ 'model' => 'Group Message', 'app' => 'grid', 'controller' => 'crud', 'action' => 'delete', 'url' => "$apixBase/delete?id=" ]
+])?>

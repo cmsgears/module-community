@@ -1,87 +1,156 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\common\components;
 
 // Yii Imports
-use \Yii;
+use Yii;
 
 /**
- * The mail component used for sending possible mails by the CMSGears core module. It must be initialised
- * for app using the name cmgCoreMailer. It's used by various controllers to trigger mails.
+ * Mailer triggers the mails provided by Community Module.
+ *
+ * @since 1.0.0
  */
 class Mailer extends \cmsgears\core\common\base\Mailer {
 
-	// Variables ---------------------------------------------------
+	// Global -----------------
 
-	// Globals -------------------------------
+	const MAIL_GROUP_CREATE		= 'group/create';
+	const MAIL_GROUP_REGISTER	= 'group/register';
 
-	// Constants --------------
-
-	const MAIL_ACCOUNT_CREATE	= "account-create";
-	const MAIL_GROUP_INVITE		= "group-invite";
-
-	// Public -----------------
-
-	// Protected --------------
-
-	// Variables -----------------------------
+	const MAIL_GROUP_MEMBER_CREATE		= 'member/create';
+	const MAIL_GROUP_MEMBER_REGISTER	= 'member/register';
+	const MAIL_GROUP_MEMBER_JOIN		= 'member/join';
+	const MAIL_GROUP_MEMBER_INVITE		= 'member/invite';
 
 	// Public -----------------
 
-    public $htmlLayout 			= '@cmsgears/module-community/common/mails/layouts/html';
-    public $textLayout 			= '@cmsgears/module-community/common/mails/layouts/text';
-    public $viewPath 			= '@cmsgears/module-community/common/mails/views';
+    public $htmlLayout 	= '@cmsgears/module-core/common/mails/layouts/html';
+    public $textLayout 	= '@cmsgears/module-core/common/mails/layouts/text';
+    public $viewPath 	= '@cmsgears/module-community/common/mails/views';
 
 	// Protected --------------
 
 	// Private ----------------
 
-	// Traits ------------------------------------------------------
-
 	// Constructor and Initialisation ------------------------------
 
 	// Instance methods --------------------------------------------
 
-	// Yii interfaces ------------------------
-
 	// Yii parent classes --------------------
-
-	// CMG interfaces ------------------------
 
 	// CMG parent classes --------------------
 
 	// Mailer --------------------------------
 
-	/**
-	 * The method sends mail for accounts created by group admin.
-	 */
-	public function sendCreateUserMail( $user ) {
+	// Group Mails --------------
 
-		$fromEmail 	= $this->mailProperties->getSenderEmail();
-		$fromName 	= $this->mailProperties->getSenderName();
+	public function sendCreateGroupMail( $group ) {
 
-		// Send Mail
-        $this->getMailer()->compose( self::MAIL_ACCOUNT_CREATE, [ 'coreProperties' => $this->coreProperties, 'user' => $user ] )
-            ->setTo( $user->email )
-            ->setFrom( [ $fromEmail => $fromName ] )
-            ->setSubject( "Registration | " . $this->coreProperties->getSiteName() )
-            //->setTextBody( "heroor" )
-            ->send();
+		$fromEmail	= $this->mailProperties->getSenderEmail();
+		$fromName	= $this->mailProperties->getSenderName();
+
+		$email = Yii::$app->factory->get( 'groupService' )->getEmail( $group );
+
+		if( !empty( $email ) ) {
+
+			// Send Mail
+			$this->getMailer()->compose( self::MAIL_GROUP_CREATE, [ 'coreProperties' => $this->coreProperties, 'group' => $group, 'email' => $email ] )
+				->setTo( $email )
+				->setFrom( [ $fromEmail => $fromName ] )
+				->setSubject( "Group Registration | " . $this->coreProperties->getSiteName() )
+				//->setTextBody( "text" )
+				->send();
+		}
 	}
 
-	/**
-	 * The method sends mail for accounts created by group admin.
-	 */
-	public function sendInvitationMail( $user ) {
+	public function sendRegisterGroupMail( $group, $admin ) {
 
-		$fromEmail 	= $this->mailProperties->getSenderEmail();
-		$fromName 	= $this->mailProperties->getSenderName();
+		$fromEmail	= $this->mailProperties->getSenderEmail();
+		$fromName	= $this->mailProperties->getSenderName();
+
+		$email = Yii::$app->factory->get( 'groupService' )->getEmail( $group );
+
+		if( !empty( $email ) ) {
+
+			// Send Mail
+			$this->getMailer()->compose( self::MAIL_GROUP_REGISTER, [ 'coreProperties' => $this->coreProperties, 'group' => $group, 'email' => $email, 'admin' => $admin ] )
+				->setTo( $group->email )
+				->setFrom( [ $fromEmail => $fromName ] )
+				->setSubject( "Group Registration | " . $this->coreProperties->getSiteName() )
+				//->setTextBody( "text" )
+				->send();
+		}
+	}
+
+	// Group Member Mails -------
+
+	public function sendCreateGroupMemberMail( $member, $group, $user ) {
+
+		$fromEmail	= $this->mailProperties->getSenderEmail();
+		$fromName	= $this->mailProperties->getSenderName();
+
+		$label = 'Member';
 
 		// Send Mail
-        $this->getMailer()->compose( self::MAIL_GROUP_INVITE, [ 'coreProperties' => $this->coreProperties, 'user' => $user ] )
-            ->setTo( $user->email )
-            ->setFrom( [ $fromEmail => $fromName ] )
-            ->setSubject( "Registration | " . $this->coreProperties->getSiteName() )
-            //->setTextBody( "heroor" )
-            ->send();
+		$this->getMailer()->compose( self::MAIL_GROUP_MEMBER_CREATE, [ 'coreProperties' => $this->coreProperties, 'member' => $member, 'group' => $group, 'user' => $user ] )
+			->setTo( $user->email )
+			->setFrom( [ $fromEmail => $fromName ] )
+			->setSubject( "$label Registration | " . $this->coreProperties->getSiteName() )
+			//->setTextBody( "text" )
+			->send();
 	}
+
+	public function sendRegisterGroupMemberMail( $member, $group, $user ) {
+
+		$fromEmail	= $this->mailProperties->getSenderEmail();
+		$fromName	= $this->mailProperties->getSenderName();
+
+		$label = 'Member';
+
+		// Send Mail
+		$this->getMailer()->compose( self::MAIL_GROUP_MEMBER_REGISTER, [ 'coreProperties' => $this->coreProperties, 'member' => $member, 'group' => $group, 'user' => $user ] )
+			->setTo( $user->email )
+			->setFrom( [ $fromEmail => $fromName ] )
+			->setSubject( "$label Registration | " . $this->coreProperties->getSiteName() )
+			//->setTextBody( "text" )
+			->send();
+	}
+
+	public function sendJoinGroupMemberMail( $member, $group, $user ) {
+
+		$fromEmail	= $this->mailProperties->getSenderEmail();
+		$fromName	= $this->mailProperties->getSenderName();
+
+		// Send Mail
+		$this->getMailer()->compose( self::MAIL_GROUP_MEMBER_JOIN, [ 'coreProperties' => $this->coreProperties, 'member' => $member, 'group' => $group, 'user' => $user ] )
+			->setTo( $user->email )
+			->setFrom( [ $fromEmail => $fromName ] )
+			->setSubject( "Join Group Request | " . $this->coreProperties->getSiteName() )
+			//->setTextBody( "text" )
+			->send();
+	}
+
+	public function sendInviteGroupMemberMail( $member, $group, $user ) {
+
+		$email		= $user->email;
+		$fromEmail  = $this->mailProperties->getSenderEmail();
+		$fromName   = $this->mailProperties->getSenderName();
+
+		$label = 'Member';
+
+		// Send Mail
+		$this->getMailer()->compose( self::MAIL_GROUP_MEMBER_INVITE, [ 'coreProperties' => $this->coreProperties, 'member' => $member, 'group' => $group, 'user' => $user ] )
+			->setTo( $email )
+			->setFrom( [ $fromEmail => $fromName ] )
+			->setSubject( "Become Group $label | " . $this->coreProperties->getSiteName() )
+			->send();
+	}
+
 }

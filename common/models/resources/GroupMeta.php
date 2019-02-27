@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\common\models\resources;
 
 // CMG Imports
@@ -6,17 +14,23 @@ use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\entities\Group;
 
 /**
- * GroupMeta Entity
+ * GroupMeta stores meta and attributes specific to group.
  *
  * @property integer $id
  * @property integer $modelId
+ * @property string $icon
  * @property string $name
  * @property string $label
  * @property string $type
+ * @property boolean $active
+ * @property integer $order
  * @property string $valueType
  * @property string $value
+ * @property string $data
+ *
+ * @since 1.0.0
  */
-class GroupMeta extends \cmsgears\core\common\models\base\ModelMeta {
+class GroupMeta extends \cmsgears\core\common\models\base\Meta {
 
 	// Variables ---------------------------------------------------
 
@@ -58,9 +72,14 @@ class GroupMeta extends \cmsgears\core\common\models\base\ModelMeta {
 
 	// GroupMeta -----------------------------
 
+	/**
+	 * Return corresponding group.
+	 *
+	 * @return \cmsgears\community\common\models\entities\Group
+	 */
 	public function getParent() {
 
-		return $this->hasOne( Group::className(), [ 'id' => 'modelId' ] );
+		return $this->hasOne( Group::class, [ 'id' => 'modelId' ] );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -74,7 +93,7 @@ class GroupMeta extends \cmsgears\core\common\models\base\ModelMeta {
      */
 	public static function tableName() {
 
-		return CmnTables::TABLE_GROUP_META;
+		return CmnTables::getTableName( CmnTables::TABLE_GROUP_META );
 	}
 
 	// CMG parent classes --------------------

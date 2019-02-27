@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\common\models\mappers;
 
 // Yii Imports
@@ -10,27 +18,39 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\community\common\config\CmnGlobal;
 
-use cmsgears\core\common\models\interfaces\IOwner;
+use cmsgears\core\common\models\interfaces\base\IOwner;
+use cmsgears\core\common\models\interfaces\resources\IContent;
+use cmsgears\core\common\models\interfaces\resources\IData;
+use cmsgears\core\common\models\interfaces\resources\IGridCache;
+
 use cmsgears\core\common\models\base\CoreTables;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\community\common\models\base\CmnTables;
 
+use cmsgears\core\common\models\traits\base\UserOwnerTrait;
+use cmsgears\core\common\models\traits\resources\ContentTrait;
 use cmsgears\core\common\models\traits\resources\DataTrait;
+use cmsgears\core\common\models\traits\resources\GridCacheTrait;
 
 /**
- * Friend Entity
+ * Friend maps one user to another.
  *
  * @property integer $id
  * @property integer $userId
  * @property integer $friendId
  * @property integer $status
- * @property string $type
+ * @property integer $type
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  * @property string $content
  * @property string $data
+ * @property string $gridCache
+ * @property boolean $gridCacheValid
+ * @property datetime $gridCachedAt
+ *
+ * @since 1.0.0
  */
-class Friend extends \cmsgears\core\common\models\base\Entity implements IOwner {
+class Friend extends \cmsgears\core\common\models\base\Mapper implements IContent, IData, IGridCache, IOwner {
 
 	// Variables ---------------------------------------------------
 
@@ -38,7 +58,35 @@ class Friend extends \cmsgears\core\common\models\base\Entity implements IOwner 
 
 	// Constants --------------
 
+	const TYPE_CHILDHOOD	=     0;
+	const TYPE_SCHOOL		=   500;
+	const TYPE_COLLEGE		=  1000;
+	const TYPE_TRAVEL		=  1500;
+	const TYPE_PROFESSIONAL	=  2000;
+	const TYPE_OTHER		= 10000;
+
+	const STATUS_REQUEST	=    0;
+	const STATUS_REJECTED	=  500;
+	const STATUS_BLOCKED	= 1000;
+	const STATUS_ACTIVE		= 1500;
+
 	// Public -----------------
+
+	public static $typeMap = [
+		self::TYPE_CHILDHOOD => 'Childhood',
+		self::TYPE_SCHOOL => 'School',
+		self::TYPE_COLLEGE => 'College',
+		self::TYPE_TRAVEL => 'Travel',
+		self::TYPE_PROFESSIONAL => 'Professional',
+		self::TYPE_OTHER => 'Other'
+	];
+
+	public static $statusMap = [
+		self::STATUS_REQUEST => 'Request',
+		self::STATUS_REJECTED => 'Rejected',
+		self::STATUS_BLOCKED => 'Blocked',
+		self::STATUS_ACTIVE => 'Active'
+	];
 
 	// Protected --------------
 
@@ -48,11 +96,16 @@ class Friend extends \cmsgears\core\common\models\base\Entity implements IOwner 
 
 	// Protected --------------
 
+	protected $modelType = CmnGlobal::TYPE_FRIEND;
+
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
 
+	use ContentTrait;
 	use DataTrait;
+	use GridCacheTrait;
+	use UserOwnerTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -71,7 +124,7 @@ class Friend extends \cmsgears\core\common\models\base\Entity implements IOwner 
 
         return [
             'timestampBehavior' => [
-                'class' => TimestampBehavior::className(),
+                'class' => TimestampBehavior::class,
 				'createdAtAttribute' => 'createdAt',
  				'updatedAtAttribute' => 'modifiedAt',
  				'value' => new Expression('NOW()')
@@ -86,16 +139,18 @@ class Friend extends \cmsgears\core\common\models\base\Entity implements IOwner 
      */
 	public function rules() {
 
-        return [
+		// Model Rules
+		$rules = [
         	// Required, Safe
             [ [ 'userId', 'friendId' ], 'required' ],
-            [ [ 'id', 'content', 'data' ], 'safe' ],
-            // Text Limit
-            [ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+            [ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
+			// Unique
+			[ 'friendId', 'unique', 'targetAttribute' => [ 'userId', 'friendId' ], 'comboNotUnique' => 'Friend already exist.' ],
             // Other
-            [ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+            [ [ 'status', 'type' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ 'gridCacheValid', 'boolean' ],
             [ [ 'userId', 'friendId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
 
@@ -108,8 +163,10 @@ class Friend extends \cmsgears\core\common\models\base\Entity implements IOwner 
 			'userId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_USER ),
 			'friendId' => Yii::$app->cmnMessage->getMessage( CmnGlobal::FIELD_FRIEND ),
 			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
+			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
-			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
+			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA ),
+			'gridCache' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_GRID_CACHE )
 		];
 	}
 
@@ -122,29 +179,25 @@ class Friend extends \cmsgears\core\common\models\base\Entity implements IOwner 
 	// Friend --------------------------------
 
 	/**
-	 * @return User
+	 * Return the user who initiated friendship.
+	 *
+	 * @return \cmsgears\core\common\models\entities\User
 	 */
 	public function getUser() {
 
-		return $this->hasOne( User::className(), [ 'id' => 'userId' ] );
+		return $this->hasOne( User::class, [ 'id' => 'userId' ] );
 	}
 
 	/**
-	 * @return User
+	 * Return user who got friendship invite.
+	 *
+	 * @return \cmsgears\core\common\models\entities\User
 	 */
 	public function getFriend() {
 
-		$userTable = CoreTables::TABLE_USER;
+		$userTable = CoreTables::getTableName( CoreTables::TABLE_USER );
 
-		return $this->hasOne( User::className(), [ 'id' => 'friendId' ] )->from( "$userTable as friend" );
-	}
-
-	/**
-	 * @return boolean - whether given user created this entry
-	 */
-	public function isOwner( $user = null, $strict = false ) {
-
-		return $this->userId	= $user->id;
+		return $this->hasOne( User::class, [ 'id' => 'friendId' ] )->from( "$userTable as friend" );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -158,7 +211,7 @@ class Friend extends \cmsgears\core\common\models\base\Entity implements IOwner 
      */
 	public static function tableName() {
 
-		return CmnTables::TABLE_FRIEND;
+		return CmnTables::getTableName( CmnTables::TABLE_FRIEND );
 	}
 
 	// CMG parent classes --------------------
@@ -167,10 +220,14 @@ class Friend extends \cmsgears\core\common\models\base\Entity implements IOwner 
 
 	// Read - Query -----------
 
+    /**
+     * @inheritdoc
+     */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'user', 'friend' ];
-		$config[ 'relations' ]	= $relations;
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'user', 'friend' ];
+
+		$config[ 'relations' ] = $relations;
 
 		return parent::queryWithAll( $config );
 	}
@@ -183,13 +240,26 @@ class Friend extends \cmsgears\core\common\models\base\Entity implements IOwner 
 
 	// Delete -----------------
 
+	/**
+	 * Delete all mappings associated with given user id.
+	 *
+	 * @param integer $userId
+	 * @return integer Number of rows
+	 */
 	public static function deleteByUserId( $userId ) {
 
-		self::deleteAll( 'userId=:id', [ ':id' => $userId ] );
+		return self::deleteAll( 'userId=:id', [ ':id' => $userId ] );
 	}
 
+	/**
+	 * Delete all mappings associated with given friend id.
+	 *
+	 * @param integer $friendId
+	 * @return integer Number of rows
+	 */
 	public static function deleteByFriendId( $friendId ) {
 
-		self::deleteAll( 'friendId=:id', [ ':id' => $friendId ] );
+		return self::deleteAll( 'friendId=:id', [ ':id' => $friendId ] );
 	}
+
 }

@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\community\admin\controllers;
 
 // Yii Imports
@@ -26,25 +34,26 @@ class RoleController extends \cmsgears\core\admin\controllers\base\RoleControlle
 
         parent::init();
 
-		// Permission
-		$this->crudPermission 	= CmnGlobal::PERM_COMMUNITY;
+		// Config
+		$this->type		= CmnGlobal::TYPE_COMMUNITY;
+		$this->system	= false;
 
 		// Sidebar
-		$this->sidebar 			= [ 'parent' => 'sidebar-community', 'child' => 'role' ];
-
-		$this->type				= CmnGlobal::TYPE_COMMUNITY;
+		$this->sidebar = [ 'parent' => 'sidebar-community', 'child' => 'role' ];
 
 		// Return Url
-		$this->returnUrl		= Url::previous( 'roles' );
-		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/role/all' ], true );
-		
+		$this->returnUrl = Url::previous( 'community-roles' );
+		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/community/role/all' ], true );
+
 		// Breadcrumbs
-		$this->breadcrumbs		= [
-			'all' => [ [ 'label' => 'Role' ] ],
-			'create' => [ [ 'label' => 'Role', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
-			'update' => [ [ 'label' => 'Role', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
-			'delete' => [ [ 'label' => 'Role', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ],
-			'items' => [ [ 'label' => 'Role', 'url' => $this->returnUrl ], [ 'label' => 'Items' ] ]
+		$this->breadcrumbs = [
+			'base' => [
+				[ 'label' => 'Home', 'url' => Url::toRoute( '/dashboard' ) ]
+			],
+			'all' => [ [ 'label' => 'Community Roles' ] ],
+			'create' => [ [ 'label' => 'Community Roles', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
+			'update' => [ [ 'label' => 'Community Roles', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Community Roles', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
 		];
 	}
 
@@ -64,11 +73,11 @@ class RoleController extends \cmsgears\core\admin\controllers\base\RoleControlle
 
 	// RoleController ------------------------
 
-	public function actionAll() {
+	public function actionAll( $config = [] ) {
 
-		Url::remember( Yii::$app->request->getUrl(), 'roles' );
+		Url::remember( Yii::$app->request->getUrl(), 'community-roles' );
 
-		return parent::actionAll();
+		return parent::actionAll( $config );
 	}
-	
+
 }
