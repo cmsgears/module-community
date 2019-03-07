@@ -320,6 +320,7 @@ class m160910_110554_community extends \cmsgears\core\common\base\Migration {
 			'texture' => $this->string( Yii::$app->core->largeText )->defaultValue( null ),
 			'title' => $this->string( Yii::$app->core->xxxLargeText )->defaultValue( null ),
 			'description' => $this->string( Yii::$app->core->xtraLargeText )->defaultValue( null ),
+			'passwordHash' => $this->string( Yii::$app->core->xLargeText )->defaultValue( null ),
 			'email' => $this->string( Yii::$app->core->xxLargeText )->defaultValue( null ),
 			'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'visibility' => $this->smallInteger( 6 )->defaultValue( 0 ),
