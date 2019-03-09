@@ -39,14 +39,14 @@ abstract class MemberController extends \cmsgears\core\admin\controllers\base\Co
 
 	// Protected --------------
 
+	protected $roleType;
+
 	protected $parentService;
 
 	protected $userService;
 	protected $memberService;
 
 	protected $roleService;
-
-	protected $superRoleId;
 
 	// Private ----------------
 
@@ -62,6 +62,9 @@ abstract class MemberController extends \cmsgears\core\admin\controllers\base\Co
 		// Permission
 		$this->crudPermission = CmnGlobal::PERM_GROUP_ADMIN;
 
+		// Config
+		$this->roleType = CmnGlobal::TYPE_COMMUNITY;
+
 		// Services
 		$this->modelService = Yii::$app->factory->get( 'groupMemberService' );
 
@@ -69,13 +72,7 @@ abstract class MemberController extends \cmsgears\core\admin\controllers\base\Co
 
 		$this->userService		= Yii::$app->factory->get( 'userService' );
 		$this->memberService	= Yii::$app->factory->get( 'siteMemberService' );
-
-		$this->roleService	= Yii::$app->factory->get( 'roleService' );
-
-		// Super Admin
-		$superRole = $this->roleService->getBySlugType( CoreGlobal::ROLE_SUPER_ADMIN, CoreGlobal::TYPE_SYSTEM );
-
-		$this->superRoleId = isset( $superRole ) ?$superRole->id : null;
+		$this->roleService		= Yii::$app->factory->get( 'roleService' );
 	}
 
 	// Instance methods --------------------------------------------
@@ -137,7 +134,7 @@ abstract class MemberController extends \cmsgears\core\admin\controllers\base\Co
 
 			$dataProvider = $this->modelService->getPageByGroupId( $parent->id );
 
-			$roleMap = $this->roleService->getIdNameMapByType( CmnGlobal::TYPE_COMMUNITY );
+			$roleMap = $this->roleService->getIdNameMapByType( $this->roleType );
 
 			return $this->render( 'all', [
 				'dataProvider' => $dataProvider,
@@ -200,11 +197,9 @@ abstract class MemberController extends \cmsgears\core\admin\controllers\base\Co
 			}
 		}
 
-		$roleMap = $this->roleService->getIdNameMapByType( CmnGlobal::TYPE_COMMUNITY );
+		$roleMap = $this->roleService->getIdNameMapByType( $this->roleType );
 
 		$siteRoleMap = $this->roleService->getIdNameMapByType( CoreGlobal::TYPE_SYSTEM );
-
-		unset( $siteRoleMap[ $this->superRoleId ] );
 
 		return $this->render( 'create', [
 			'group' => $parent,
@@ -237,7 +232,7 @@ abstract class MemberController extends \cmsgears\core\admin\controllers\base\Co
 				return $this->redirect( $this->returnUrl );
 			}
 
-			$roleMap = $this->roleService->getIdNameMapByType( CmnGlobal::TYPE_COMMUNITY );
+			$roleMap = $this->roleService->getIdNameMapByType( $this->roleType );
 
 			return $this->render( 'update', [
 				'group' => $parent,

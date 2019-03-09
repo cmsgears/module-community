@@ -45,6 +45,7 @@ class MemberController extends \cmsgears\community\admin\controllers\base\group\
 		// Config
 		$this->title	= 'Group Member';
 		$this->apixBase	= 'community/group/member';
+		$this->baseUrl	= 'room/member';
 
 		// Services
 		$this->parentService = Yii::$app->factory->get( 'groupService' );

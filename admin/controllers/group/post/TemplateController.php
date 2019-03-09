@@ -43,6 +43,7 @@ class TemplateController extends \cmsgears\core\admin\controllers\base\TemplateC
 		$this->crudPermission = CmnGlobal::PERM_GROUP_ADMIN;
 
 		// Config
+		$this->title	= 'Group Post';
 		$this->type		= CmnGlobal::TYPE_GROUP_POST;
 		$this->apixBase	= 'community/group/post/template';
 

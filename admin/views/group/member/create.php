@@ -1,9 +1,9 @@
 <?php
 // Yii Imports
-use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 
 // CMG Imports
+use cmsgears\core\common\widgets\ActiveForm;
 use cmsgears\files\widgets\AvatarUploader;
 use cmsgears\icons\widgets\IconChooser;
 
@@ -25,7 +25,11 @@ $groupName	= isset( $model->group ) ? $model->group->name : null;
 				<div class="box-content">
 					<div class="row">
 						<div class="col col5x2">
-							<?= Yii::$app->formDesigner->getAutoSuggest( $form, $model, 'userId', [ 'placeholder' => 'User', 'icon' => 'cmti cmti-search', 'value' => $userName, 'url' => 'core/user/auto-search' ] ) ?>
+							<?= Yii::$app->formDesigner->getAutoSuggest( $form, $model, 'userId', [
+								'placeholder' => 'Search User', 'icon' => 'cmti cmti-search',
+								'app' => 'core', 'controller' => 'user',
+								'value' => $userName, 'url' => 'core/user/auto-search'
+							])?>
 						</div>
 						<div class="col col5 align align-center">
 							OR

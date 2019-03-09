@@ -1,11 +1,9 @@
 <?php
 // Yii Imports
-use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 
 // CMG Imports
-use cmsgears\files\widgets\AvatarUploader;
-use cmsgears\icons\widgets\IconChooser;
+use cmsgears\core\common\widgets\ActiveForm;
 
 $coreProperties = $this->context->getCoreProperties();
 $this->title 	= 'Update Group Member | ' . $coreProperties->getSiteTitle();

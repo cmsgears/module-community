@@ -269,7 +269,9 @@ class GroupMemberService extends \cmsgears\core\common\services\base\MapperServi
 		$model->roleId	= isset( $role ) ? $role->id : $model->roleId;
 		$model->userId	= isset( $user ) ? $user->id : $model->userId;
 
-		$model->status	= isset( $model->status ) ? $model->status : $modelClass::STATUS_NEW;
+		$model->status = isset( $model->status ) ? $model->status : $modelClass::STATUS_NEW;
+
+		$model->generateVerifyToken();
 
 		if( empty( $model->roleId ) ) {
 
