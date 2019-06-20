@@ -41,7 +41,6 @@ class GroupController extends \cmsgears\community\admin\controllers\base\GroupCo
 		$this->type			= CmnGlobal::TYPE_GROUP;
 		$this->templateType	= CmnGlobal::TYPE_GROUP;
 		$this->apixBase		= 'community/group';
-		$this->title		= 'Group';
 
 		// Services
 		$this->modelService	= Yii::$app->factory->get( 'groupService' );
