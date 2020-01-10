@@ -57,7 +57,10 @@ class m160910_110601_community_data extends \cmsgears\core\common\base\Migration
 
 		// Init system pages
 		$this->insertSystemPages();
-    }
+
+		// Notifications
+		$this->insertNotificationTemplates();
+	}
 
 	private function insertRolePermission() {
 
@@ -300,7 +303,9 @@ class m160910_110601_community_data extends \cmsgears\core\common\base\Migration
 		$columns = [ 'siteId', 'createdBy', 'modifiedBy', 'name', 'slug', 'type', 'icon', 'title', 'status', 'visibility', 'order', 'featured', 'comments', 'createdAt', 'modifiedAt' ];
 
 		$pages	= [
-			// Hidden Search Pages
+			// Group Pages
+			[ $this->site->id, $this->master->id, $this->master->id, 'Groups', CmnGlobal::PAGE_GROUPS, CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			// Search Pages
 			[ $this->site->id, $this->master->id, $this->master->id, 'Search Groups', CmnGlobal::PAGE_SEARCH_GROUPS, CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ]
 		];
 
@@ -312,11 +317,25 @@ class m160910_110601_community_data extends \cmsgears\core\common\base\Migration
 		$columns = [ 'parentId', 'parentType', 'seoName', 'seoDescription', 'seoKeywords', 'seoRobot', 'summary', 'content', 'publishedAt' ];
 
 		$pages	= [
-			// Hidden Search Pages
+			// Group Pages
+			[ Page::findBySlugType( CmnGlobal::PAGE_GROUPS, CmsGlobal::TYPE_PAGE )->id, CmsGlobal::TYPE_PAGE, null, null, null, null, $summary, $content, DateUtil::getDateTime() ],
+			// Search Pages
 			[ Page::findBySlugType( CmnGlobal::PAGE_SEARCH_GROUPS, CmsGlobal::TYPE_PAGE )->id, CmsGlobal::TYPE_PAGE, null, null, null, null, $summary, $content, DateUtil::getDateTime() ]
 		];
 
 		$this->batchInsert( $this->prefix . 'cms_model_content', $columns, $pages );
+	}
+
+	private function insertNotificationTemplates() {
+
+		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'icon', 'type', 'description', 'active', 'renderer', 'fileRender', 'layout', 'layoutGroup', 'viewPath', 'createdAt', 'modifiedAt', 'message', 'content', 'data' ];
+
+		$templates = [
+			// Group
+			[ $this->master->id, $this->master->id, 'New Group', CmnGlobal::TPL_NOTIFY_GROUP_NEW, null, 'notification', 'Trigger Notification and Email to Admin, when new Group is created by site users.', true, 'twig', 0, null, false, null, DateUtil::getDateTime(), DateUtil::getDateTime(), 'New Group - <b>{{model.displayName}}</b>', 'New Group - <b>{{model.displayName}}</b> has been submitted for registration. {% if config.link %}Please follow this <a href="{{config.link}}">link</a>.{% endif %}{% if config.adminLink %}Please follow this <a href="{{config.adminLink}}">link</a>.{% endif %}', '{"config":{"admin":"1","user":"0","direct":"0","adminEmail":"1","userEmail":"0","directEmail":"0"}}' ]
+		];
+
+		$this->batchInsert( $this->prefix . 'core_template', $columns, $templates );
 	}
 
     public function down() {
