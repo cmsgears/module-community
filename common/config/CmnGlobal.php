@@ -20,7 +20,7 @@ class CmnGlobal {
 
 	// System Pages ---------------------------------------------------
 
-	const PAGE_SEARCH_GROUPS = 'search-groups';
+	const PAGE_SEARCH_GROUPS = 'groups';
 
 	// Grouping by type ------------------------------------------------
 
