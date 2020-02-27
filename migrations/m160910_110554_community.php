@@ -133,8 +133,11 @@ class m160910_110554_community extends \cmsgears\core\common\base\Migration {
 			'id' => $this->bigPrimaryKey( 20 ),
 			'modelId' => $this->bigInteger( 20 )->notNull(),
 			'parentId' => $this->bigInteger( 20 )->notNull(),
-			'type' => $this->smallInteger( 6 )->defaultValue( 0 ),
-			'active' => $this->boolean()->notNull()->defaultValue( false ),
+			'type' => $this->string( Yii::$app->core->mediumText )->notNull(),
+			'order' => $this->smallInteger( 6 )->defaultValue( 0 ),
+			'active' => $this->boolean()->notNull()->defaultValue( true ),
+			'pinned' => $this->boolean()->notNull()->defaultValue( false ),
+			'featured' => $this->boolean()->notNull()->defaultValue( false ),
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
 			'data' => $this->mediumText()
