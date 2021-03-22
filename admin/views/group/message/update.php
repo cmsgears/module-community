@@ -34,7 +34,11 @@ $userName = isset( $model->publisher ) ? $model->publisher->name : null;
 					<div class="row">
 						<div class="col col5"></div>
 						<div class="col col5x3">
-							<?= Yii::$app->formDesigner->getAutoSuggest( $form, $model, 'senderId', [ 'placeholder' => 'User', 'icon' => 'cmti cmti-search', 'value' => $userName, 'url' => 'core/user/auto-search' ] ) ?>
+							<?= Yii::$app->formDesigner->getAutoSuggest( $form, $model, 'senderId', [
+								'placeholder' => 'Search User', 'icon' => 'cmti cmti-search',
+								'app' => 'core', 'controller' => 'user',
+								'value' => $userName, 'url' => 'core/user/auto-search'
+							])?>
 						</div>
 						<div class="col col5"></div>
 					</div>

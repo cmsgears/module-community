@@ -1,11 +1,11 @@
 <?php
 use yii\helpers\Html;
 
-$parent = isset( $widget->data[ 'parent' ] ) ? $widget->data[ 'parent' ] : null;
-$updUrl	= isset( $parent ) ? "update?id=$model->id&pid=$parent->id" : "update?id=$model->id";
+$baseUrl	= isset( $widget->data[ 'baseUrl' ] ) ? $widget->data[ 'baseUrl' ] : 'group/post';
+$parent		= isset( $widget->data[ 'parent' ] ) ? $widget->data[ 'parent' ] : null;
+$updUrl		= isset( $parent ) ? "update?id=$model->id&pid=$parent->id" : "update?id=$model->id";
 ?>
-
-<span title="Attributes"><?= Html::a( "", [ "group/post/attribute/all?pid=$model->id" ], [ 'class' => 'cmti cmti-tag' ] ) ?></span>
+<span title="Attributes"><?= Html::a( "", [ "$baseUrl/attribute/all?pid=$model->id" ], [ 'class' => 'cmti cmti-tag' ] ) ?></span>
 <span title="Gallery"><?= Html::a( "", [ "gallery?id=$model->id" ], [ 'class' => 'cmti cmti-image' ] ) ?></span>
 <span title="Update"><?= Html::a( "", [ $updUrl ], [ 'class' => 'cmti cmti-edit' ] )  ?></span>
 

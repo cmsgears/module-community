@@ -187,7 +187,7 @@ class GroupPost extends \cmsgears\core\common\models\base\Resource implements IA
 
 		return [
 			'groupId' => Yii::$app->cmnMessage->getMessage( CmnGlobal::FIELD_GROUP ),
-			'publisherId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SENDER ),
+			'publisherId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PUBLISHER ),
 			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
 			'templateId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TEMPLATE ),
 			'galleryId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_GALLERY ),

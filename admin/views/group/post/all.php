@@ -8,14 +8,15 @@ $coreProperties = $this->context->getCoreProperties();
 $title			= $this->context->title;
 $this->title	= $title . 's | ' . $coreProperties->getSiteTitle();
 $apixBase		= $this->context->apixBase;
+$baseUrl		= $this->context->baseUrl;
 
 // View Templates
 $moduleTemplates	= '@cmsgears/module-community/admin/views/templates';
 $themeTemplates		= '@themes/admin/views/templates';
 ?>
 <?= DataGrid::widget([
-	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => "create?pid=$parent->id", 'data' => [ 'parent' => $parent ],
-	'title' => 'Group Posts', 'options' => [ 'class' => 'grid-data grid-data-admin' ],
+	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => "create?pid=$parent->id", 'data' => [ 'baseUrl' => $baseUrl, 'parent' => $parent ],
+	'title' => "{$title}s", 'options' => [ 'class' => 'grid-data grid-data-admin' ],
 	'searchColumns' => [ 'title' => 'Title', 'content' => 'Content' ],
 	'sortColumns' => [
 		'title' => 'Title', 'status' => 'Status', 'template' => 'Template',
@@ -64,29 +65,29 @@ $themeTemplates		= '@themes/admin/views/templates';
 <?= Popup::widget([
 	'title' => 'Apply Bulk Action', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'bulk',
-	'data' => [ 'model' => 'Group Post', 'app' => 'grid', 'controller' => 'crud', 'action' => 'bulk', 'url' => "$apixBase/bulk" ]
+	'data' => [ 'model' => $title, 'app' => 'grid', 'controller' => 'crud', 'action' => 'bulk', 'url' => "$apixBase/bulk" ]
 ])?>
 
 <?= Popup::widget([
-	'title' => 'Approve Group Post', 'size' => 'medium',
+	'title' => "Approve $title", 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'approve',
-	'data' => [ 'model' => 'Group Post', 'app' => 'grid', 'controller' => 'crud', 'action' => 'generic', 'url' => "$apixBase/approve?id=" ]
+	'data' => [ 'model' => $title, 'app' => 'grid', 'controller' => 'crud', 'action' => 'generic', 'url' => "$apixBase/approve?id=" ]
 ])?>
 
 <?= Popup::widget([
-	'title' => 'Block Group Post', 'size' => 'medium',
+	'title' => "Block $title", 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'block',
-	'data' => [ 'model' => 'Group Post', 'app' => 'grid', 'controller' => 'crud', 'action' => 'generic', 'url' => "$apixBase/toggle-block?id=" ]
+	'data' => [ 'model' => $title, 'app' => 'grid', 'controller' => 'crud', 'action' => 'generic', 'url' => "$apixBase/toggle-block?id=" ]
 ])?>
 
 <?= Popup::widget([
-	'title' => 'Activate Group Post', 'size' => 'medium',
+	'title' => "Activate $title", 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'activate',
-	'data' => [ 'model' => 'Group Post', 'app' => 'grid', 'controller' => 'crud', 'action' => 'generic', 'url' => "$apixBase/toggle-block?id=" ]
+	'data' => [ 'model' => $title, 'app' => 'grid', 'controller' => 'crud', 'action' => 'generic', 'url' => "$apixBase/toggle-block?id=" ]
 ])?>
 
 <?= Popup::widget([
-	'title' => 'Delete Group Post', 'size' => 'medium',
+	'title' => "Delete $title", 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'delete',
-	'data' => [ 'model' => 'Group Post', 'app' => 'grid', 'controller' => 'crud', 'action' => 'delete', 'url' => "$apixBase/delete?id=" ]
+	'data' => [ 'model' => $title, 'app' => 'grid', 'controller' => 'crud', 'action' => 'delete', 'url' => "$apixBase/delete?id=" ]
 ])?>

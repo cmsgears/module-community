@@ -18,9 +18,13 @@ class CmnGlobal {
 
 	// System Sites ---------------------------------------------------
 
+	const SITE_COMMUNITY = 'community';
+
 	// System Pages ---------------------------------------------------
 
 	const PAGE_SEARCH_GROUPS = 'search-groups';
+
+	const PAGE_GROUPS = 'groups';
 
 	// Grouping by type ------------------------------------------------
 
@@ -38,7 +42,9 @@ class CmnGlobal {
 
 	// Templates -------------------------------------------------------
 
-	const TPL_NOTIFY_GROUP_REGISTER = 'group-register';
+	const TEMPLATE_GROUP = 'group';
+
+	const TPL_NOTIFY_GROUP_NEW = 'group-new';
 
 	const TPL_NOTIFY_GROUP_MEMBER_ADD		= 'group-member-add';
 	const TPL_NOTIFY_GROUP_MEMBER_SUBMIT	= 'group-member-submit';

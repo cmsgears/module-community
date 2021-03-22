@@ -54,6 +54,7 @@ abstract class GroupController extends \cmsgears\core\admin\controllers\base\Cru
 		$this->setViewPath( '@cmsgears/module-community/admin/views/group' );
 
 		// Config
+		$this->title		= 'Group';
 		$this->reviews		= true;
 		$this->prettyReview	= false;
 

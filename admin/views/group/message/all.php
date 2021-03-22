@@ -8,14 +8,15 @@ $coreProperties = $this->context->getCoreProperties();
 $title			= $this->context->title;
 $this->title	= $title . 's | ' . $coreProperties->getSiteTitle();
 $apixBase		= $this->context->apixBase;
+$baseUrl		= $this->context->baseUrl;
 
 // View Templates
 $moduleTemplates	= '@cmsgears/module-community/admin/views/templates';
 $themeTemplates		= '@themes/admin/views/templates';
 ?>
 <?= DataGrid::widget([
-	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => "create?pid=$parent->id", 'data' => [ 'parent' => $parent ],
-	'title' => 'Groups', 'options' => [ 'class' => 'grid-data grid-data-admin' ],
+	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => "create?pid=$parent->id", 'data' => [ 'baseUrl' => $baseUrl, 'parent' => $parent ],
+	'title' => "{$title}s", 'options' => [ 'class' => 'grid-data grid-data-admin' ],
 	'searchColumns' => [ 'content' => 'Content' ],
 	'sortColumns' => [
 		'sender' => 'Sender', 'broadcasted' => 'Broadcasted', 'delivered' => 'Delivered',
@@ -57,11 +58,11 @@ $themeTemplates		= '@themes/admin/views/templates';
 <?= Popup::widget([
 	'title' => 'Apply Bulk Action', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'bulk',
-	'data' => [ 'model' => 'Group Message', 'app' => 'grid', 'controller' => 'crud', 'action' => 'bulk', 'url' => "$apixBase/bulk" ]
+	'data' => [ 'model' => $title, 'app' => 'grid', 'controller' => 'crud', 'action' => 'bulk', 'url' => "$apixBase/bulk" ]
 ])?>
 
 <?= Popup::widget([
-	'title' => 'Delete Group Message', 'size' => 'medium',
+	'title' => "Delete $title", 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'delete',
-	'data' => [ 'model' => 'Group Message', 'app' => 'grid', 'controller' => 'crud', 'action' => 'delete', 'url' => "$apixBase/delete?id=" ]
+	'data' => [ 'model' => $title, 'app' => 'grid', 'controller' => 'crud', 'action' => 'delete', 'url' => "$apixBase/delete?id=" ]
 ])?>

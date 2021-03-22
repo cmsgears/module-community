@@ -45,6 +45,7 @@ class PostController extends \cmsgears\community\admin\controllers\base\group\Po
 		// Config
 		$this->title	= 'Group Post';
 		$this->apixBase	= 'community/group/post';
+		$this->baseUrl	= 'group/post';
 
 		// Services
 		$this->parentService = Yii::$app->factory->get( 'groupService' );

@@ -45,6 +45,7 @@ class MessageController extends \cmsgears\community\admin\controllers\base\group
 		// Config
 		$this->title	= 'Group Message';
 		$this->apixBase	= 'community/group/message';
+		$this->baseUrl	= 'group/message';
 
 		// Services
 		$this->parentService = Yii::$app->factory->get( 'groupService' );
