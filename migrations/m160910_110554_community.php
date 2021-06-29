@@ -312,7 +312,7 @@ class m160910_110554_community extends \cmsgears\core\common\base\Migration {
         $this->createTable( $this->prefix . 'cmn_group', [
 			'id' => $this->bigPrimaryKey( 20 ),
 			'siteId' => $this->bigInteger( 20 )->notNull(),
-			'ownerId' => $this->bigInteger( 20 ),
+			'userId' => $this->bigInteger( 20 ),
 			'avatarId' => $this->bigInteger( 20 ),
 			'createdBy' => $this->bigInteger( 20 )->notNull(),
 			'modifiedBy' => $this->bigInteger( 20 ),
@@ -342,7 +342,7 @@ class m160910_110554_community extends \cmsgears\core\common\base\Migration {
 
         // Index for columns avatar, creator and modifier
 		$this->createIndex( 'idx_' . $this->prefix . 'group_site', $this->prefix . 'cmn_group', 'siteId' );
-		$this->createIndex( 'idx_' . $this->prefix . 'group_owner', $this->prefix . 'cmn_group', 'ownerId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'group_user', $this->prefix . 'cmn_group', 'userId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'group_avatar', $this->prefix . 'cmn_group', 'avatarId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'group_creator', $this->prefix . 'cmn_group', 'createdBy' );
 		$this->createIndex( 'idx_' . $this->prefix . 'group_modifier', $this->prefix . 'cmn_group', 'modifiedBy' );
@@ -600,7 +600,7 @@ class m160910_110554_community extends \cmsgears\core\common\base\Migration {
 
 		// Group
 		$this->addForeignKey( 'fk_' . $this->prefix . 'group_site', $this->prefix . 'cmn_group', 'siteId', $this->prefix . 'core_site', 'id', 'RESTRICT' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'group_owner', $this->prefix . 'cmn_group', 'ownerId', $this->prefix . 'core_user', 'id', 'SET NULL' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'group_user', $this->prefix . 'cmn_group', 'userId', $this->prefix . 'core_user', 'id', 'SET NULL' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'group_avatar', $this->prefix . 'cmn_group', 'avatarId', $this->prefix . 'core_file', 'id', 'SET NULL' );
         $this->addForeignKey( 'fk_' . $this->prefix . 'group_creator', $this->prefix . 'cmn_group', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'group_modifier', $this->prefix . 'cmn_group', 'modifiedBy', $this->prefix . 'core_user', 'id', 'SET NULL' );
@@ -728,7 +728,7 @@ class m160910_110554_community extends \cmsgears\core\common\base\Migration {
 
 		// Group
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'group_site', $this->prefix . 'cmn_group' );
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'group_owner', $this->prefix . 'cmn_group' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'group_user', $this->prefix . 'cmn_group' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'group_avatar', $this->prefix . 'cmn_group' );
         $this->dropForeignKey( 'fk_' . $this->prefix . 'group_creator', $this->prefix . 'cmn_group' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'group_modifier', $this->prefix . 'cmn_group' );

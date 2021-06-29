@@ -43,7 +43,6 @@ use cmsgears\cms\common\models\interfaces\mappers\IElement;
 use cmsgears\cms\common\models\interfaces\mappers\IWidget;
 
 use cmsgears\core\common\models\base\CoreTables;
-use cmsgears\core\common\models\entities\User;
 use cmsgears\community\common\models\base\CmnTables;
 use cmsgears\community\common\models\resources\GroupMeta;
 use cmsgears\community\common\models\mappers\GroupFollower;
@@ -78,7 +77,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @property integer $id
  * @property integer $siteId
- * @property integer $ownerId
+ * @property integer $userId
  * @property integer $avatarId
  * @property integer $createdBy
  * @property integer $modifiedBy
@@ -228,7 +227,7 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 			[ 'email', 'email' ],
 			[ [ 'status', 'visibility', 'order' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'pinned', 'featured', 'reviews', 'gridCacheValid' ], 'boolean' ],
-			[ [ 'siteId', 'ownerId', 'avatarId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'siteId', 'userId', 'avatarId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 
@@ -250,7 +249,7 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 
 		return [
 			'siteId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SITE ),
-			'ownerId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
+			'userId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_USER ),
 			'avatarId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_AVATAR ),
 			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_AUTHOR ),
 			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
@@ -281,11 +280,6 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 
 	// Group ---------------------------------
 
-	public function getOwner() {
-
-		return $this->hasOne( User::class, [ 'id' => 'ownerId' ] );
-	}
-
 	/**
 	 * Return all the group members.
 	 *
@@ -315,9 +309,9 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 
 		if( empty( $email ) ) {
 
-			if( isset( $this->owner ) ) {
+			if( isset( $this->user ) ) {
 
-				$email = $this->owner->email;
+				$email = $this->user->email;
 			}
 		}
 
@@ -349,7 +343,7 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
      */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'avatar', 'modelContent', 'modelContent.template', 'site', 'creator', 'modifier' ];
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'avatar', 'modelContent', 'modelContent.template', 'site', 'user' ];
 
 		$config[ 'relations' ] = $relations;
 
@@ -390,9 +384,9 @@ class Group extends \cmsgears\core\common\models\base\Entity implements IApprova
 	 */
 	public static function queryWithAuthor( $config = [] ) {
 
-		$config[ 'relations' ][] = [ 'avatar', 'modelContent', 'modelContent.template', 'modelContent.banner', 'creator' ];
+		$config[ 'relations' ][] = [ 'avatar', 'modelContent', 'modelContent.template', 'modelContent.banner', 'user' ];
 
-		$config[ 'relations' ][] = [ 'creator.avatar'  => function ( $query ) {
+		$config[ 'relations' ][] = [ 'user.avatar'  => function ( $query ) {
 			$fileTable	= CoreTables::getTableName( CoreTables::TABLE_FILE );
 			$query->from( "$fileTable aavatar" ); }
 		];
