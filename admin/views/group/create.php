@@ -17,9 +17,9 @@ $this->title 	= 'Add Group | ' . $coreProperties->getSiteTitle();
 $returnUrl		= $this->context->returnUrl;
 $apixBase		= $this->context->apixBase;
 
-$userName = isset( $model->user ) ? $model->user->getName() . ', ' . $model->user->email : null;
-
 Editor::widget();
+
+$userName = isset( $model->user ) ? $model->user->getName() . ', ' . $model->user->username . ', ' . $model->user->email : null;
 ?>
 <div class="box-crud-wrap row">
 	<div class="box-crud-wrap-main colf colf3x2">
@@ -38,7 +38,7 @@ Editor::widget();
 								'value' => $userName, 'url' => 'core/user/auto-search'
 							]) ?>
 						</div>
-						<div class="note">Notes: Assign group user as existing user if required.</div>
+						<div class="note">Notes: Assign corresponding user if required.</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
