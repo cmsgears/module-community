@@ -8,7 +8,9 @@
  */
 
 // CMG Imports
-use cmsgears\core\common\models\resources\Stats;
+use cmsgears\core\common\config\CoreGlobal;
+
+use cmsgears\core\common\models\resources\ModelStats;
 use cmsgears\community\common\models\base\CmnTables;
 
 /**
@@ -50,55 +52,55 @@ class m160910_111782_community_stats extends \cmsgears\core\common\base\Migratio
 
 	private function insertTables() {
 
-		$columns = [ 'tableName', 'type', 'count' ];
+		$columns = [ 'parentId', 'parentType', 'name', 'type', 'count' ];
 
 		$tableData = [
-			[ $this->prefix . 'cmn_friend', 'rows', 0 ],
-			[ $this->prefix . 'cmn_friend_invite', 'rows', 0 ],
-			[ $this->prefix . 'cmn_user_follower', 'rows', 0 ],
-			[ $this->prefix . 'cmn_user_post', 'rows', 0 ],
-			[ $this->prefix . 'cmn_user_post_meta', 'rows', 0 ],
-			[ $this->prefix . 'cmn_chat', 'rows', 0 ],
-			[ $this->prefix . 'cmn_chat_member', 'rows', 0 ],
-			[ $this->prefix . 'cmn_chat_message', 'rows', 0 ],
-			[ $this->prefix . 'cmn_chat_message_report', 'rows', 0 ],
-			[ $this->prefix . 'cmn_group', 'rows', 0 ],
-			[ $this->prefix . 'cmn_group_meta', 'rows', 0 ],
-			[ $this->prefix . 'cmn_group_follower', 'rows', 0 ],
-			[ $this->prefix . 'cmn_group_post', 'rows', 0 ],
-			[ $this->prefix . 'cmn_group_post_meta', 'rows', 0 ],
-			[ $this->prefix . 'cmn_group_member', 'rows', 0 ],
-			[ $this->prefix . 'cmn_group_invite', 'rows', 0 ],
-			[ $this->prefix . 'cmn_group_message', 'rows', 0 ],
-			[ $this->prefix . 'cmn_group_message_report', 'rows', 0 ]
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_friend', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_friend_invite', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_user_follower', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_user_post', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_user_post_meta', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_chat', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_chat_member', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_chat_message', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_chat_message_report', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_group', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_group_meta', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_group_follower', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_group_post', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_group_post_meta', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_group_member', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_group_invite', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_group_message', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cmn_group_message_report', 'rows', 0 ]
 		];
 
-		$this->batchInsert( $this->prefix . 'core_stats', $columns, $tableData );
+		$this->batchInsert( $this->prefix . 'core_model_stats', $columns, $tableData );
 	}
 
 	public function down() {
 
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_FRIEND ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_FRIEND_INVITE ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_FRIEND ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_FRIEND_INVITE ) );
 
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_USER_FOLLOWER ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_USER_POST ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_USER_POST_META ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_USER_FOLLOWER ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_USER_POST ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_USER_POST_META ) );
 
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_CHAT ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_CHAT_MEMBER ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_CHAT_MESSAGE ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_CHAT_MESSAGE_REPORT ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_CHAT ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_CHAT_MEMBER ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_CHAT_MESSAGE ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_CHAT_MESSAGE_REPORT ) );
 
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_GROUP ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_GROUP_META ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_GROUP_FOLLOWER ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_GROUP_POST ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_GROUP_POST_META ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_GROUP_MEMBER ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_GROUP_INVITE ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_GROUP_MESSAGE ) );
-		Stats::deleteByTableName( CmnTables::getTableName( CmnTables::TABLE_GROUP_MESSAGE_REPORT ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_GROUP ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_GROUP_META ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_GROUP_FOLLOWER ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_GROUP_POST ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_GROUP_POST_META ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_GROUP_MEMBER ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_GROUP_INVITE ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_GROUP_MESSAGE ) );
+		ModelStats::deleteByTable( CmnTables::getTableName( CmnTables::TABLE_GROUP_MESSAGE_REPORT ) );
 	}
 
 }

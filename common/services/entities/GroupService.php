@@ -432,7 +432,7 @@ class GroupService extends \cmsgears\cms\common\services\base\ContentService imp
 		if( $admin ) {
 
 			$attributes	= ArrayHelper::merge( $attributes, [
-				'ownerId', 'status', 'order', 'pinned', 'featured', 'reviews'
+				'userId', 'status', 'order', 'pinned', 'featured', 'reviews'
 			]);
 		}
 

@@ -17,9 +17,9 @@ $this->title 	= 'Add Group | ' . $coreProperties->getSiteTitle();
 $returnUrl		= $this->context->returnUrl;
 $apixBase		= $this->context->apixBase;
 
-$ownerName = isset( $model->owner ) ? $model->owner->getName() . ', ' . $model->owner->email : null;
-
 Editor::widget();
+
+$userName = isset( $model->user ) ? $model->user->getName() . ', ' . $model->user->username . ', ' . $model->user->email : null;
 ?>
 <div class="box-crud-wrap row">
 	<div class="box-crud-wrap-main colf colf3x2">
@@ -32,13 +32,13 @@ Editor::widget();
 				<div class="box-content">
 					<div class="row margin margin-bottom-medium">
 						<div class="row row-medium">
-							<?= Yii::$app->formDesigner->getAutoSuggest( $form, $model, 'ownerId', [
-								'placeholder' => 'Search Owner', 'icon' => 'cmti cmti-search',
+							<?= Yii::$app->formDesigner->getAutoSuggest( $form, $model, 'userId', [
+								'placeholder' => 'Search User', 'icon' => 'cmti cmti-search',
 								'app' => 'core', 'controller' => 'user',
-								'value' => $ownerName, 'url' => 'core/user/auto-search'
+								'value' => $userName, 'url' => 'core/user/auto-search'
 							]) ?>
 						</div>
-						<div class="note">Notes: Assign group owner as existing user if required.</div>
+						<div class="note">Notes: Assign corresponding user if required.</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
